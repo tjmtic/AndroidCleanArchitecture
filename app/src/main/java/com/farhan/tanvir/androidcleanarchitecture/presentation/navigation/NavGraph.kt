@@ -6,6 +6,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.farhan.tanvir.androidcleanarchitecture.presentation.screen.details.LoginDetailsScreen
 import com.farhan.tanvir.androidcleanarchitecture.presentation.screen.details.UserDetailsScreen
 import com.farhan.tanvir.androidcleanarchitecture.presentation.screen.home.HomeScreen
 import com.farhan.tanvir.androidcleanarchitecture.util.Constant
@@ -16,6 +17,9 @@ fun NavGraph(navController: NavHostController) {
         navController = navController,
         startDestination = Screen.Home.route
     ) {
+        composable(route = Screen.Login.route) {
+            LoginDetailsScreen(navController = navController)
+        }
         composable(route = Screen.Home.route) {
             HomeScreen(navController = navController)
         }
