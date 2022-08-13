@@ -12,21 +12,21 @@ import com.farhan.tanvir.androidcleanarchitecture.ui.theme.AppThemeColor
 
 
 @Composable
-fun MovieDetailsScreen(
-    movieId: String,
+fun UserDetailsScreen(
+    userId: String,
     navController: NavController,
-    viewModel: MovieDetailsViewModel = hiltViewModel(),
+    viewModel: UserDetailsViewModel = hiltViewModel(),
 ) {
-    viewModel.getMovieDetails(movieID = movieId.toInt())
-    val movieDetails by viewModel.selectedMovie.collectAsState()
+    viewModel.getUserDetails(userID = userId.toInt())
+    val userDetails by viewModel.selectedUser.collectAsState()
     Scaffold(
         topBar={
-               MovieDetailsTopBar(navController)
+               UserDetailsTopBar(navController)
         },
         contentColor = MaterialTheme.colors.AppContentColor,
         backgroundColor = MaterialTheme.colors.AppThemeColor,
         content = {
-            movieDetails?.let { MovieDetailsContent(it) }
+            userDetails?.let { UserDetailsContent(it) }
         })
 }
 

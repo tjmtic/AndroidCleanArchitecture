@@ -1,9 +1,9 @@
 package com.farhan.tanvir.androidcleanarchitecture.di
 
-import com.farhan.tanvir.data.repository.MovieRepositoryImpl
-import com.farhan.tanvir.data.repository.dataSource.MovieLocalDataSource
-import com.farhan.tanvir.data.repository.dataSource.MovieRemoteDataSource
-import com.farhan.tanvir.domain.repository.MovieRepository
+import com.farhan.tanvir.data.repository.UserRepositoryImpl
+import com.farhan.tanvir.data.repository.dataSource.UserLocalDataSource
+import com.farhan.tanvir.data.repository.dataSource.UserRemoteDataSource
+import com.farhan.tanvir.domain.repository.UserRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,9 +15,9 @@ import dagger.hilt.components.SingletonComponent
 object RepositoryModule {
 
     @Provides
-    fun provideMoviesRepository(
-        movieRemoteDataSource: MovieRemoteDataSource,
-        movieLocalDataSource: MovieLocalDataSource
-    ): MovieRepository =
-        MovieRepositoryImpl(movieRemoteDataSource, movieLocalDataSource = movieLocalDataSource)
+    fun provideUsersRepository(
+        userRemoteDataSource: UserRemoteDataSource,
+        userLocalDataSource: UserLocalDataSource
+    ): UserRepository =
+        UserRepositoryImpl(userRemoteDataSource, userLocalDataSource = userLocalDataSource)
 }

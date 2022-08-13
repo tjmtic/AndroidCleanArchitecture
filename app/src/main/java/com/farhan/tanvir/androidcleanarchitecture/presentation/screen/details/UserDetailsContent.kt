@@ -18,10 +18,10 @@ import com.farhan.tanvir.androidcleanarchitecture.BuildConfig
 import com.farhan.tanvir.androidcleanarchitecture.presentation.components.RatingComponent
 import com.farhan.tanvir.androidcleanarchitecture.presentation.components.ReleaseDateComponent
 import com.farhan.tanvir.androidcleanarchitecture.ui.theme.AppThemeColor
-import com.farhan.tanvir.domain.model.Movie
+import com.farhan.tanvir.domain.model.User
 
 @Composable
-fun MovieDetailsContent(movie: Movie) {
+fun UserDetailsContent(user: User) {
     val scrollState = rememberScrollState()
     Card(
         elevation = 0.dp,
@@ -34,7 +34,7 @@ fun MovieDetailsContent(movie: Movie) {
         ) {
             Image(
                 painter = rememberImagePainter(
-                    data = BuildConfig.POSTER_URL + movie.posterPath, builder = {
+                    data = BuildConfig.POSTER_URL + user.images, builder = {
                         crossfade(true)
                         scale(Scale.FIT)
                     }),
@@ -46,7 +46,7 @@ fun MovieDetailsContent(movie: Movie) {
             )
             Column(modifier = Modifier.padding(8.dp)) {
                 Spacer(modifier = Modifier.height(16.dp))
-                movie.title?.let {
+                user.name?.let {
                     Text(
                         text = it,
                         style = MaterialTheme.typography.h5,
@@ -54,13 +54,13 @@ fun MovieDetailsContent(movie: Movie) {
                     )
                 }
                 Spacer(modifier = Modifier.height(8.dp))
-                movie.releaseDate?.let {
+                user.name?.let {
                     ReleaseDateComponent(releaseDate = it)
                 }
                 Spacer(modifier = Modifier.height(8.dp))
-                movie.rating?.let { RatingComponent(rating = it) }
+                user.name.let { RatingComponent(rating = it) }
                 Spacer(modifier = Modifier.height(16.dp))
-                movie.overview?.let {
+                user.payerEmail?.let {
                     Text(
                         text = it,
                         style = MaterialTheme.typography.body2

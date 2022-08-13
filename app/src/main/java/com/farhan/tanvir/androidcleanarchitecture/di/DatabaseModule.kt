@@ -3,9 +3,9 @@ package com.farhan.tanvir.androidcleanarchitecture.di
 import android.app.Application
 import androidx.room.Database
 import androidx.room.Room
-import com.farhan.tanvir.data.db.MovieDB
-import com.farhan.tanvir.data.db.MovieDao
-import com.farhan.tanvir.data.db.MovieRemoteKeysDao
+import com.farhan.tanvir.data.db.UserDB
+import com.farhan.tanvir.data.db.UserDao
+import com.farhan.tanvir.data.db.UserRemoteKeysDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,13 +16,13 @@ import dagger.hilt.components.SingletonComponent
 object DatabaseModule {
 
     @Provides
-    fun provideDatabase(app: Application): MovieDB =
-        Room.databaseBuilder(app, MovieDB::class.java, "movie_db").fallbackToDestructiveMigration()
+    fun provideDatabase(app: Application): UserDB =
+        Room.databaseBuilder(app, UserDB::class.java, "user_db").fallbackToDestructiveMigration()
             .build()
 
     @Provides
-    fun provideMovieDao(movieDB: MovieDB) : MovieDao= movieDB.movieDao()
+    fun provideUserDao(userDB: UserDB) : UserDao = userDB.userDao()
 
     @Provides
-    fun provideMovieRemoteKeysDao(movieDB: MovieDB) : MovieRemoteKeysDao = movieDB.movieRemoteKeysDao()
+    fun provideUserRemoteKeysDao(userDB: UserDB) : UserRemoteKeysDao = userDB.userRemoteKeysDao()
 }

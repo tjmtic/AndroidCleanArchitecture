@@ -1,9 +1,9 @@
 package com.farhan.tanvir.androidcleanarchitecture.di
 
-import com.farhan.tanvir.domain.repository.MovieRepository
-import com.farhan.tanvir.domain.useCase.GetMoviesFromDBUseCase
-import com.farhan.tanvir.domain.useCase.GetPopularMoviesUseCase
-import com.farhan.tanvir.domain.useCase.MovieUseCases
+import com.farhan.tanvir.domain.repository.UserRepository
+import com.farhan.tanvir.domain.useCase.GetAllUsersUseCase
+import com.farhan.tanvir.domain.useCase.GetUsersFromDBUseCase
+import com.farhan.tanvir.domain.useCase.UserUseCases
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -14,8 +14,8 @@ import dagger.hilt.components.SingletonComponent
 object UseCaseModule {
 
     @Provides
-    fun provideMovieUseCases(movieRepository: MovieRepository) = MovieUseCases(
-        getPopularMoviesUseCase = GetPopularMoviesUseCase(movieRepository = movieRepository),
-        getMoviesFromDBUseCase = GetMoviesFromDBUseCase(movieRepository = movieRepository)
+    fun provideUserUseCases(userRepository: UserRepository) = UserUseCases(
+        getAllUsersUseCase = GetAllUsersUseCase(userRepository = userRepository),
+        getUsersFromDBUseCase = GetUsersFromDBUseCase(userRepository = userRepository)
     )
 }

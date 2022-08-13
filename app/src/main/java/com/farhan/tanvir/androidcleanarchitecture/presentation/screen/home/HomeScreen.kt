@@ -17,7 +17,7 @@ fun HomeScreen(navController: NavHostController, viewModel: HomeViewModel = hilt
 
     val systemUiController = rememberSystemUiController()
     val systemBarColor = MaterialTheme.colors.AppThemeColor
-    val allMovies = viewModel.getAllPopularMovies.collectAsLazyPagingItems()
+    val allUsers = viewModel.getAllUsers.collectAsLazyPagingItems()
 
     SideEffect {
         systemUiController.setStatusBarColor(
@@ -32,7 +32,7 @@ fun HomeScreen(navController: NavHostController, viewModel: HomeViewModel = hilt
             HomeTopBar()
         },
         content = {
-            MovieListContent(allMovies = allMovies, navController = navController)
+            UserListContent(allUsers = allUsers, navController = navController)
         }
     )
 }

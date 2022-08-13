@@ -6,7 +6,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.farhan.tanvir.androidcleanarchitecture.presentation.screen.details.MovieDetailsScreen
+import com.farhan.tanvir.androidcleanarchitecture.presentation.screen.details.UserDetailsScreen
 import com.farhan.tanvir.androidcleanarchitecture.presentation.screen.home.HomeScreen
 import com.farhan.tanvir.androidcleanarchitecture.util.Constant
 
@@ -20,13 +20,13 @@ fun NavGraph(navController: NavHostController) {
             HomeScreen(navController = navController)
         }
         composable(
-            route = Screen.MovieDetails.route,
-            arguments = listOf(navArgument(Constant.MOVIE_DETAILS_ARGUMENT_KEY) {
+            route = Screen.UserDetails.route,
+            arguments = listOf(navArgument(Constant.USER_DETAILS_ARGUMENT_KEY) {
                 type = NavType.StringType
             })
         ) { backStackEntry ->
-            backStackEntry.arguments?.getString(Constant.MOVIE_DETAILS_ARGUMENT_KEY)
-                ?.let { MovieDetailsScreen(it,navController) }
+            backStackEntry.arguments?.getString(Constant.USER_DETAILS_ARGUMENT_KEY)
+                ?.let { UserDetailsScreen(it,navController) }
         }
     }
 }

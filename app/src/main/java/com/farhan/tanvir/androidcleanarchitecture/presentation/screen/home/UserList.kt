@@ -22,28 +22,28 @@ import com.farhan.tanvir.androidcleanarchitecture.BuildConfig
 import com.farhan.tanvir.androidcleanarchitecture.presentation.components.RatingComponent
 import com.farhan.tanvir.androidcleanarchitecture.presentation.navigation.Screen
 import com.farhan.tanvir.androidcleanarchitecture.ui.theme.ItemBackgroundColor
-import com.farhan.tanvir.domain.model.Movie
+import com.farhan.tanvir.domain.model.User
 
 @Composable
-fun MovieListContent(allMovies: LazyPagingItems<Movie>, navController: NavHostController) {
+fun UserListContent(allUsers: LazyPagingItems<User>, navController: NavHostController) {
     LazyColumn(
         contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
     ) {
         items(
-            items = allMovies,
-            key = { movie ->
-                movie.pk
+            items = allUsers,
+            key = { user ->
+                user.pk
             }
-        ) { movie ->
-            if (movie != null) {
-                MovieListItem(movie = movie, navController = navController)
+        ) { user ->
+            if (user != null) {
+                UserListItem(user = user, navController = navController)
             }
         }
     }
 }
 
 @Composable
-fun MovieListItem(movie: Movie, navController: NavHostController) {
+fun UserListItem(user: User, navController: NavHostController) {
     Card(
         modifier = Modifier
             .padding(top = 8.dp)
@@ -57,11 +57,11 @@ fun MovieListItem(movie: Movie, navController: NavHostController) {
                 .height(IntrinsicSize.Max)
                 .fillMaxWidth()
                 .clickable {
-                    navController.navigate(route = Screen.MovieDetails.passMovieId(movie.movieId.toString()))
+                    navController.navigate(route = Screen.UserDetails.passUserId(user.userId.toString()))
                 },
             verticalAlignment = Alignment.CenterVertically
         ) {
-            movie.posterPath?.let {
+            user.images?.let {
                 Image(
                     modifier = Modifier
                         .padding(
@@ -69,7 +69,7 @@ fun MovieListItem(movie: Movie, navController: NavHostController) {
                         )
                         .width(120.dp),
                     painter = rememberImagePainter(
-                        data = BuildConfig.POSTER_URL + movie.posterPath, builder = {
+                        data = BuildConfig.POSTER_URL + it, builder = {
                             crossfade(true)
                             scale(Scale.FILL)
                         }),
@@ -82,9 +82,9 @@ fun MovieListItem(movie: Movie, navController: NavHostController) {
                 .padding(
                     end = 2.dp,
                 )) {
-                movie.title?.let { Text(text = it, style = MaterialTheme.typography.body1) }
+                user.name.let { Text(text = it, style = MaterialTheme.typography.body1) }
                 Spacer(modifier = Modifier.height(4.dp))
-                movie.overview?.let {
+                user.payerEmail?.let {
                     Text(
                         text = it,
                         style = MaterialTheme.typography.body2,
@@ -93,7 +93,7 @@ fun MovieListItem(movie: Movie, navController: NavHostController) {
                     )
                 }
                 Spacer(modifier = Modifier.height(8.dp))
-                movie.rating?.let { RatingComponent(rating = it) }
+                user.name.let { RatingComponent(rating = it) }
             }
         }
     }

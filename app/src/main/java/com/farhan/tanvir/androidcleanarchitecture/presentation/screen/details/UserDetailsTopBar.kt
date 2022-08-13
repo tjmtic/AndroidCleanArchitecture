@@ -15,7 +15,7 @@ import com.farhan.tanvir.androidcleanarchitecture.ui.theme.AppContentColor
 import com.farhan.tanvir.androidcleanarchitecture.ui.theme.AppThemeColor
 
 @Composable
-fun MovieDetailsTopBar(
+fun UserDetailsTopBar(
     navController: NavController
 ) {
     TopAppBar(
