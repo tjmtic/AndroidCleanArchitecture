@@ -9,8 +9,10 @@ import java.io.Serializable
 data class User(
     @PrimaryKey(autoGenerate = true)
     var pk: Long = 0,
+    @SerializedName("_id")
+    val id: Int,
     @SerializedName("id")
-    val userId: Int,
+    val userId: String,
     @SerializedName("payerBalance")
     val payerBalance: Int,
     @SerializedName("receiverBalance")
@@ -29,6 +31,8 @@ data class User(
     val sponsors: String,
     @SerializedName("balance")
     val balance: Int,
+    @SerializedName("email")
+    val email: String,
     @SerializedName("name")
     val name: String,
     @SerializedName("paypal")

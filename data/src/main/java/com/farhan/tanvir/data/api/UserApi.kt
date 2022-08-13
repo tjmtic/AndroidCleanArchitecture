@@ -6,6 +6,8 @@ import com.farhan.tanvir.domain.model.UserList
 import org.json.JSONObject
 import retrofit2.Response
 import retrofit2.http.GET
+import retrofit2.http.POST
+import retrofit2.http.Query
 
 interface UserApi {
     @GET("api/get/user")
@@ -25,4 +27,11 @@ interface UserApi {
 
     @GET("api/get/delete/contributors")
     suspend fun getDeleteAllContributors(): Response<JSONObject>
+
+
+    @POST("api/login")
+    suspend fun postLogin(
+        @Query("email") email: String,
+        @Query("password") password: String
+    ): Response<JSONObject>
 }

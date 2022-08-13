@@ -68,7 +68,7 @@ class UserRemoteMediator(private val userApi: UserApi, private val userDB: UserD
 
                         val keys = responseData.users.map { user ->
                             UserRemoteKeys(
-                                id = user.userId,
+                                id = user.id,
                                 prevPage = prevPage,
                                 nextPage = nextPage,
                                 lastUpdated = System.currentTimeMillis()
@@ -90,7 +90,7 @@ class UserRemoteMediator(private val userApi: UserApi, private val userDB: UserD
         state: PagingState<Int, User>,
     ): UserRemoteKeys? {
         return state.anchorPosition?.let { position ->
-            state.closestItemToPosition(position)?.userId?.let { id ->
+            state.closestItemToPosition(position)?.id?.let { id ->
                 userRemoteKeysDao.getUserRemoteKeys(userId = id)
             }
         }
@@ -101,7 +101,7 @@ class UserRemoteMediator(private val userApi: UserApi, private val userDB: UserD
     ): UserRemoteKeys? {
         return state.pages.firstOrNull { it.data.isNotEmpty() }?.data?.firstOrNull()
             ?.let { user ->
-                userRemoteKeysDao.getUserRemoteKeys(userId = user.userId)
+                userRemoteKeysDao.getUserRemoteKeys(userId = user.id)
             }
     }
 
@@ -110,7 +110,7 @@ class UserRemoteMediator(private val userApi: UserApi, private val userDB: UserD
     ): UserRemoteKeys? {
         return state.pages.lastOrNull { it.data.isNotEmpty() }?.data?.lastOrNull()
             ?.let { user ->
-                userRemoteKeysDao.getUserRemoteKeys(userId = user.userId)
+                userRemoteKeysDao.getUserRemoteKeys(userId = user.id)
             }
     }
 }

@@ -11,6 +11,7 @@ import com.farhan.tanvir.data.paging.UserRemoteMediator
 import com.farhan.tanvir.data.repository.dataSource.UserRemoteDataSource
 import com.farhan.tanvir.domain.model.User
 import kotlinx.coroutines.flow.Flow
+import org.json.JSONObject
 
 
 class UserRemoteDataSourceImpl(private val userApi: UserApi, private val userDB: UserDB) :
@@ -29,5 +30,12 @@ class UserRemoteDataSourceImpl(private val userApi: UserApi, private val userDB:
             ),
             pagingSourceFactory = pagingSourceFactory,
         ).flow
+    }
+
+    override suspend fun postLogin(email:String, password:String): JSONObject? {
+        val response = userApi.postLogin(email, password)
+        Log.d("TIME123", "ACtual;ly loging in 555..." + response)
+
+        return response.body()
     }
 }
