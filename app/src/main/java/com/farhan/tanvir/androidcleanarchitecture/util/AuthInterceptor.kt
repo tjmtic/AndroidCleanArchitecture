@@ -19,6 +19,13 @@ class AuthInterceptor() : Interceptor {
             requestBuilder.addHeader("Authorization", "Bearer $token")
         //}
 
+        requestBuilder.addHeader("Content-Type", "application/x-www-form-urlencoded")
+        requestBuilder.addHeader("Accept", "application/json")
+
+        requestBuilder.addHeader("x-api-device", "123")
+        requestBuilder.addHeader("x-api-device-type", "android")
+        requestBuilder.addHeader("x-notification-token", "123")
+
         return chain.proceed(requestBuilder.build())
     }
 }

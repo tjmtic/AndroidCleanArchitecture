@@ -6,11 +6,14 @@ import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
-import com.farhan.tanvir.data.BuildConfig
 import com.farhan.tanvir.data.api.UserApi
 import com.farhan.tanvir.data.db.UserDB
 import com.farhan.tanvir.domain.model.User
 import com.farhan.tanvir.domain.model.UserRemoteKeys
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import java.lang.reflect.Type
+
 
 @OptIn(ExperimentalPagingApi::class)
 class UserRemoteMediator(private val userApi: UserApi, private val userDB: UserDB) :
@@ -51,7 +54,36 @@ class UserRemoteMediator(private val userApi: UserApi, private val userDB: UserD
                 Log.d("TIME123", "REMOTE MEDIATOR RESPONSE - LOGGING FOR GET ALL USERS " + response);
 
                 Log.d("TIME123", "REMOTE MEDIATOR RESPONSE - LOGGING FOR GET ALL USERS " + responseData);
-                endOfPaginationReached = responseData == null
+
+                val rec = responseData?.getAsJsonArray("receivers");
+                //val rec2 = rec?.asString;
+                val con = responseData?.getAsJsonArray("contributors");
+                val spon = responseData?.getAsJsonArray("sponsors");
+                val history = responseData?.getAsJsonArray("history");
+                val contacts = responseData?.getAsJsonArray("contacts");
+                val favorites = responseData?.getAsJsonArray("sponsors");
+
+                /*val list: List<User> = mapper.readValue(
+                    rec,
+                    TypeFactory.defaultInstance().constructCollectionType(
+                        MutableList::class.java,
+                        User::class.java
+                    )
+                )*/
+               /* val gson = Gson()
+                val type: Type = object : TypeToken<List<User?>?>() {}.type
+                val userList: List<User> = gson.fromJson(rec2, type)
+
+                Log.d("TIME123", "User lists..:" + userList)*/
+                Log.d("TIME123", "rec..:" + rec);
+                Log.d("TIME123", "con..:" + con);
+                Log.d("TIME123", "spon..:" + spon);
+                Log.d("TIME123", "history..:" + history);
+                Log.d("TIME123", "contacs..:" + contacts);
+                Log.d("TIME123", "favorites..:" + favorites);
+
+
+                endOfPaginationReached = true;//responseData == null
                 responseData?.let {
                     userDB.withTransaction {
                         if (loadType == LoadType.REFRESH) {
@@ -61,7 +93,7 @@ class UserRemoteMediator(private val userApi: UserApi, private val userDB: UserD
                         var prevPage: Int?
                         var nextPage: Int
 
-                        responseData.page.let { pageNumber ->
+                      /*  responseData.page.let { pageNumber ->
                             nextPage = pageNumber + 1
                             prevPage = if (pageNumber <= 1) null else pageNumber - 1
                         }
@@ -74,8 +106,8 @@ class UserRemoteMediator(private val userApi: UserApi, private val userDB: UserD
                                 lastUpdated = System.currentTimeMillis()
                             )
                         }
-                        userRemoteKeysDao.addAllUserRemoteKeys(userRemoteKeys = keys)
-                        userDao.addUsers(users = responseData.users)
+                        userRemoteKeysDao.addAllUserRemoteKeys(userRemoteKeys = keys)*/
+                      //  userDao.addUsers(users = userList)
                     }
                 }
 

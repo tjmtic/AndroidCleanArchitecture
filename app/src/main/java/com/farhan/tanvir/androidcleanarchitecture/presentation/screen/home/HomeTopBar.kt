@@ -18,6 +18,7 @@ import androidx.core.content.ContextCompat
 import com.farhan.tanvir.androidcleanarchitecture.R
 import com.farhan.tanvir.androidcleanarchitecture.ui.theme.AppContentColor
 import com.farhan.tanvir.androidcleanarchitecture.ui.theme.AppThemeColor
+import com.google.gson.JsonObject
 
 @Composable
 fun HomeTopBar(

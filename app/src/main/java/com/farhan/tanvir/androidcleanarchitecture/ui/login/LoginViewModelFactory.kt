@@ -32,7 +32,7 @@ val userDB: UserDB) : ViewModelProvider.Factory{
             return LoginViewModel(
                 loginRepository = LoginRepository(
                     dataSource = LoginDataSource(
-                        userUseCases = UserUseCases(
+                        /*userUseCases = UserUseCases(
                             getAllUsersUseCase = GetAllUsersUseCase(
                                 userRepository = UserRepositoryImpl(
                                     userLocalDataSource = UserLocalDataSourceImpl(
@@ -66,7 +66,7 @@ val userDB: UserDB) : ViewModelProvider.Factory{
                                     )
                                 )
                             )
-                        )
+                        ) */
                     ),
                 )
             ) as T

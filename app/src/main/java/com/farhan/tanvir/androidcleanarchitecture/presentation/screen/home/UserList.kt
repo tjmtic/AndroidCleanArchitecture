@@ -23,9 +23,10 @@ import com.farhan.tanvir.androidcleanarchitecture.presentation.components.Rating
 import com.farhan.tanvir.androidcleanarchitecture.presentation.navigation.Screen
 import com.farhan.tanvir.androidcleanarchitecture.ui.theme.ItemBackgroundColor
 import com.farhan.tanvir.domain.model.User
+import com.google.gson.JsonObject
 
 @Composable
-fun UserListContent(allUsers: LazyPagingItems<User>, navController: NavHostController) {
+fun UserListContent(allUsers: LazyPagingItems<User>, navController: NavHostController, currentUser: JsonObject) {
     LazyColumn(
         contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
     ) {
@@ -98,3 +99,9 @@ fun UserListItem(user: User, navController: NavHostController) {
         }
     }
 }
+
+
+
+
+
+

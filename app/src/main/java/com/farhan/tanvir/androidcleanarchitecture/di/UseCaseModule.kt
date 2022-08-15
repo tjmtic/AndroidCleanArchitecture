@@ -1,10 +1,7 @@
 package com.farhan.tanvir.androidcleanarchitecture.di
 
 import com.farhan.tanvir.domain.repository.UserRepository
-import com.farhan.tanvir.domain.useCase.GetAllUsersUseCase
-import com.farhan.tanvir.domain.useCase.GetUsersFromDBUseCase
-import com.farhan.tanvir.domain.useCase.PostLoginUseCase
-import com.farhan.tanvir.domain.useCase.UserUseCases
+import com.farhan.tanvir.domain.useCase.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,6 +13,7 @@ object UseCaseModule {
 
     @Provides
     fun provideUserUseCases(userRepository: UserRepository) = UserUseCases(
+        getCurrentUserUseCase = GetCurrentUserUseCase(userRepository = userRepository),
         getAllUsersUseCase = GetAllUsersUseCase(userRepository = userRepository),
         getUsersFromDBUseCase = GetUsersFromDBUseCase(userRepository = userRepository),
         postLoginUseCase = PostLoginUseCase(userRepository = userRepository)

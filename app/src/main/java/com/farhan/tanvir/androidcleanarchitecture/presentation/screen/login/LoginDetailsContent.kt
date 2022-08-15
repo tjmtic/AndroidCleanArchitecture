@@ -12,6 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
 import coil.size.Scale
 import com.farhan.tanvir.androidcleanarchitecture.BuildConfig
@@ -21,7 +23,10 @@ import com.farhan.tanvir.androidcleanarchitecture.ui.theme.AppThemeColor
 import com.farhan.tanvir.domain.model.User
 
 @Composable
-fun LoginDetailsContent(user: User) {
+fun LoginDetailsContent(
+    navController: NavHostController,
+    viewModel: LoginViewModel = hiltViewModel()
+) {
     val scrollState = rememberScrollState()
     Card(
         elevation = 0.dp,
@@ -32,41 +37,11 @@ fun LoginDetailsContent(user: User) {
                 .fillMaxWidth()
                 .verticalScroll(scrollState)
         ) {
-            Image(
-                painter = rememberImagePainter(
-                    data = BuildConfig.POSTER_URL + user.images, builder = {
-                        crossfade(true)
-                        scale(Scale.FIT)
-                    }),
-                contentDescription = null,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(350.dp),
-                contentScale = ContentScale.FillWidth
-            )
-            Column(modifier = Modifier.padding(8.dp)) {
-                Spacer(modifier = Modifier.height(16.dp))
-                user.name?.let {
-                    Text(
-                        text = it,
-                        style = MaterialTheme.typography.h5,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-                user.name?.let {
-                    ReleaseDateComponent(releaseDate = it)
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-                user.name.let { RatingComponent(rating = it) }
-                Spacer(modifier = Modifier.height(16.dp))
-                user.payerEmail?.let {
-                    Text(
-                        text = it,
-                        style = MaterialTheme.typography.body2
-                    )
-                }
-            }
+
+            //input
+            //input
+            //button - login -
+                        // viewModel.postLogin(input1, input2)
         }
     }
 }

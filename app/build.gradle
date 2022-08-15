@@ -21,6 +21,7 @@ android {
         }
         buildConfigField("String","BASE_URL",BASE_URL)
         buildConfigField("String","POSTER_URL",POSTER_URL)
+        buildConfigField("String","SOCKET_URL",SOCKET_URL)
 
     }
 
@@ -102,6 +103,13 @@ dependencies {
     // Paging 3.0
     implementation 'androidx.paging:paging-compose:1.0.0-alpha14'
 
+
+    //Compose State
+    implementation 'androidx.compose.runtime:runtime-livedata:1.0.0-beta01'
+
+    implementation ('io.socket:socket.io-client:2.0.0') {
+        exclude group: 'org.json', module: 'json'
+    }
 }
 
 kapt {

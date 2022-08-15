@@ -1,5 +1,6 @@
 package com.farhan.tanvir.androidcleanarchitecture.presentation.screen.details
 
+import android.util.Log
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -9,19 +10,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.farhan.tanvir.androidcleanarchitecture.R
+import com.farhan.tanvir.androidcleanarchitecture.presentation.navigation.Screen
 import com.farhan.tanvir.androidcleanarchitecture.ui.theme.AppContentColor
 import com.farhan.tanvir.androidcleanarchitecture.ui.theme.AppThemeColor
 
 @Composable
 fun LoginDetailsTopBar(
-    navController: NavController
+    navController: NavHostController,
+    viewModel: LoginViewModel = hiltViewModel(),
 ) {
     TopAppBar(
         backgroundColor = MaterialTheme.colors.AppThemeColor,
         navigationIcon = {
-            IconButton(onClick = { navController.popBackStack() }) {
+            IconButton(onClick = { Log.d("TIME123", "Console log on CLICK!");
+                //viewModel.postLogin("jay@0260tech.com","Admin123!");
+                //navController.navigate(route = Screen.Home.route)
+
+            }) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
                     contentDescription = "Back Icon",

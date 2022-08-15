@@ -15,10 +15,11 @@ import com.farhan.tanvir.androidcleanarchitecture.util.Constant
 fun NavGraph(navController: NavHostController) {
     NavHost(
         navController = navController,
-        startDestination = Screen.Home.route
+        startDestination = Screen.Login.route
     ) {
         composable(route = Screen.Login.route) {
-            LoginDetailsScreen(navController = navController)
+            LoginDetailsScreen(navController = navController,
+                                onNavigateToHome = { navController.navigate(route = Screen.Home.route) })
         }
         composable(route = Screen.Home.route) {
             HomeScreen(navController = navController)

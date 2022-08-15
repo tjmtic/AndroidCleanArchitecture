@@ -11,21 +11,21 @@ import javax.inject.Inject
  * Class that handles authentication w/ login credentials and retrieves user information.
  */
 class LoginDataSource @Inject constructor(
-    val userUseCases: UserUseCases
+   // val userUseCases: UserUseCases
 ) {
 
     suspend fun login(username: String, password: String): Result<String> {
         try {
             Log.d("TIME123", "ACtual;ly loging in..." + username + password)
             // TODO: handle loggedInUser authentication
-            val realUser = userUseCases.postLoginUseCase(username,password);
+          //  val realUser = userUseCases.postLoginUseCase(username,password);
            // var token = realUser?.getString("token");
-            Log.d("TIME123", "ACtual;ly loging in.222.." + realUser)
+         /*   Log.d("TIME123", "ACtual;ly loging in.222.." + realUser)
 
             realUser?.let{
-                var token = it.getString("token");
-                return Result.Success(token)
-            }
+                var token = it.get("token");
+                return Result.Success(token.asString)
+            }*/
             Log.d("TIME123", "ACtual;ly loging in.3333..")
 
             //val fakeUser = LoggedInUser(java.util.UUID.randomUUID().toString(), "Jane Doe")
