@@ -18,43 +18,19 @@ import androidx.navigation.NavHostController
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.items
 import com.farhan.tanvir.domain.model.User
+import com.farhan.tanvir.domain.model.UserList
 
 @Composable
 fun UserListContent(allUsers: LazyPagingItems<User>,
                     usersWithReservations: LazyPagingItems<User>,
                     usersWithoutReservations: LazyPagingItems<User>,
                     navController: NavHostController,
-                    selectedUsers: MutableList<User>,
-                    getUserListValue: (User) -> Unit
+                    selectedUsers: List<User>,
+                    getUserValue: (Boolean, User) -> Unit
 ) {
 
-    var checkedList by rememberSaveable {
-       // mutableStateOf(selectedUsers)
-        mutableStateOf(emptyList<User>())
-    }
-
-    fun getCheckboxValue(text: Boolean, user: User){
-        println("Is checkbox checked:" + text + " for user:" + user)
-
-        if(checkedList.contains(user)){
-            Log.d("TIME123", "Removing user")
-            val newList = checkedList.toMutableList()
-            newList.remove(user)
-            checkedList = newList.toList()//.value.remove(user)
-            //checkedList.remove(user)
-        }
-        else{
-            Log.d("TIME123", "Adding user")
-            val newList = checkedList.toMutableList()
-            newList.add(user)
-            checkedList = newList.toList()
-            //checkedList.add(user)
-        }
-
-       // checked = !checked;
-
-
-        getUserListValue(user)
+    fun getCheckboxValue(selected: Boolean, user: User){
+        getUserValue(selected, user)
     }
 
     Row(
@@ -75,10 +51,8 @@ fun UserListContent(allUsers: LazyPagingItems<User>,
             ) { user ->
                 if (user != null) {
                     UserListItem(user = user,
-                       // navController = navController,
-                        //selectedUsers = selectedUsers,
-                        checked = checkedList.contains(user),
-                        onCheckboxSelected = { getCheckboxValue(it, user)})
+                                checked = selectedUsers.contains(user),
+                                onCheckboxSelected = { getCheckboxValue(it, user)})
                 }
             }
         }
@@ -101,10 +75,8 @@ fun UserListContent(allUsers: LazyPagingItems<User>,
             ) { user ->
                 if (user != null) {
                     UserListItem(user = user,
-                       // navController = navController,
-                       // selectedUsers = selectedUsers,
-                        checked = checkedList.contains(user),
-                        onCheckboxSelected = { getCheckboxValue(it, user)})
+                                checked = selectedUsers.contains(user),
+                                onCheckboxSelected = { getCheckboxValue(it, user)})
                 }
             }
         }

@@ -18,8 +18,6 @@ import com.farhan.tanvir.domain.model.User
 
 @Composable
 fun UserListItem(user: User,
-                // navController: NavHostController,
-                // selectedUsers: MutableList<User>,
                  checked: Boolean,
                  onCheckboxSelected: (Boolean) -> Unit) {
 
@@ -37,7 +35,6 @@ fun UserListItem(user: User,
                 .fillMaxWidth()
                 .clickable {
                            onCheckboxSelected(!checked);
-                    //navController.navigate(route = Screen.UserDetails.passUserId(user.userId.toString()))
                 },
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -49,7 +46,7 @@ fun UserListItem(user: User,
                     end = 2.dp,
                 )) {
 
-                user.name.let { CheckboxComponent(text = it, checked, onCheckboxSelected) }
+                CheckboxComponent(text = user.name, checked, onCheckboxSelected)
             }
         }
     }

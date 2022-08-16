@@ -18,6 +18,7 @@ import com.farhan.tanvir.domain.model.UserList
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.lifecycle.LifecycleOwner
 import kotlinx.coroutines.flow.emptyFlow
 
 @Composable
@@ -25,40 +26,23 @@ fun HomeScreen(navController: NavHostController, viewModel: HomeViewModel = hilt
 
     val systemUiController = rememberSystemUiController()
     val systemBarColor = MaterialTheme.colors.AppThemeColor
+
     val allUsers = viewModel.getAllUsers.collectAsLazyPagingItems()
     val usersWithReservations = viewModel.usersWithReservations.collectAsLazyPagingItems()
     val usersWithoutReservations = viewModel.usersWithoutReservations.collectAsLazyPagingItems()
 
-    //val isSelected = viewModel._isSelected.observeAsState(initial = viewModel._isSelected)
-    //val selectedUsers = viewModel.selectedUsers.observeAsState(initial = viewModel.selectedUsers)
+    val selectedUsers = viewModel.selectedUsers.observeAsState(viewModel.selectedUsers.value as List<User>)
 
-    var selectedUsersWithReservation by rememberSaveable {
-        mutableStateOf((emptyList<User>().toMutableList()))
-    }
-    val selectedUsersWithWithoutReservation = mutableListOf<User>();
+    val uiState = viewModel.uiState
 
-    var checked by rememberSaveable {
-        mutableStateOf(false)
+    fun navigate(){
+       println("Navigate!")
     }
 
-    var enabled by rememberSaveable {
-       // mutableStateOf(isSelected)
-        mutableStateOf(false)
+    fun getUserValue(selected: Boolean, user : User){
+        viewModel.updateSelected(selected, user)
     }
 
-    fun updateViewModel(sel: Boolean){
-        viewModel.updateSelected(sel)
-    }
-
-    fun updateViewModel(sel: User){
-        viewModel.updateSelected(sel)
-    }
-
-    fun getUserListValue(user : User){
-        println(user)
-
-        updateViewModel(user)
-    }
 
     SideEffect {
         systemUiController.setStatusBarColor(
@@ -77,11 +61,11 @@ fun HomeScreen(navController: NavHostController, viewModel: HomeViewModel = hilt
                             usersWithReservations = usersWithReservations,
                             usersWithoutReservations = usersWithoutReservations,
                             navController = navController,
-                            selectedUsers = selectedUsersWithReservation,
-            getUserListValue = {getUserListValue(it)})
+                            selectedUsers = selectedUsers.value,
+                            getUserValue = {selected, user -> getUserValue(selected, user)},)
         },
         bottomBar = {
-            HomeBottomBar("Continue", {updateViewModel(false)}, enabled)
+            HomeBottomBar("Continue", {navigate()}, uiState.enabled)
         }
     )
 }

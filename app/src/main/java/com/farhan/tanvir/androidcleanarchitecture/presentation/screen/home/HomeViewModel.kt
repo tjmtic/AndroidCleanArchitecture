@@ -1,5 +1,9 @@
 package com.farhan.tanvir.androidcleanarchitecture.presentation.screen.home
 
+import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.snapshots.Snapshot.Companion.observe
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -12,34 +16,39 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val userUseCases: UserUseCases,
 ) : ViewModel() {
+
     val getAllUsers = userUseCases.getAllUsersUseCase()
     val usersWithReservations = userUseCases.getAllUsersWithReservationUseCase()
     val usersWithoutReservations = userUseCases.getAllUsersWithoutReservationUseCase()
 
-    val _isSelected = MutableLiveData<Boolean>(false);
-    val isSelected: LiveData<Boolean> = _isSelected
-
-    val _selectedUsers = MutableLiveData<List<User>>(emptyList());
+    val _selectedUsers = MutableLiveData<List<User>>(emptyList<User>());
     val selectedUsers: LiveData<List<User>> = _selectedUsers;
 
-    fun updateSelected(sel: Boolean){
-        _isSelected.postValue(sel);
-    }
+    var uiState by mutableStateOf(HomeViewModelUiState(false))
+        private set
 
-    fun updateSelected(user: User){
-        println("Updating Selected:" + user)
-        selectedUsers.value?.let {
-                if (it.contains(user)) {
-                    val newList = it.toMutableList()
+
+    fun updateSelected(selected: Boolean, user: User){
+        println("Updating Selected:" + user + selected)
+        _selectedUsers.value?.let {
+
+            val newList = it.toMutableList()
+
+            if (it.contains(user) && !selected) {
                     newList.remove(user)
-                    _selectedUsers.postValue(newList)
-                }
-            else {
-                val newList = it.toMutableList()
-                newList.add(user)
-                _selectedUsers.postValue(newList)
+                    uiState = HomeViewModelUiState(newList.isNotEmpty())
             }
-            }
-    }
 
+            else if(!it.contains(user) && selected) {
+                newList.add(user)
+                uiState = HomeViewModelUiState(true)
+            }
+
+            _selectedUsers.postValue(newList)
+         }
+    }
 }
+
+data class HomeViewModelUiState(
+    val enabled: Boolean = false
+)
