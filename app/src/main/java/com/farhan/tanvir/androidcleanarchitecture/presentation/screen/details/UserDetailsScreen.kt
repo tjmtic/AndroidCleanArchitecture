@@ -26,7 +26,7 @@ fun UserDetailsScreen(
         contentColor = MaterialTheme.colors.AppContentColor,
         backgroundColor = MaterialTheme.colors.AppThemeColor,
         content = {
-            userDetails?.let { UserDetailsContent(it) }
+            //userDetails?.let { UserDetailsContent(it) }
         })
 }
 

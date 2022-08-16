@@ -12,14 +12,23 @@ import kotlinx.coroutines.flow.Flow
 interface UserDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun addUsers(users: List<User>)
+    fun addUser(user: User)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun addUsers(users: List<User>)
 
     @Query("SELECT * FROM users")
     fun getAllUsers(): PagingSource<Int, User>
+
+    @Query("SELECT * FROM users WHERE reserved = 1")
+    fun getAllUsersWithReservation(): PagingSource<Int, User>
+
+    @Query("SELECT * FROM users WHERE reserved = 0")
+    fun getAllUsersWithoutReservation(): PagingSource<Int, User>
 
     @Query("SELECT * FROM users WHERE userId = :userId")
     fun getUser(userId: Int): Flow<User>
 
     @Query("DELETE FROM users")
-    suspend fun deleteAllUsers()
+    fun deleteAllUsers()
 }

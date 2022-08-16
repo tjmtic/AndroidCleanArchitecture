@@ -8,8 +8,10 @@ import org.json.JSONObject
 
 
 interface UserRepository {
-    suspend fun getCurrentUser(): JsonObject?
+    fun insertNewUser(user: User)
+    fun insertNewUsers(userList: List<User>)
     fun getAllUsers(): Flow<PagingData<User>>
-    fun getUsersFromDB(userId: Int): Flow<User>
-    suspend fun postLogin(email: String, password: String): JsonObject?
+    fun getAllUsersWithReservation(): Flow<PagingData<User>>
+    fun getAllUsersWithoutReservation(): Flow<PagingData<User>>
+    fun deleteAllUsers()
 }

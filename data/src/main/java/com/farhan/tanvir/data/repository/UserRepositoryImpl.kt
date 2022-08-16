@@ -1,31 +1,29 @@
 package com.farhan.tanvir.data.repository
 
-import android.util.Log
 import com.farhan.tanvir.data.repository.dataSource.UserLocalDataSource
-import com.farhan.tanvir.data.repository.dataSource.UserRemoteDataSource
 import com.farhan.tanvir.domain.model.User
 import com.farhan.tanvir.domain.repository.UserRepository
-import com.google.gson.JsonObject
-import kotlinx.coroutines.flow.Flow
-import org.json.JSONObject
 
 class UserRepositoryImpl(
-    private val userRemoteDataSource: UserRemoteDataSource,
     private val userLocalDataSource: UserLocalDataSource,
 ) :
     UserRepository {
 
-    override suspend fun getCurrentUser(): JsonObject? =
-        userRemoteDataSource.getCurrentUser()
+    override fun insertNewUser(user: User) =
+        userLocalDataSource.insertNewUser(user)
+
+    override fun insertNewUsers(userList: List<User>) =
+        userLocalDataSource.insertNewUsers(userList)
 
     override fun getAllUsers() =
-        userRemoteDataSource.getAllUsers()
+        userLocalDataSource.getAllUsers()
 
-    override fun getUsersFromDB(userId: Int): Flow<User> =
-        userLocalDataSource.getUsersFromDB(userId)
+    override fun getAllUsersWithReservation() =
+        userLocalDataSource.getAllUsersWithReservation()
 
-    override suspend fun postLogin(email:String, password:String): JsonObject? {
-        Log.d("TIME123", "ACtual;ly loging in. 444.." + email + password)
-        return userRemoteDataSource.postLogin(email, password)
-    }
+    override fun getAllUsersWithoutReservation() =
+        userLocalDataSource.getAllUsersWithoutReservation()
+
+    override fun deleteAllUsers() =
+        userLocalDataSource.deleteAllUsers()
 }

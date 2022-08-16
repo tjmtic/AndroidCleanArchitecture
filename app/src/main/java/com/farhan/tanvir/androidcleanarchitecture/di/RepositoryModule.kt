@@ -2,7 +2,6 @@ package com.farhan.tanvir.androidcleanarchitecture.di
 
 import com.farhan.tanvir.data.repository.UserRepositoryImpl
 import com.farhan.tanvir.data.repository.dataSource.UserLocalDataSource
-import com.farhan.tanvir.data.repository.dataSource.UserRemoteDataSource
 import com.farhan.tanvir.domain.repository.UserRepository
 import dagger.Module
 import dagger.Provides
@@ -16,8 +15,8 @@ object RepositoryModule {
 
     @Provides
     fun provideUsersRepository(
-        userRemoteDataSource: UserRemoteDataSource,
+        //userRemoteDataSource: UserRemoteDataSource,
         userLocalDataSource: UserLocalDataSource
     ): UserRepository =
-        UserRepositoryImpl(userRemoteDataSource, userLocalDataSource = userLocalDataSource)
+        UserRepositoryImpl(userLocalDataSource = userLocalDataSource)
 }

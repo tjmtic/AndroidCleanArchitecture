@@ -1,39 +1,45 @@
 package com.farhan.tanvir.androidcleanarchitecture.presentation.screen.home
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.farhan.tanvir.androidcleanarchitecture.util.SocketHandler
 import com.farhan.tanvir.domain.model.User
 import com.farhan.tanvir.domain.useCase.UserUseCases
-import com.google.gson.JsonObject
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val userUseCases: UserUseCases,
 ) : ViewModel() {
-    //val getAllUsers = userUseCases.getAllUsersUseCase()
+    val getAllUsers = userUseCases.getAllUsersUseCase()
+    val usersWithReservations = userUseCases.getAllUsersWithReservationUseCase()
+    val usersWithoutReservations = userUseCases.getAllUsersWithoutReservationUseCase()
 
-    private val _currentUser: MutableLiveData<User> = MutableLiveData(null)
-    private val _selectedUser: MutableStateFlow<JsonObject?> = MutableStateFlow(JsonObject())
-    val currentUser: MutableStateFlow<JsonObject?> = _selectedUser
+    val _isSelected = MutableLiveData<Boolean>(false);
+    val isSelected: LiveData<Boolean> = _isSelected
 
-    fun getCurrentUser() {
-        viewModelScope.launch {
-            _selectedUser.value = userUseCases.getCurrentUserUseCase()
-            // navController.navigate(route = Screen.Home.route)
-            Log.d("TIME123", "New current user:" + _selectedUser.value)
+    val _selectedUsers = MutableLiveData<List<User>>(emptyList());
+    val selectedUsers: LiveData<List<User>> = _selectedUsers;
 
-            //user id to set socket namespace
-            //MainActivity.setSocketNamespace(userId)
-        }
+    fun updateSelected(sel: Boolean){
+        _isSelected.postValue(sel);
+    }
+
+    fun updateSelected(user: User){
+        println("Updating Selected:" + user)
+        selectedUsers.value?.let {
+                if (it.contains(user)) {
+                    val newList = it.toMutableList()
+                    newList.remove(user)
+                    _selectedUsers.postValue(newList)
+                }
+            else {
+                val newList = it.toMutableList()
+                newList.add(user)
+                _selectedUsers.postValue(newList)
+            }
+            }
     }
 
 }

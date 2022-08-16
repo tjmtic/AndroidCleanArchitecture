@@ -19,9 +19,9 @@ class UserDetailsViewModel @Inject constructor(
 
     fun getUserDetails(userID: Int) {
         viewModelScope.launch {
-            userUseCases.getUsersFromDBUseCase.invoke(userID = userID).collect {
-                _selectedUser.value = it
-            }
+           // userUseCases.getUsersFromDBUseCase.invoke(userID = userID).collect {
+            //    _selectedUser.value = it
+           // }
         }
     }
 }

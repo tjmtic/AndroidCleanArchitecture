@@ -13,9 +13,11 @@ object UseCaseModule {
 
     @Provides
     fun provideUserUseCases(userRepository: UserRepository) = UserUseCases(
-        getCurrentUserUseCase = GetCurrentUserUseCase(userRepository = userRepository),
+        insertNewUserUseCase = InsertNewUserUseCase(userRepository = userRepository),
+        insertNewUsersUseCase = InsertNewUsersUseCase(userRepository = userRepository),
         getAllUsersUseCase = GetAllUsersUseCase(userRepository = userRepository),
-        getUsersFromDBUseCase = GetUsersFromDBUseCase(userRepository = userRepository),
-        postLoginUseCase = PostLoginUseCase(userRepository = userRepository)
+        getAllUsersWithReservationUseCase = GetAllUsersWithReservationUseCase(userRepository = userRepository),
+        getAllUsersWithoutReservationUseCase = GetAllUsersWithoutReservationUseCase(userRepository = userRepository),
+        deleteAllUsersUseCase = DeleteAllUsersUseCase(userRepository = userRepository),
     )
 }

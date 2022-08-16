@@ -2,8 +2,10 @@ package com.farhan.tanvir.domain.useCase
 
 
 data class UserUseCases(
-    val getCurrentUserUseCase: GetCurrentUserUseCase,
+    val insertNewUserUseCase: InsertNewUserUseCase,
+    val insertNewUsersUseCase: InsertNewUsersUseCase,
     val getAllUsersUseCase: GetAllUsersUseCase,
-    val getUsersFromDBUseCase: GetUsersFromDBUseCase,
-    val postLoginUseCase: PostLoginUseCase
+    val getAllUsersWithReservationUseCase: GetAllUsersWithReservationUseCase,
+    val getAllUsersWithoutReservationUseCase: GetAllUsersWithoutReservationUseCase,
+    val deleteAllUsersUseCase: DeleteAllUsersUseCase,
 )
