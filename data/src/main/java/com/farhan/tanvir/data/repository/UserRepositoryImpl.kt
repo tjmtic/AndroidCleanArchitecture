@@ -24,6 +24,15 @@ class UserRepositoryImpl(
     override fun getAllUsersWithoutReservation() =
         userLocalDataSource.getAllUsersWithoutReservation()
 
+    override fun selectUser(user: User) =
+        userLocalDataSource.selectUser(user)
+
+    override fun unselectUser(user: User) =
+        userLocalDataSource.unselectUser(user)
+
+    override fun getAllSelectedUsers() =
+        userLocalDataSource.getAllSelectedUsers()
+
     override fun deleteAllUsers() =
         userLocalDataSource.deleteAllUsers()
 }

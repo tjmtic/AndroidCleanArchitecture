@@ -31,9 +31,9 @@ fun HomeScreen(navController: NavHostController, viewModel: HomeViewModel = hilt
     val usersWithReservations = viewModel.usersWithReservations.collectAsLazyPagingItems()
     val usersWithoutReservations = viewModel.usersWithoutReservations.collectAsLazyPagingItems()
 
-    val selectedUsers = viewModel.selectedUsers.observeAsState(viewModel.selectedUsers.value as List<User>)
+    val getSelectedUsersFlow = viewModel.getSelectedUsersFlow.collectAsState(emptyList())
 
-    val uiState = viewModel.uiState
+    val uiState = viewModel.uiState.collectAsState()
 
     fun navigate(){
        println("Navigate!")
@@ -61,11 +61,12 @@ fun HomeScreen(navController: NavHostController, viewModel: HomeViewModel = hilt
                             usersWithReservations = usersWithReservations,
                             usersWithoutReservations = usersWithoutReservations,
                             navController = navController,
-                            selectedUsers = selectedUsers.value,
+                            selectedUsers = getSelectedUsersFlow.value,
                             getUserValue = {selected, user -> getUserValue(selected, user)},)
         },
         bottomBar = {
-            HomeBottomBar("Continue", {navigate()}, uiState.enabled)
+            HomeBottomBar("Continue", {navigate()}, (uiState.value is UserListUiState.Success
+                                                            && (uiState.value as UserListUiState.Success).enabled) )
         }
     )
 }

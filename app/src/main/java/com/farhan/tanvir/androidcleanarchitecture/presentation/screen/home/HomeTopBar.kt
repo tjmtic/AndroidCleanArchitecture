@@ -18,7 +18,6 @@ import com.farhan.tanvir.androidcleanarchitecture.ui.theme.AppThemeColor
 @Composable
 fun HomeTopBar(
 ) {
-    val context = LocalContext.current
     TopAppBar(
         backgroundColor = MaterialTheme.colors.AppThemeColor,
         title = {

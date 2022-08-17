@@ -15,4 +15,6 @@ data class User(
     val name: String,
     @SerializedName("reserved")
     val reserved: Boolean,
+    @SerializedName("selected")
+    val selected: Boolean,
 ) : Serializable

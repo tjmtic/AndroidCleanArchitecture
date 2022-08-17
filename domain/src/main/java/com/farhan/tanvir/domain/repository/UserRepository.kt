@@ -13,5 +13,8 @@ interface UserRepository {
     fun getAllUsers(): Flow<PagingData<User>>
     fun getAllUsersWithReservation(): Flow<PagingData<User>>
     fun getAllUsersWithoutReservation(): Flow<PagingData<User>>
+    fun selectUser(user: User)
+    fun unselectUser(user: User)
+    fun getAllSelectedUsers(): Flow<List<User>>
     fun deleteAllUsers()
 }

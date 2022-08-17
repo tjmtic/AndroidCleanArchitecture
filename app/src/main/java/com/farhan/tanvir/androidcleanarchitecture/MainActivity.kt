@@ -29,7 +29,7 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        initUsers()
+       // initUsers()
     }
 
     fun initUsers(){
@@ -38,17 +38,17 @@ class MainActivity : ComponentActivity() {
         val usersList = mutableListOf<User>()
         file.forEachLine {
             var line = it.split(",")
-            usersList.add(User(0, line[0]!!.toInt(), line[1]!!, line[2]!!.trim().toBoolean() ))
+            usersList.add(User(0, line[0]!!.toInt(), line[1]!!, line[2]!!.trim().toBoolean(), false ))
             println(line)
             println(line[2]!!.trim().toBoolean())
         }
 
         mainScope.launch(
-            Dispatchers.IO, CoroutineStart.DEFAULT, {
-                userUseCases.deleteAllUsersUseCase.invoke();
-                userUseCases.insertNewUsersUseCase.invoke(usersList);
-            }
-        )
+            Dispatchers.IO, CoroutineStart.DEFAULT
+        ) {
+            userUseCases.deleteAllUsersUseCase.invoke();
+            userUseCases.insertNewUsersUseCase.invoke(usersList);
+        }
 
     }
 

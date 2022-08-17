@@ -9,6 +9,8 @@ import com.farhan.tanvir.data.db.UserDao
 import com.farhan.tanvir.data.repository.dataSource.UserLocalDataSource
 import com.farhan.tanvir.domain.model.User
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.flow
 
 
 class UserLocalDataSourceImpl(private val userDao: UserDao) : UserLocalDataSource {
@@ -42,6 +44,25 @@ class UserLocalDataSourceImpl(private val userDao: UserDao) : UserLocalDataSourc
             config = PagingConfig(pageSize = 20),
             pagingSourceFactory = pagingSourceFactory,
         ).flow
+    }
+
+    override fun selectUser(user: User) {
+        userDao.selectUser(user.userId)
+    }
+
+    override fun unselectUser(user: User) {
+        userDao.unselectUser(user.userId)
+    }
+
+    override  fun getAllSelectedUsers() : Flow<List<User>> {
+         /*return flow {
+             while(true) {
+                 val users = userDao.getAllSelectedUsers()
+                 emit(users)
+             }
+                    }*/
+
+       return userDao.getAllSelectedUsersFlow()
     }
 
     override fun deleteAllUsers() {
