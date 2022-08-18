@@ -19,7 +19,6 @@ fun UserListItem(user: User,
 
     Card(
         modifier = Modifier
-            //.padding(top = 8.dp)
             .height(40.dp)
             .fillMaxWidth(),
         elevation = 0.dp,

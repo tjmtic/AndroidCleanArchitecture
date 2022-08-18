@@ -32,18 +32,18 @@ fun UserListContent(users: LazyPagingItems<User>,
     }
     val groupedItems = users.itemSnapshotList.items.groupBy { it.reserved }
 
-    LazyColumn(modifier = Modifier.padding(10.dp)){
+    LazyColumn{
                 groupedItems.forEach { (reserved, userGroup) ->
 
-                    stickyHeader() {
+                    stickyHeader{
                         Text(
                             text = if (reserved) stringResource(id = R.string.have_reservations) else stringResource(id = R.string.need_reservations),
                             color = Color.Black,
-                            fontSize = 20.sp,
+                            fontSize = 18.sp,
                             modifier = Modifier
                                 .background(Color.White)
                                 .padding(20.dp)
-                                .shadow(2.dp)
+                                //.shadow(1.dp)
                                 .fillMaxWidth()
                         )
                     }
@@ -58,8 +58,6 @@ fun UserListContent(users: LazyPagingItems<User>,
                     }
                 }
             }
-
-   // InfoComponent(info = stringResource(id = R.string.info))
 
 }
 

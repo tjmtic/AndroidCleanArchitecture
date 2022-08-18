@@ -19,15 +19,15 @@ fun ButtonComponent(text: String, onClick: () -> Unit, enabled: Boolean) {
         enabled = enabled,
         onClick = { onClick() },
         contentPadding = PaddingValues(
-            start = 10.dp,
-            top = 10.dp,
-            end = 10.dp,
-            bottom = 10.dp
+            start = 30.dp,
+            top = 12.dp,
+            end = 30.dp,
+            bottom = 12.dp
         ),
         modifier = Modifier
                     .fillMaxWidth()
-            .padding(10.dp, 0.dp, 10.dp, 20.dp),
-        shape = RoundedCornerShape(22.dp)
+            .padding(16.dp, 0.dp, 16.dp, 34.dp),
+        shape = RoundedCornerShape(25.dp)
     ) {
         Text(text)
     }

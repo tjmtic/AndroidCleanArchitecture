@@ -73,35 +73,54 @@ fun HomeScreen(onConfirm: () -> Unit,
         },
         content = {
 
-                ConstraintLayout {
-                    val (list, text) = createRefs()
+                ConstraintLayout(modifier = Modifier.fillMaxHeight()) {
+                    val (list, text, bottomBar) = createRefs()
 
-                    Column(
+                    Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .constrainAs(list) {
-                                top.linkTo(parent.top, margin = 16.dp)
-                               // bottom.linkTo(parent.bottom, margin = 200.dp)
+                                top.linkTo(parent.top)
                             }
-                            .padding(bottom=110.dp)
+                            .padding(bottom=160.dp)
                     ) {
                         UserListContent(users = allUsers,
                             getUserValue = { selected, user -> getUserValue(selected, user) })
                     }
-                    Column(
+                    Row(
                         modifier = Modifier
                             .height(IntrinsicSize.Max)
                             .fillMaxWidth()
                             .constrainAs(text) {
-                                bottom.linkTo(list.bottom, margin = 70.dp)
+                                bottom.linkTo(list.bottom, margin = 100.dp)
                             },
                     ) {
                         InfoComponent(info = stringResource(id = R.string.info))
                     }
+
+                    Row(
+                        modifier = Modifier
+                            //.height(IntrinsicSize.Max)
+                            .fillMaxWidth()
+                            .constrainAs(bottomBar) {
+                                bottom.linkTo(parent.bottom)
+                            }
+                    ) {
+                        when(uiState.value){
+                            is HomeViewUiState.Success,
+                            HomeViewUiState.Mixed,
+                            HomeViewUiState.NoReservation -> HomeBottomBar(text = "Continue",
+                                onClickButton = { bottomButtonAction() },
+                                enabled = true,
+                                onClickPopup = { togglePopup() },
+                                displayPopup = displayPopup.value)
+                            is HomeViewUiState.Error,
+                            HomeViewUiState.Empty -> HomeBottomBar(text = "Continue")
+                        }                    }
                 }
 
         },
-        bottomBar = {
+       /* bottomBar = {
             when(uiState.value){
                 is HomeViewUiState.Success,
                    HomeViewUiState.Mixed,
@@ -113,7 +132,7 @@ fun HomeScreen(onConfirm: () -> Unit,
                 is HomeViewUiState.Error,
                    HomeViewUiState.Empty -> HomeBottomBar(text = "Continue")
             }
-        }
+        }*/
     )
 }
 

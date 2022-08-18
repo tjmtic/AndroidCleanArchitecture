@@ -29,7 +29,7 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        initUsers()
+       // initUsers()
        /* initUsers()
         initUsers()
         initUsers()
@@ -49,7 +49,6 @@ class MainActivity : ComponentActivity() {
         file.forEachLine {
             var line = it.split(",")
             usersList.add(User(0, line[0]!!.toInt(), line[1]!!, line[2]!!.trim().toBoolean(), false ))
-           /* usersList.add(User(0, line[0]!!.toInt(), line[1]!!, line[2]!!.trim().toBoolean(), false ))
             usersList.add(User(0, line[0]!!.toInt(), line[1]!!, line[2]!!.trim().toBoolean(), false ))
             usersList.add(User(0, line[0]!!.toInt(), line[1]!!, line[2]!!.trim().toBoolean(), false ))
             usersList.add(User(0, line[0]!!.toInt(), line[1]!!, line[2]!!.trim().toBoolean(), false ))
@@ -59,7 +58,8 @@ class MainActivity : ComponentActivity() {
             usersList.add(User(0, line[0]!!.toInt(), line[1]!!, line[2]!!.trim().toBoolean(), false ))
             usersList.add(User(0, line[0]!!.toInt(), line[1]!!, line[2]!!.trim().toBoolean(), false ))
             usersList.add(User(0, line[0]!!.toInt(), line[1]!!, line[2]!!.trim().toBoolean(), false ))
-            usersList.add(User(0, line[0]!!.toInt(), line[1]!!, line[2]!!.trim().toBoolean(), false )) */
+            usersList.add(User(0, line[0]!!.toInt(), line[1]!!, line[2]!!.trim().toBoolean(), false ))
+            usersList.add(User(0, line[0]!!.toInt(), line[1]!!, line[2]!!.trim().toBoolean(), false ))
 
             println(line)
             println(line[2]!!.trim().toBoolean())
@@ -68,7 +68,7 @@ class MainActivity : ComponentActivity() {
         mainScope.launch(
             Dispatchers.IO, CoroutineStart.DEFAULT
         ) {
-            userUseCases.deleteAllUsersUseCase.invoke();
+            //userUseCases.deleteAllUsersUseCase.invoke();
             userUseCases.insertNewUsersUseCase.invoke(usersList);
         }
 

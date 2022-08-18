@@ -33,16 +33,13 @@ fun HomeBottomBar( text: String,
                    onClickPopup: () -> Unit = { },
                    displayPopup: Boolean = false
 ) {
-    BottomAppBar(
-        backgroundColor = MaterialTheme.colors.AppThemeColor,
-        elevation = 0.dp,
-        content = {
             //May display action button or popup dialog
             if (!displayPopup)
             ButtonComponent(text, onClickButton, enabled)
             else
-            PopupComponent(stringResource(id = R.string.info), { onClickPopup() })
-        }
-    )
+            PopupComponent(title = stringResource(id = R.string.reservation_needed),
+                           text = stringResource(id = R.string.select_at_least_one),
+                           onIconClick = { onClickPopup() })
+
 }
 

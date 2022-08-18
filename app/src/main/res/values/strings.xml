@@ -8,6 +8,8 @@
     <string name="conflict">Conflict</string>
     <string name="have_reservations">These Guests Have Reservations</string>
     <string name="need_reservations">These Guests Need Reservations</string>
+    <string name="reservation_needed">Reservation Needed</string>
+    <string name="select_at_least_one">Select at least one Guest that has a reservation to continue.</string>
 
 
     <string name="details">Details</string>
