@@ -107,13 +107,11 @@ dependencies {
     //Compose State
     implementation "androidx.compose.runtime:runtime-livedata:$compose_version"
 
-    implementation ('io.socket:socket.io-client:2.0.0') {
-        exclude group: 'org.json', module: 'json'
-    }
-
     implementation 'com.opencsv:opencsv:4.6'
     implementation 'org.apache.commons:commons-csv:1.5'
 
+    //Layout
+    implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1"
 }
 
 kapt {

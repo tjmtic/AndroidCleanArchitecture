@@ -17,6 +17,7 @@ class HomeViewModel @Inject constructor(
     private val userUseCases: UserUseCases,
 ) : ViewModel() {
 
+    val allUsers = userUseCases.getAllUsersUseCase()
     //List of Users(reserved = 1) as PagingData
     val usersWithReservations = userUseCases.getAllUsersWithReservationUseCase()
     //List of Users(reserved = 0) as PagingData
