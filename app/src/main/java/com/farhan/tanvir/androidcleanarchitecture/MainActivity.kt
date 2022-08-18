@@ -29,7 +29,17 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-       // initUsers()
+        initUsers()
+       /* initUsers()
+        initUsers()
+        initUsers()
+        initUsers()
+        initUsers()
+        initUsers()
+        initUsers()
+        initUsers()
+        initUsers()
+        initUsers()*/
     }
 
     fun initUsers(){
@@ -39,6 +49,18 @@ class MainActivity : ComponentActivity() {
         file.forEachLine {
             var line = it.split(",")
             usersList.add(User(0, line[0]!!.toInt(), line[1]!!, line[2]!!.trim().toBoolean(), false ))
+           /* usersList.add(User(0, line[0]!!.toInt(), line[1]!!, line[2]!!.trim().toBoolean(), false ))
+            usersList.add(User(0, line[0]!!.toInt(), line[1]!!, line[2]!!.trim().toBoolean(), false ))
+            usersList.add(User(0, line[0]!!.toInt(), line[1]!!, line[2]!!.trim().toBoolean(), false ))
+            usersList.add(User(0, line[0]!!.toInt(), line[1]!!, line[2]!!.trim().toBoolean(), false ))
+            usersList.add(User(0, line[0]!!.toInt(), line[1]!!, line[2]!!.trim().toBoolean(), false ))
+            usersList.add(User(0, line[0]!!.toInt(), line[1]!!, line[2]!!.trim().toBoolean(), false ))
+            usersList.add(User(0, line[0]!!.toInt(), line[1]!!, line[2]!!.trim().toBoolean(), false ))
+            usersList.add(User(0, line[0]!!.toInt(), line[1]!!, line[2]!!.trim().toBoolean(), false ))
+            usersList.add(User(0, line[0]!!.toInt(), line[1]!!, line[2]!!.trim().toBoolean(), false ))
+            usersList.add(User(0, line[0]!!.toInt(), line[1]!!, line[2]!!.trim().toBoolean(), false ))
+            usersList.add(User(0, line[0]!!.toInt(), line[1]!!, line[2]!!.trim().toBoolean(), false )) */
+
             println(line)
             println(line[2]!!.trim().toBoolean())
         }

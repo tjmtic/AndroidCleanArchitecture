@@ -1,6 +1,7 @@
 package com.farhan.tanvir.androidcleanarchitecture.presentation.components
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -18,11 +19,15 @@ fun ButtonComponent(text: String, onClick: () -> Unit, enabled: Boolean) {
         enabled = enabled,
         onClick = { onClick() },
         contentPadding = PaddingValues(
-            start = 20.dp,
-            top = 12.dp,
-            end = 20.dp,
-            bottom = 12.dp
-        )
+            start = 10.dp,
+            top = 10.dp,
+            end = 10.dp,
+            bottom = 10.dp
+        ),
+        modifier = Modifier
+                    .fillMaxWidth()
+            .padding(10.dp, 0.dp, 10.dp, 20.dp),
+        shape = RoundedCornerShape(22.dp)
     ) {
         Text(text)
     }

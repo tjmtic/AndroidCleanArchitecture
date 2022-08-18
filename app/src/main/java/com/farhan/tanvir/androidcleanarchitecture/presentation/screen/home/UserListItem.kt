@@ -19,10 +19,10 @@ fun UserListItem(user: User,
 
     Card(
         modifier = Modifier
-            .padding(top = 8.dp)
-            .height(180.dp)
+            //.padding(top = 8.dp)
+            .height(40.dp)
             .fillMaxWidth(),
-        elevation = 4.dp,
+        elevation = 0.dp,
         backgroundColor = MaterialTheme.colors.ItemBackgroundColor
     ) {
         Row(
@@ -34,16 +34,7 @@ fun UserListItem(user: User,
                 },
             verticalAlignment = Alignment.CenterVertically
         ) {
-
-            Column(
-                Modifier
-                .height(IntrinsicSize.Max)
-                .padding(
-                    end = 2.dp,
-                )) {
-
-                CheckboxComponent(text = user.name, user.selected, onCheckboxSelected)
-            }
+            CheckboxComponent(text = user.name, user.selected, onCheckboxSelected)
         }
     }
 }

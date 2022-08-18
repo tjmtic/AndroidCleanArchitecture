@@ -10,20 +10,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.farhan.tanvir.domain.model.User
 
 @Composable
 fun CheckboxComponent(text: String, value: Boolean, onValueChanged: (Boolean) -> Unit) {
-    Row(modifier = Modifier.padding(8.dp)) {
+    Row {
         Checkbox(
             checked = value,
             onCheckedChange = onValueChanged,
             //enabled = true,
             colors = CheckboxDefaults.colors(Color.Green)
         )
-        Text(text = text)
+        Text(text = text, fontSize = 16.sp, modifier = Modifier.align(Alignment.CenterVertically))
     }
 }

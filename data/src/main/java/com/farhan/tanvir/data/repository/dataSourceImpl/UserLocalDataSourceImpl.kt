@@ -47,11 +47,11 @@ class UserLocalDataSourceImpl(private val userDao: UserDao) : UserLocalDataSourc
     }
 
     override fun selectUser(user: User) {
-        userDao.selectUser(user.userId)
+        userDao.selectUser(user.pk)
     }
 
     override fun unselectUser(user: User) {
-        userDao.unselectUser(user.userId)
+        userDao.unselectUser(user.pk)
     }
 
     override  fun getAllSelectedUsers() : Flow<List<User>> {

@@ -26,14 +26,14 @@ interface UserDao {
     @Query("SELECT * FROM users WHERE reserved = 0")
     fun getAllUsersWithoutReservation(): PagingSource<Int, User>
 
-    @Query("SELECT * FROM users WHERE userId = :userId")
-    fun getUser(userId: Int): Flow<User>
+    @Query("SELECT * FROM users WHERE pk = :userPk")
+    fun getUser(userPk: Long): Flow<User>
 
-    @Query("UPDATE users SET selected = 1 WHERE userId = :userId")
-    fun selectUser(userId: Int)
+    @Query("UPDATE users SET selected = 1 WHERE pk = :userPk")
+    fun selectUser(userPk: Long)
 
-    @Query("UPDATE users SET selected = 0 WHERE userId = :userId")
-    fun unselectUser(userId: Int)
+    @Query("UPDATE users SET selected = 0 WHERE pk = :userPk")
+    fun unselectUser(userPk: Long)
 
     @Query("SELECT * FROM users WHERE selected = 1")
     fun getAllSelectedUsers(): List<User>

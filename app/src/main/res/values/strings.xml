@@ -6,6 +6,9 @@
     <string name="info">At least one Guest in the party must have a reservation. Guests without reservations must remain in the same booking party in order to enter.</string>
     <string name="confirm">Confirm</string>
     <string name="conflict">Conflict</string>
+    <string name="have_reservations">These Guests Have Reservations</string>
+    <string name="need_reservations">These Guests Need Reservations</string>
+
 
     <string name="details">Details</string>
     <string name="title_activity_login">LoginActivity</string>

@@ -72,50 +72,34 @@ fun HomeScreen(onConfirm: () -> Unit,
             HomeTopBar()
         },
         content = {
-            ConstraintLayout(
-                //modifier = Modifier.verticalScroll(rememberScrollState())
-            ) {
-                val (list1, list2, text) = createRefs()
-                //val listState = rememberLazyListState()
 
-                Column(
-                    modifier = Modifier
-                        //.height(IntrinsicSize.Max)
-                        .fillMaxWidth()
-                        // .verticalScroll()
-                        .constrainAs(list1) {
-                            top.linkTo(parent.top, margin = 16.dp)
-                        }
-                    // verticalAlignment = Alignment.CenterVertically
-                ) {
-                    UserListContent(title = "These Guests Have Reservations",
-                        users = allUsers,
-                        getUserValue = { selected, user -> getUserValue(selected, user) })
-                }
-                /*Column(
-                    modifier = Modifier
-                        // .height(IntrinsicSize.Max)
-                        .fillMaxWidth()
-                        .constrainAs(list2) {
-                            top.linkTo(list1.bottom, margin = 16.dp)
-                        }//.//verticalAlignment = Alignment.CenterVertically
-                ) {
+                ConstraintLayout {
+                    val (list, text) = createRefs()
 
-                    UserListContent(title = "These Guests Need Reservations",
-                        users = usersWithoutReservations,
-                        getUserValue = { selected, user -> getUserValue(selected, user) })
-                }*/
-                Column(
-                    modifier = Modifier
-                        .height(IntrinsicSize.Max)
-                        .fillMaxWidth()
-                        .constrainAs(text) {
-                            top.linkTo(list1.bottom, margin = 16.dp)
-                        },
-                ) {
-                    InfoComponent(info = stringResource(id = R.string.info))
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .constrainAs(list) {
+                                top.linkTo(parent.top, margin = 16.dp)
+                               // bottom.linkTo(parent.bottom, margin = 200.dp)
+                            }
+                            .padding(bottom=110.dp)
+                    ) {
+                        UserListContent(users = allUsers,
+                            getUserValue = { selected, user -> getUserValue(selected, user) })
+                    }
+                    Column(
+                        modifier = Modifier
+                            .height(IntrinsicSize.Max)
+                            .fillMaxWidth()
+                            .constrainAs(text) {
+                                bottom.linkTo(list.bottom, margin = 70.dp)
+                            },
+                    ) {
+                        InfoComponent(info = stringResource(id = R.string.info))
+                    }
                 }
-            }
+
         },
         bottomBar = {
             when(uiState.value){
