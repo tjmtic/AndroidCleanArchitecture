@@ -14,6 +14,7 @@ fun NavGraph(navController: NavHostController) {
     //NavGraph as the navigation source of truth
     fun navigateToConfirm(){ navController.navigate(Screen.Confirm.route) }
     fun navigateToConflict(){ navController.navigate(Screen.Conflict.route) }
+    //Added for convenience
     fun navigateBack(){ navController.popBackStack() }
 
     NavHost(

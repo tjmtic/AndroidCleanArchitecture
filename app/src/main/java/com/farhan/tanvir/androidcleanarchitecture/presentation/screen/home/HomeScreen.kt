@@ -5,6 +5,7 @@ import com.farhan.tanvir.androidcleanarchitecture.R
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -24,34 +25,26 @@ fun HomeScreen(onConfirm: () -> Unit,
 
     val systemUiController = rememberSystemUiController()
     val systemBarColor = MaterialTheme.colors.AppThemeColor
-
+    //
     val usersWithReservations = viewModel.usersWithReservations.collectAsLazyPagingItems()
     val usersWithoutReservations = viewModel.usersWithoutReservations.collectAsLazyPagingItems()
-
+    //
     val uiState = viewModel.uiState.collectAsState()
 
-    /*fun callOnConfirm(){
-        onConfirm()
-    }
-
-    fun callOnConflict(){
-        onConflict()
-    }*/
-
-    fun showPopup(){
-        //Need Users with Reservation to finish
-        println("Navigate Popup / NoReservation")
-
-    }
+    //Save display state in Composable Lifecycle
+    val displayPopup = rememberSaveable { mutableStateOf(false) }
+    fun togglePopup(){ displayPopup.value = !displayPopup.value }
 
     fun bottomButtonAction(){
+        //Perform appropriate action
         when(uiState.value){
             is HomeViewUiState.Success -> onConfirm()
             is HomeViewUiState.Mixed -> onConflict()
-            is HomeViewUiState.NoReservation -> showPopup()
+            is HomeViewUiState.NoReservation -> togglePopup()
         }
     }
 
+    //
     fun getUserValue(selected: Boolean, user: User){
         viewModel.updateSelected(selected, user)
     }
@@ -73,12 +66,20 @@ fun HomeScreen(onConfirm: () -> Unit,
             UserListContent(usersWithReservations = usersWithReservations,
                             usersWithoutReservations = usersWithoutReservations,
                             getUserValue = {selected, user -> getUserValue(selected, user)},)
+
             InfoComponent(info = stringResource(id = R.string.info) )
         },
         bottomBar = {
             when(uiState.value){
-                is HomeViewUiState.Success, HomeViewUiState.Mixed, HomeViewUiState.NoReservation -> HomeBottomBar("Continue", { bottomButtonAction() }, true)
-                is HomeViewUiState.Error, HomeViewUiState.Empty -> HomeBottomBar("Continue", { }, false)
+                is HomeViewUiState.Success,
+                   HomeViewUiState.Mixed,
+                   HomeViewUiState.NoReservation -> HomeBottomBar(text = "Continue",
+                                                                  onClickButton = { bottomButtonAction() },
+                                                                  enabled = true,
+                                                                  onClickPopup = { togglePopup() },
+                                                                  displayPopup = displayPopup.value)
+                is HomeViewUiState.Error,
+                   HomeViewUiState.Empty -> HomeBottomBar(text = "Continue")
             }
         }
     )

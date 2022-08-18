@@ -22,13 +22,11 @@ fun HomeTopBar(
     TopAppBar(
         backgroundColor = MaterialTheme.colors.AppThemeColor,
         navigationIcon = {
-            IconButton(onClick = { }) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
                     contentDescription = "Back Icon",
                     tint = MaterialTheme.colors.AppContentColor
                 )
-            }
         },
         title = {
             Text(
