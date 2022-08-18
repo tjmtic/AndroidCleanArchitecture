@@ -1,4 +1,4 @@
-package com.farhan.tanvir.androidcleanarchitecture.presentation.screen.details
+package com.farhan.tanvir.androidcleanarchitecture.presentation.screen.confirm
 
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -12,21 +12,17 @@ import com.farhan.tanvir.androidcleanarchitecture.ui.theme.AppThemeColor
 
 
 @Composable
-fun UserDetailsScreen(
-    userId: String,
-    navController: NavController,
-    viewModel: UserDetailsViewModel = hiltViewModel(),
+fun ConfirmScreen(
+    onBackPressed: () -> Unit,
 ) {
-    viewModel.getUserDetails(userID = userId.toInt())
-    val userDetails by viewModel.selectedUser.collectAsState()
     Scaffold(
         topBar={
-               UserDetailsTopBar(navController)
+            ConfirmTopBar({onBackPressed()})
         },
         contentColor = MaterialTheme.colors.AppContentColor,
         backgroundColor = MaterialTheme.colors.AppThemeColor,
         content = {
-            //userDetails?.let { UserDetailsContent(it) }
+
         })
 }
 

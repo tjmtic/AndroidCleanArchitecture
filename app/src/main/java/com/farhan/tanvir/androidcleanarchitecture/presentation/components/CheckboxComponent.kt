@@ -21,7 +21,7 @@ fun CheckboxComponent(text: String, value: Boolean, onValueChanged: (Boolean) ->
         Checkbox(
             checked = value,
             onCheckedChange = onValueChanged,
-            enabled = true,
+            //enabled = true,
             colors = CheckboxDefaults.colors(Color.Green)
         )
         Text(text = text)

@@ -1,4 +1,4 @@
-package com.farhan.tanvir.androidcleanarchitecture.presentation.screen.details
+package com.farhan.tanvir.androidcleanarchitecture.presentation.screen.confirm
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.*
@@ -15,13 +15,13 @@ import com.farhan.tanvir.androidcleanarchitecture.ui.theme.AppContentColor
 import com.farhan.tanvir.androidcleanarchitecture.ui.theme.AppThemeColor
 
 @Composable
-fun UserDetailsTopBar(
-    navController: NavController
+fun ConflictTopBar(
+    onBackPressed: () -> Unit
 ) {
     TopAppBar(
         backgroundColor = MaterialTheme.colors.AppThemeColor,
         navigationIcon = {
-            IconButton(onClick = { navController.popBackStack() }) {
+            IconButton(onClick = { onBackPressed() }) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
                     contentDescription = "Back Icon",
@@ -31,7 +31,7 @@ fun UserDetailsTopBar(
         },
         title = {
             Text(
-                text = stringResource(R.string.details),
+                text = stringResource(R.string.conflict),
                 color = MaterialTheme.colors.AppContentColor,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.fillMaxWidth(),
