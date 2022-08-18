@@ -21,6 +21,4 @@ object DatabaseModule {
     @Provides
     fun provideUserDao(userDB: UserDB) : UserDao = userDB.userDao()
 
-    //@Provides
-    //fun provideUserRemoteKeysDao(userDB: UserDB) : UserRemoteKeysDao = userDB.userRemoteKeysDao()
 }

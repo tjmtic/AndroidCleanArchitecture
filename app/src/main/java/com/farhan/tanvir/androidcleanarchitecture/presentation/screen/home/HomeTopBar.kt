@@ -3,6 +3,7 @@ package com.farhan.tanvir.androidcleanarchitecture.presentation.screen.home
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -20,25 +21,24 @@ fun HomeTopBar(
 ) {
     TopAppBar(
         backgroundColor = MaterialTheme.colors.AppThemeColor,
+        navigationIcon = {
+            IconButton(onClick = { }) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = "Back Icon",
+                    tint = MaterialTheme.colors.AppContentColor
+                )
+            }
+        },
         title = {
             Text(
-                text = stringResource(R.string.app_name),
+                text = stringResource(R.string.select_guests),
                 color = MaterialTheme.colors.AppContentColor,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.fillMaxWidth(),
-                style = MaterialTheme.typography.h5
+                style = MaterialTheme.typography.h6
             )
         },
         elevation = 0.dp,
-        actions = {
-
-            IconButton(onClick = {  }) {
-                Icon(
-                    imageVector = Icons.Default.Favorite,
-                    contentDescription = "Favourite Icon",
-                    tint = Color.Red
-                )
-            }
-        }
     )
 }

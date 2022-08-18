@@ -17,7 +17,6 @@ fun ButtonComponent(text: String, onClick: () -> Unit, enabled: Boolean) {
     Button(
         enabled = enabled,
         onClick = { onClick() },
-        // Uses ButtonDefaults.ContentPadding by default
         contentPadding = PaddingValues(
             start = 20.dp,
             top = 12.dp,

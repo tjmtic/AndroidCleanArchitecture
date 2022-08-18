@@ -18,10 +18,8 @@ import com.farhan.tanvir.domain.model.User
 @Composable
 fun CheckboxComponent(text: String, value: Boolean, onValueChanged: (Boolean) -> Unit) {
     Row(modifier = Modifier.padding(8.dp)) {
-        //val isChecked = rememberSaveable { mutableStateOf(value) }
-
         Checkbox(
-            checked = value,//isChecked.value,
+            checked = value,
             onCheckedChange = onValueChanged,
             enabled = true,
             colors = CheckboxDefaults.colors(Color.Green)

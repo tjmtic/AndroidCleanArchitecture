@@ -1,31 +1,22 @@
 package com.farhan.tanvir.androidcleanarchitecture.presentation.screen.home
 
-import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
 
 import androidx.compose.runtime.Composable
 
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.items
 import com.farhan.tanvir.domain.model.User
-import com.farhan.tanvir.domain.model.UserList
 
 @Composable
-fun UserListContent(allUsers: LazyPagingItems<User>,
-                    usersWithReservations: LazyPagingItems<User>,
+fun UserListContent(usersWithReservations: LazyPagingItems<User>,
                     usersWithoutReservations: LazyPagingItems<User>,
-                    navController: NavHostController,
-                    selectedUsers: List<User>,
                     getUserValue: (Boolean, User) -> Unit
 ) {
 
@@ -50,9 +41,7 @@ fun UserListContent(allUsers: LazyPagingItems<User>,
                 }
             ) { user ->
                 if (user != null) {
-                    UserListItem(user = user,
-                                checked = selectedUsers.contains(user),
-                                onCheckboxSelected = { getCheckboxValue(it, user)})
+                    UserListItem(user = user, onCheckboxSelected = { getCheckboxValue(it, user)})
                 }
             }
         }
@@ -74,9 +63,7 @@ fun UserListContent(allUsers: LazyPagingItems<User>,
                 }
             ) { user ->
                 if (user != null) {
-                    UserListItem(user = user,
-                                checked = selectedUsers.contains(user),
-                                onCheckboxSelected = { getCheckboxValue(it, user)})
+                    UserListItem(user = user, onCheckboxSelected = { getCheckboxValue(it, user)})
                 }
             }
         }

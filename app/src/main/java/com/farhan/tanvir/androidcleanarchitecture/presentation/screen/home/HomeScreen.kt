@@ -1,5 +1,6 @@
 package com.farhan.tanvir.androidcleanarchitecture.presentation.screen.home
 
+import com.farhan.tanvir.androidcleanarchitecture.R
 
 import android.util.Log
 import androidx.compose.material.MaterialTheme
@@ -18,7 +19,9 @@ import com.farhan.tanvir.domain.model.UserList
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.LifecycleOwner
+import com.farhan.tanvir.androidcleanarchitecture.presentation.components.InfoComponent
 import kotlinx.coroutines.flow.emptyFlow
 
 @Composable
@@ -27,16 +30,29 @@ fun HomeScreen(navController: NavHostController, viewModel: HomeViewModel = hilt
     val systemUiController = rememberSystemUiController()
     val systemBarColor = MaterialTheme.colors.AppThemeColor
 
-    val allUsers = viewModel.getAllUsers.collectAsLazyPagingItems()
     val usersWithReservations = viewModel.usersWithReservations.collectAsLazyPagingItems()
     val usersWithoutReservations = viewModel.usersWithoutReservations.collectAsLazyPagingItems()
 
-    val getSelectedUsersFlow = viewModel.getSelectedUsersFlow.collectAsState(emptyList())
-
     val uiState = viewModel.uiState.collectAsState()
 
-    fun navigate(){
-       println("Navigate!")
+    fun navigateConfirm(){
+        //Navigate to Confirm Page
+    }
+
+    fun navigateConflict(){
+        //Navigate to Conflict Page
+    }
+
+    fun showPopup(){
+        //Need Users with Reservation to finish
+    }
+
+    fun bottomButtonAction(){
+        when(uiState.value){
+            is HomeViewUiState.Success, -> navigateConfirm()
+            is HomeViewUiState.Mixed -> navigateConflict()
+            is HomeViewUiState.NoReservation -> showPopup()
+        }
     }
 
     fun getUserValue(selected: Boolean, user : User){
@@ -57,16 +73,20 @@ fun HomeScreen(navController: NavHostController, viewModel: HomeViewModel = hilt
             HomeTopBar()
         },
         content = {
-            UserListContent(allUsers = allUsers,
-                            usersWithReservations = usersWithReservations,
+            UserListContent(usersWithReservations = usersWithReservations,
                             usersWithoutReservations = usersWithoutReservations,
-                            navController = navController,
-                            selectedUsers = getSelectedUsersFlow.value,
                             getUserValue = {selected, user -> getUserValue(selected, user)},)
+            InfoComponent(info = stringResource(id = R.string.info) )
         },
         bottomBar = {
-            HomeBottomBar("Continue", {navigate()}, (uiState.value is UserListUiState.Success
-                                                            && (uiState.value as UserListUiState.Success).enabled) )
+            when(uiState.value){
+                is HomeViewUiState.Success, HomeViewUiState.Mixed, HomeViewUiState.NoReservation -> HomeBottomBar("Continue", { bottomButtonAction() }, true)
+                //is HomeViewUiState.Mixed -> HomeBottomBar("Continue", { }, true)
+                //is HomeViewUiState.NoReservation -> HomeBottomBar("Continue", { }, true)
+                //is HomeViewUiState.Empty -> HomeBottomBar("Continue", { }, false)
+                is HomeViewUiState.Error, HomeViewUiState.Empty -> HomeBottomBar("Continue", { }, false)
+               // else -> HomeBottomBar("Continue", { showPopup() }, false)
+            }
         }
     )
 }

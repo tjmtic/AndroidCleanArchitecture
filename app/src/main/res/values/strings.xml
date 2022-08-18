@@ -1,6 +1,10 @@
 <resources>
     <string name="app_name">TipMania</string>
     <string name="toast_error">Something happened . Please try again .</string>
+
+    <string name="select_guests">Select Guests</string>
+    <string name="info">At least one Guest in the party must have a reservation. Guests without reservations must remain in the same booking party in order to enter.</string>
+
     <string name="details">Details</string>
     <string name="title_activity_login">LoginActivity</string>
     <string name="prompt_email">Email</string>

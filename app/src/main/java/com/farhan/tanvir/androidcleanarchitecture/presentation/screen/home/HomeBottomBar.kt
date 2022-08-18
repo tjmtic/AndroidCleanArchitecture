@@ -24,13 +24,13 @@ import com.farhan.tanvir.domain.model.User
 import com.google.gson.JsonObject
 
 @Composable
-fun HomeBottomBar( text: String, navigateToConfirm: () -> Unit, users: Boolean
+fun HomeBottomBar( text: String, navigateToConfirm: () -> Unit, enabled: Boolean
 ) {
     BottomAppBar(
         backgroundColor = MaterialTheme.colors.AppThemeColor,
         elevation = 0.dp,
         content = {
-            ButtonComponent(text, navigateToConfirm, users)
+            ButtonComponent(text, navigateToConfirm, enabled)
         }
     )
 }
