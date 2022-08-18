@@ -41,7 +41,7 @@ fun PopupComponent(title: String, text: String, onIconClick: () -> Unit) {
                     top.linkTo(titleText.bottom)
                 }
         ) {
-            Text(text = text, style = MaterialTheme.typography.body2, color = Color.White)
+            Text(text = text, style = MaterialTheme.typography.subtitle2, color = Color.White)
         }
         Column(
             modifier = Modifier
