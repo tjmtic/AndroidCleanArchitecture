@@ -24,21 +24,21 @@ class HomeViewModel @Inject constructor(
     //List of Users(selected = 1) as Flow
     private val selectedUsersFlow = userUseCases.getAllSelectedUsersUseCase()
 
-    //State for Bottom Button
+    //State for Combined States
     private val _uiState = MutableStateFlow<HomeViewUiState>(HomeViewUiState.Empty)
-    //private val _uiState2 = MutableStateFlow<UserListUiState>(UserListUiState.Success(false))
     val uiState: StateFlow<HomeViewUiState> = _uiState
 
-    val selectedReservations = selectedUsersFlow
+    //Flow of selected Users with reservation
+    val selectedWithReservations = selectedUsersFlow
         //Check for Users WITH Reservation
         .map { users -> users.filter { it.reserved } }
-        //Set appropriate status on errors
+        //Set appropriate status on error
         .catch { exception ->  _uiState.value = HomeViewUiState.Error(exception) }
 
-    val selectedNoReservations = selectedUsersFlow
+    //Flow of selected Users without Reservation
+    val selectedWithoutReservations = selectedUsersFlow
         //Check for Users WITHOUT Reservation
         .map { users -> users.filter { !it.reserved } }
-        //Set appropriate status on errors
         .catch { exception ->  _uiState.value = HomeViewUiState.Error(exception) }
 
     //Initialize Collection on IO Threads
@@ -46,19 +46,24 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch (
             Dispatchers.IO, CoroutineStart.DEFAULT
         ) {
-            combine(selectedReservations, selectedNoReservations){usersWithReservation, usersWithoutReservation -> {
-                Pair(
-                    usersWithReservation.isNotEmpty(),// -> UserListUiState.Success,
-                    usersWithoutReservation.isNotEmpty()// -> UserListUiState.Success
-                )
-            } }.collect {
-                when (it()) {
-                    Pair(true, true) -> _uiState.value = HomeViewUiState.Mixed
-                    Pair(true, false) -> _uiState.value = HomeViewUiState.Success
-                    Pair(false, true) -> _uiState.value = HomeViewUiState.NoReservation
-                    Pair(false, false) -> _uiState.value = HomeViewUiState.Empty
+            //Unify related flow collection actions
+            combine(selectedWithReservations, selectedWithoutReservations) {
+                    //Simple data transform / validation
+                    usersWithReservations, usersWithoutReservations ->
+                        CombinedFlowStates(
+                          usersWithReservations = if (usersWithReservations.isNotEmpty()) UserListUiState.Valid else UserListUiState.Invalid,
+                          usersWithoutReservations = if (usersWithoutReservations.isNotEmpty()) UserListUiState.Valid else UserListUiState.Invalid
+                        )
                 }
-            }
+                .collect {
+                    //Set appropriate UiState
+                    when (it) {
+                        CombinedFlowStates(UserListUiState.Valid, UserListUiState.Valid) -> _uiState.value = HomeViewUiState.Mixed
+                        CombinedFlowStates(UserListUiState.Valid, UserListUiState.Invalid) -> _uiState.value = HomeViewUiState.Success
+                        CombinedFlowStates(UserListUiState.Invalid, UserListUiState.Valid) -> _uiState.value = HomeViewUiState.NoReservation
+                        CombinedFlowStates(UserListUiState.Invalid, UserListUiState.Invalid) -> _uiState.value = HomeViewUiState.Empty
+                    }
+                }
         }
     }
 
@@ -73,17 +78,11 @@ class HomeViewModel @Inject constructor(
             } else {
                 userUseCases.unselectUserUseCase(user)
             }
-
         }
     }
 }
 
-//UiState resulting from Selected Users Collection
-/*sealed class UserListUiState {
-    object Success: UserListUiState()
-    data class Error(val exception: Throwable): UserListUiState()
-}*/
-
+//UiState representing final state
 sealed class HomeViewUiState {
     object Success: HomeViewUiState()
     object Mixed: HomeViewUiState()
@@ -91,3 +90,12 @@ sealed class HomeViewUiState {
     object Empty: HomeViewUiState()
     data class Error(val exception: Throwable): HomeViewUiState()
 }
+
+//UiState resulting from selected users collection
+sealed class UserListUiState {
+    object Valid: UserListUiState()
+    object Invalid: UserListUiState()
+}
+
+//Data holder for flow states
+data class CombinedFlowStates(val usersWithReservations: UserListUiState, val usersWithoutReservations:UserListUiState)
