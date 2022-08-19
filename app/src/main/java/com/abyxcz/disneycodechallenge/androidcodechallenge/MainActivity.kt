@@ -29,17 +29,16 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        initUsers(100)
+        initUsers(BuildConfig.NUM_USERS)
     }
 
     fun initUsersFromFile(){
-
+        //CSV file can be uploaded to the application root folder, sample file provided in src
         val file = File(applicationContext.filesDir, "testUsers.csv")
         val usersList = mutableListOf<User>()
         file.forEachLine {
             var line = it.split(",")
-            usersList.add(User(0, line[0]!!.trim().toInt(), line[1]!!, line[2]!!.trim().toBoolean(), false ))
-
+            usersList.add(User(0, line[0].trim().toInt(), line[1], line[2].trim().toBoolean(), false ))
         }
 
         updateUsers(usersList)

@@ -23,15 +23,11 @@ import com.abyxcz.disneycodechallenge.domain.model.User
 fun UserListContent(users: LazyPagingItems<User>,
                     getUserValue: (Boolean, User) -> Unit
 ) {
-    val groupedItems = users.itemSnapshotList.items.groupBy { it.reserved }
-
     //Function Hoisted in UserListItem
     fun getCheckboxValue(selected: Boolean, user: User){
         getUserValue(selected, user)
-
-        println(groupedItems.entries.toString())
     }
-    //val groupedItems = users.itemSnapshotList.items.groupBy { it.reserved }
+    val groupedItems = users.itemSnapshotList.items.groupBy{ it.reserved }.toSortedMap(reverseOrder())
 
     LazyColumn{
                 groupedItems.forEach { (reserved, userGroup) ->

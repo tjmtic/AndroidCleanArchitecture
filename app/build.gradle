@@ -19,6 +19,8 @@ android {
         vectorDrawables {
             useSupportLibrary true
         }
+
+        buildConfigField("int","NUM_USERS", NUM_USERS)
     }
 
     buildTypes {
