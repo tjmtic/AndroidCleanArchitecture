@@ -9,7 +9,7 @@ android {
     compileSdk 32
 
     defaultConfig {
-        applicationId "com.farhan.tanvir.androidcleanarchitecture"
+        applicationId "com.abyxcz.disneycodechallenge.androidcodechallenge"
         minSdk 21
         targetSdk 32
         versionCode 1
@@ -19,10 +19,6 @@ android {
         vectorDrawables {
             useSupportLibrary true
         }
-        buildConfigField("String","BASE_URL",BASE_URL)
-        buildConfigField("String","POSTER_URL",POSTER_URL)
-        buildConfigField("String","SOCKET_URL",SOCKET_URL)
-
     }
 
     buildTypes {
