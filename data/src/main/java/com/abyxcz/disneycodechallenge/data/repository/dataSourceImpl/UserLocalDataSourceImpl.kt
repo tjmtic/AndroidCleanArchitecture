@@ -23,6 +23,7 @@ class UserLocalDataSourceImpl(private val userDao: UserDao) : UserLocalDataSourc
         return Pager(
             config = PagingConfig(pageSize = 60),
             pagingSourceFactory = pagingSourceFactory,
+
         ).flow
     }
 

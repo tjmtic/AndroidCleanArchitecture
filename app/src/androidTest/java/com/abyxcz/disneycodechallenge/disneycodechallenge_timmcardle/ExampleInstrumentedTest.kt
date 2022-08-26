@@ -1,4 +1,4 @@
-package com.abyxcz.disneycodechallenge.domain
+package com.abyxcz.disneycodechallenge.disneycodechallenge_timmcardle
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

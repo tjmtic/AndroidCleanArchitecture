@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Android Code Challenge</string>
+    <string name="app_name">Disney Code Challenge Tim McArdle</string>
     <string name="toast_error">Something happened . Please try again .</string>
 
     <string name="select_guests">Select Guests</string>
