@@ -1,12 +1,12 @@
 package com.farhan.tanvir.androidcleanarchitecture.presentation.screen.details
 
+import android.app.Application
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import com.farhan.tanvir.androidcleanarchitecture.AndroidCleanArchitecture
+import com.farhan.tanvir.androidcleanarchitecture.MainActivity
 import com.farhan.tanvir.androidcleanarchitecture.presentation.navigation.Screen
 import com.farhan.tanvir.domain.model.User
 import com.farhan.tanvir.domain.repository.UserRepository
@@ -28,11 +28,14 @@ import com.farhan.tanvir.androidcleanarchitecture.util.Result
 class LoginViewModel @Inject constructor(
     private val userUseCases: UserUseCases,
     private val userRepository: UserRepository,
-) : ViewModel() {
+    //val navController: NavHostController
+    application: Application
+) : AndroidViewModel(application) {
 
     private val _uiState = MutableStateFlow<LoginUiState>(LoginUiState.Login)
     val uiState: StateFlow<LoginUiState> = _uiState
     private val _networkUiState = MutableStateFlow<NetworkUiState>(NetworkUiState.Neutral)
+
 
 
     private val _username = MutableStateFlow<String>("");
@@ -88,14 +91,31 @@ class LoginViewModel @Inject constructor(
             }*/
 
             //Remove Loading, Display Error
-            //when (response) {
+            when (response) {
             //    is Result.Success -> networkUiState.value = NetworkUiState.Success
                 //is Response.Failure -> networkUiState.value = NetworkUiState.Failure(it.value)
              //   is Result.Error -> networkUiState.value = NetworkUiState.Error(it.value)
-            //}
+            }
 
+            response?.get("token")?.let{
+                // _selectedToken.value = it.asString;
+                //println(_selectedToken.value)
+                _networkUiState.value = NetworkUiState.Success
+
+                (getApplication<Application>().applicationContext as AndroidCleanArchitecture).currentUserToken = it.asString;
+                //TODO: Convert to flow of userRepository (token/loggedInUser/getCurrentUser)
+                _uiState.value = LoginUiState.Home
+
+            } ?: run {
+               // _networkUiState.value = NetworkUiState.Failure(it.value)
+                _networkUiState.value = NetworkUiState.Failure("Network Error")
+            }
+
+            println("current user token = " + userRepository.getCurrentToken())
             if(userRepository.getCurrentToken() != null){
                 _uiState.value = LoginUiState.Home
+
+               // navController.navigate(Screen.Home.route)
             }
         }
     }
@@ -166,8 +186,8 @@ class LoginViewModel @Inject constructor(
 
     sealed class NetworkUiState {
         object Neutral: NetworkUiState()
-        object Success: NetworkUiState()
         object Loading: NetworkUiState()
+        object Success: NetworkUiState()
         data class Failure(val error: String): NetworkUiState()
         data class Error(val exception: Throwable): NetworkUiState()
     }

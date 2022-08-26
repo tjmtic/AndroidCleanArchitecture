@@ -15,13 +15,13 @@ class UserRepositoryImpl(
 ) :
     UserRepository {
     //In-Memory Cache
-    var token: String? = null
-        private set
+    var token: String?;
 
     var currentUser : String?;
 
     init {
         currentUser = null;
+        token = null;
     }
 
     val isLoggedIn: Boolean
@@ -47,9 +47,10 @@ class UserRepositoryImpl(
             setLoggedInUser(result.data)
         }*/
         result?.get("token")?.let{
-            token = it.asString;
+            this.token = it.asString;
             Log.d("TIME123", "ACtual;ly loging in. 666.." + token)
-
+            Log.d("TIME123", "ACtual;ly loging in. 777.." + getCurrentToken())
+            //setLoggedInUser(result.data)
         }
 
         return result
@@ -65,5 +66,6 @@ class UserRepositoryImpl(
         // @see https://developer.android.com/training/articles/keystore
 
         //set application token
+
     }
 }

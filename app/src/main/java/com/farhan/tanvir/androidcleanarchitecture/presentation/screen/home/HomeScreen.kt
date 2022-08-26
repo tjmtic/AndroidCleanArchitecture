@@ -22,6 +22,8 @@ fun HomeScreen(navController: NavHostController, viewModel: HomeViewModel = hilt
     //viewModel.getCurrentUser()
     val currentUser = viewModel.currentUser.collectAsState()
 
+    println("THIS HOME VIEW TOKEN=="+viewModel.token)
+
     SideEffect {
         systemUiController.setStatusBarColor(
             color = systemBarColor

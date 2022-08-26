@@ -34,10 +34,6 @@ fun LoginDetailsScreen(
         onNavigateToHome()
     }
 
-    /*if(uiState.value is LoginViewModel.LoginUiState.Home){
-        println("NAVIGATING HOEM!@!!")
-        navigateHome()
-    }*/
 
     fun onLoginClick(){
         viewModel.postLogin()//username, password)
@@ -62,6 +58,9 @@ fun LoginDetailsScreen(
     fun onDisplayForgot(){
         viewModel.showForgot();
     }
+
+
+
 
     Scaffold(
        /* topBar={
@@ -89,6 +88,12 @@ fun LoginDetailsScreen(
                     {onDisplayLogin()},
                     {onDisplaySignup()},
                     true)
+                //After Login Success
+                is LoginViewModel.LoginUiState.Home -> {
+                    LaunchedEffect(uiState){
+                        navigateHome()
+                    }
+                }
                 //error
                 else -> LoginDetailsContent(navController = navController, { onLoginClick() }, {onDisplaySignup()},
                     {onDisplayForgot()}, true)

@@ -1,10 +1,10 @@
 package com.farhan.tanvir.androidcleanarchitecture.presentation.screen.home
 
+import android.app.Application
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
+import com.farhan.tanvir.androidcleanarchitecture.AndroidCleanArchitecture
+import com.farhan.tanvir.androidcleanarchitecture.MainActivity
 import com.farhan.tanvir.androidcleanarchitecture.util.SocketHandler
 import com.farhan.tanvir.domain.model.User
 import com.farhan.tanvir.domain.useCase.UserUseCases
@@ -18,12 +18,15 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val userUseCases: UserUseCases,
-) : ViewModel() {
+    application: Application
+) : AndroidViewModel(application) {
     //val getAllUsers = userUseCases.getAllUsersUseCase()
 
     private val _currentUser: MutableLiveData<User> = MutableLiveData(null)
     private val _selectedUser: MutableStateFlow<JsonObject?> = MutableStateFlow(JsonObject())
     val currentUser: MutableStateFlow<JsonObject?> = _selectedUser
+
+    val token = (getApplication<Application>().applicationContext as AndroidCleanArchitecture).currentUserToken
 
     fun getCurrentUser() {
         viewModelScope.launch {
