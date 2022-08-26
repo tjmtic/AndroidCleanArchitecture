@@ -25,10 +25,10 @@ interface UserApi {
     suspend fun getReceiverTipSessions(): Response<List<TipSession>>
 
     @GET("api/get/delete/history")
-    suspend fun getDeleteAllHistory(): Response<JSONObject>
+    suspend fun getDeleteAllHistory(): Response<JsonObject>
 
     @GET("api/get/delete/contributors")
-    suspend fun getDeleteAllContributors(): Response<JSONObject>
+    suspend fun getDeleteAllContributors(): Response<JsonObject>
 
 
     @POST("api/login")

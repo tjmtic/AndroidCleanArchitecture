@@ -14,6 +14,18 @@ class UserRepositoryImpl(
     private val userLocalDataSource: UserLocalDataSource,
 ) :
     UserRepository {
+    //In-Memory Cache
+    var token: String? = null
+        private set
+
+    var currentUser : String?;
+
+    init {
+        currentUser = null;
+    }
+
+    val isLoggedIn: Boolean
+        get() = currentUser != null
 
     override suspend fun getCurrentUser(): JsonObject? =
         userRemoteDataSource.getCurrentUser()
@@ -26,6 +38,32 @@ class UserRepositoryImpl(
 
     override suspend fun postLogin(email:String, password:String): JsonObject? {
         Log.d("TIME123", "ACtual;ly loging in. 444.." + email + password)
-        return userRemoteDataSource.postLogin(email, password)
+        //return userRemoteDataSource.postLogin(email, password)
+
+
+        val result = userRemoteDataSource.postLogin(email, password)
+
+        /*if (result is Result.Success) {
+            setLoggedInUser(result.data)
+        }*/
+        result?.get("token")?.let{
+            token = it.asString;
+            Log.d("TIME123", "ACtual;ly loging in. 666.." + token)
+
+        }
+
+        return result
+    }
+
+    override fun getCurrentToken(): String?{
+        return token;
+    }
+
+    private fun setLoggedInUser(loggedInUserToken: String) {
+        this.token = loggedInUserToken
+        // If user credentials will be cached in local storage, it is recommended it be encrypted
+        // @see https://developer.android.com/training/articles/keystore
+
+        //set application token
     }
 }

@@ -13,7 +13,6 @@ import com.farhan.tanvir.data.repository.dataSource.UserRemoteDataSource
 import com.farhan.tanvir.domain.model.User
 import com.google.gson.JsonObject
 import kotlinx.coroutines.flow.Flow
-import org.json.JSONObject
 
 
 class UserRemoteDataSourceImpl(private val userApi: UserApi, private val userDB: UserDB) :
@@ -45,6 +44,14 @@ class UserRemoteDataSourceImpl(private val userApi: UserApi, private val userDB:
         Log.d("TIME123", "ACtual;ly loging in 555..." + response)
         Log.d("TIME123", "ACtual;ly loging in 555aa..." + response.body())
 
-        return response.body()
+        val resp = response.body();
+        return resp;
+
+
+        /*resp?.get("token")?.let{
+            return Result.Success(resp)
+        }
+
+        return Result.Error(Exception("Bad Login"))*/
     }
 }

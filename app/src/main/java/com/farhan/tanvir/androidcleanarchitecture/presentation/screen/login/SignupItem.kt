@@ -30,12 +30,28 @@ import com.google.gson.JsonObject
 
 
 @Composable
-fun LoginItem(onLoginClick: () -> Unit,
+fun SignupItem(onSignupClick: (String, String) -> Unit,
+               showLoginClick: () -> Unit,
+               showForgotClick: () -> Unit,
               enabled: Boolean,
                 viewModel: LoginViewModel = hiltViewModel()) {
 
     var username by remember { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
+
+    var usernameConfirm by remember { mutableStateOf("") }
+    var passwordConfirm by rememberSaveable { mutableStateOf("") }
+
+    fun validateSignup(){
+
+        if(username.equals(usernameConfirm) && password.equals(passwordConfirm)) {
+
+            onSignupClick(username, password)
+        }
+        else{
+            println("Invalid Login!!!!!!!!!!!!! Mismatched username or password.")
+        }
+    }
 
     Card(
         modifier = Modifier
@@ -58,18 +74,6 @@ fun LoginItem(onLoginClick: () -> Unit,
                         end = 2.dp,
                     )) {
 
-                Image(
-                    painter = rememberImagePainter(
-                        data = BuildConfig.POSTER_URL, builder = {
-                            crossfade(true)
-                            scale(Scale.FIT)
-                        }),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(250.dp),
-                    contentScale = ContentScale.FillWidth
-                )
 
                 OutlinedTextField(
                     value = username,
@@ -80,18 +84,41 @@ fun LoginItem(onLoginClick: () -> Unit,
                 Spacer(modifier = Modifier.height(4.dp))
 
                 OutlinedTextField(
+                    value = usernameConfirm,
+                    onValueChange = { usernameConfirm = it ;},
+                    label = { Text("Confirm Username") }
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+
+                OutlinedTextField(
                         value = password,
                         onValueChange = { password = it ; viewModel.updatePassword(password) },
-                        label = { Text("Enter password") },
+                        label = { Text("Password") },
                         visualTransformation = PasswordVisualTransformation(),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
                     )
+                Spacer(modifier = Modifier.height(4.dp))
 
+                OutlinedTextField(
+                    value = passwordConfirm,
+                    onValueChange = { passwordConfirm = it ; },
+                    label = { Text("Confirm password") },
+                    visualTransformation = PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+                )
 
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                ButtonComponent(text = "Login Button", {onLoginClick()}, enabled)
+                ButtonComponent(text = "Signup Button", {validateSignup()}, enabled)
+
+                //Back to Login
+                ButtonComponent(text = "User a Login", {showLoginClick()}, enabled)
+
+                //Forgot
+                ButtonComponent(text = "Actually I Forgot", {showForgotClick()}, enabled)
             }
         }
     }

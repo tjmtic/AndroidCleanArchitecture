@@ -7,3 +7,7 @@ data class UserUseCases(
     val getUsersFromDBUseCase: GetUsersFromDBUseCase,
     val postLoginUseCase: PostLoginUseCase
 )
+
+interface Invokable{
+    fun invoke()
+}

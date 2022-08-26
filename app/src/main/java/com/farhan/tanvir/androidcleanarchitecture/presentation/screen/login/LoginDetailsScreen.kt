@@ -3,15 +3,16 @@ package com.farhan.tanvir.androidcleanarchitecture.presentation.screen.details
 import android.util.Log
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.farhan.tanvir.androidcleanarchitecture.presentation.navigation.Screen
+import com.farhan.tanvir.androidcleanarchitecture.presentation.screen.login.ForgotItem
 import com.farhan.tanvir.androidcleanarchitecture.presentation.screen.login.LoginItem
+import com.farhan.tanvir.androidcleanarchitecture.presentation.screen.login.SignupItem
 import com.farhan.tanvir.androidcleanarchitecture.ui.theme.AppContentColor
 import com.farhan.tanvir.androidcleanarchitecture.ui.theme.AppThemeColor
 import com.farhan.tanvir.domain.model.User
@@ -23,43 +24,78 @@ fun LoginDetailsScreen(
     onNavigateToHome: () -> Unit,
     viewModel: LoginViewModel = hiltViewModel(),
 ) {
-    // viewModel.getUserDetails(userID = userId.toInt())
-    val userDetails by viewModel.selectedUser.collectAsState()
 
-    val hasUser by viewModel.selectedToken.collectAsState()
+    val uiState = viewModel.uiState.collectAsState()
 
-    hasUser?.get("token").let{
-        it?.let{
-            if(it.asString.isNotEmpty()){
-                //navController.navigate(route = Screen.Home.route)
-                //Log.d("TIME123", "Has User Token.")
-            }
-        }
-    }
-
-    userDetails?.get("name").let{
-        it?.let{
-            if(it.asString.isNotEmpty()){
-               // Log.d("TIME123", "Has User Details." + userDetails)
-                //navController.navigate(route = Screen.Home.route)
-                //onNavigateToHome()
-            }
-        }
-    }
+    //var username by remember { mutableStateOf("") }
+    //var password by rememberSaveable { mutableStateOf("") }
 
     fun navigateHome(){
         onNavigateToHome()
     }
 
+    /*if(uiState.value is LoginViewModel.LoginUiState.Home){
+        println("NAVIGATING HOEM!@!!")
+        navigateHome()
+    }*/
+
+    fun onLoginClick(){
+        viewModel.postLogin()//username, password)
+    }
+
+    fun onDisplayLogin(){
+        viewModel.showLogin();
+    }
+
+    fun onSignupClick(username: String, password: String){
+        viewModel.postSignup(username, password)
+    }
+
+    fun onDisplaySignup(){
+        viewModel.showSignup();
+    }
+
+    fun onForgotClick(username: String){
+        viewModel.postForgot(username)
+    }
+
+    fun onDisplayForgot(){
+        viewModel.showForgot();
+    }
+
     Scaffold(
-        topBar={
+       /* topBar={
             LoginDetailsTopBar(navController)
-        },
+        },*/
         contentColor = MaterialTheme.colors.AppContentColor,
         backgroundColor = MaterialTheme.colors.AppThemeColor,
         content = {
-           // userDetails?.let { LoginDetailsContent(navController = navController) }
-            LoginItem(navController = navController, onNavigateToHome)
+            //icon and title
+
+            when(uiState.value){
+                //logindetailscontent
+                is LoginViewModel.LoginUiState.Login -> LoginDetailsContent(navController = navController,
+                                                                            {onLoginClick()},
+                    {onDisplaySignup()},
+                    {onDisplayForgot()},
+                                                                            true)
+                //signupitem
+                is LoginViewModel.LoginUiState.Signup -> SignupItem({username, password -> onSignupClick(username, password)},
+                    {onDisplayLogin()},
+                    {onDisplayForgot()},
+                    true)
+                //forgotitem
+                is LoginViewModel.LoginUiState.Forgot -> ForgotItem({ username -> onForgotClick(username) },
+                    {onDisplayLogin()},
+                    {onDisplaySignup()},
+                    true)
+                //error
+                else -> LoginDetailsContent(navController = navController, { onLoginClick() }, {onDisplaySignup()},
+                    {onDisplayForgot()}, true)
+            }
+
+            //oAuth Login
+
         })
 }
 

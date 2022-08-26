@@ -24,7 +24,7 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        initSocket()
+       // initSocket()
     }
 
     fun initSocket(){
