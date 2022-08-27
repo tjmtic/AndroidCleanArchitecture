@@ -1,6 +1,7 @@
 package com.farhan.tanvir.androidcleanarchitecture.presentation.screen.home
 
 import android.app.Application
+import android.graphics.Bitmap
 import android.util.Log
 import androidx.lifecycle.*
 import com.farhan.tanvir.androidcleanarchitecture.AndroidCleanArchitecture
@@ -38,6 +39,8 @@ class HomeViewModel @Inject constructor(
 
 
     val token = (getApplication<Application>().applicationContext as AndroidCleanArchitecture).currentUserToken
+
+    val qrImage: Bitmap? = token?.let{(getApplication<Application>().applicationContext as AndroidCleanArchitecture).generateQR(token)}
 
     init {
         Log.d("TIME123","initializeing homewVIEWMODEL....");

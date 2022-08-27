@@ -1,18 +1,23 @@
 package com.farhan.tanvir.androidcleanarchitecture.presentation.screen.home
 
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.farhan.tanvir.androidcleanarchitecture.presentation.components.CameraComponent
 import com.farhan.tanvir.androidcleanarchitecture.ui.theme.AppContentColor
 import com.farhan.tanvir.androidcleanarchitecture.ui.theme.AppThemeColor
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun HomeScreen(navController: NavHostController,
                onNavigateToProfile: () -> Unit,
@@ -53,8 +58,9 @@ fun HomeScreen(navController: NavHostController,
         },
         content = {
             when(uiState.value) {
-                is HomeViewModel.HomeUiState.Receive -> ReceiveItem(user = currentUser.value, navController = navController)
-                is HomeViewModel.HomeUiState.Send -> UserItem(user = currentUser.value, users = currentUsers.value, navController = navController)
+                is HomeViewModel.HomeUiState.Receive -> ReceiveItem(user = currentUser.value, viewModel.qrImage, navController = navController)
+                is HomeViewModel.HomeUiState.Send -> CameraComponent(Modifier.fillMaxSize())
+                // is HomeViewModel.HomeUiState.Send -> UserItem(user = currentUser.value, users = currentUsers.value, navController = navController)
                 is HomeViewModel.HomeUiState.Default -> UserItem(user = currentUser.value, users = currentUsers.value, navController = navController)
                 is HomeViewModel.HomeUiState.Error -> UserItem(user = currentUser.value, users = currentUsers.value, navController = navController)
             }

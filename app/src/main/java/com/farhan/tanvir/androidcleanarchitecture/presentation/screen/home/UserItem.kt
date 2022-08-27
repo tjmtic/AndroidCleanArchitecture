@@ -18,7 +18,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
 import coil.size.Scale
-import com.farhan.tanvir.androidcleanarchitecture.BuildConfig
 import com.farhan.tanvir.androidcleanarchitecture.presentation.components.RatingComponent
 import com.farhan.tanvir.androidcleanarchitecture.presentation.navigation.Screen
 import com.farhan.tanvir.androidcleanarchitecture.ui.theme.ItemBackgroundColor

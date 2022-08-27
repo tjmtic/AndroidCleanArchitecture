@@ -110,6 +110,26 @@ dependencies {
     implementation ('io.socket:socket.io-client:2.0.0') {
         exclude group: 'org.json', module: 'json'
     }
+
+    //CameraX
+    def camerax_version = "1.0.1"
+    //implementation "androidx.camera:camera-camera2:$camerax_version"
+    //implementation "androidx.camera:camera-lifecycle:$camerax_version"
+   // implementation "androidx.camera:camera-view:1.0.0-alpha14"
+    //Barcode
+    implementation 'com.google.zxing:core:3.2.1'
+    implementation 'com.journeyapps:zxing-android-embedded:4.3.0'
+
+    //Google MLKit Barcode Scanning
+    implementation 'com.google.mlkit:barcode-scanning:17.0.2'
+
+    //Jetpack CameraX Compose
+    implementation "androidx.camera:camera-camera2:$camerax_version"
+    implementation "androidx.camera:camera-lifecycle:$camerax_version"
+    implementation 'androidx.camera:camera-view:1.0.0-alpha28'
+
+    implementation "com.google.accompanist:accompanist-permissions:0.18.0"
+
 }
 
 kapt {

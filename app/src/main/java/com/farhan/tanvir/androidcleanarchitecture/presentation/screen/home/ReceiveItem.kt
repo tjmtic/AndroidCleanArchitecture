@@ -1,5 +1,6 @@
 package com.farhan.tanvir.androidcleanarchitecture.presentation.screen.home
 
+import android.graphics.Bitmap
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -18,7 +19,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
 import coil.size.Scale
-import com.farhan.tanvir.androidcleanarchitecture.BuildConfig
 import com.farhan.tanvir.androidcleanarchitecture.presentation.components.RatingComponent
 import com.farhan.tanvir.androidcleanarchitecture.presentation.navigation.Screen
 import com.farhan.tanvir.androidcleanarchitecture.ui.theme.ItemBackgroundColor
@@ -26,7 +26,8 @@ import com.google.gson.JsonObject
 
 
 @Composable
-fun ReceiveItem(user: JsonObject?, navController: NavHostController) {
+fun ReceiveItem(user: JsonObject?, qrImage: Bitmap?,
+                navController: NavHostController) {
     Card(
         modifier = Modifier
             .padding(top = 8.dp)
@@ -75,6 +76,19 @@ fun ReceiveItem(user: JsonObject?, navController: NavHostController) {
                     )
                 }
                 user?.get("name")?.asString?.let { RatingComponent(rating = it) }
+
+                Image(
+                    painter = rememberImagePainter(
+                        data = qrImage, builder = {
+                            crossfade(true)
+                            scale(Scale.FIT)
+                        }),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(125.dp),
+                    contentScale = ContentScale.FillWidth
+                )
 
                 user?.get("images")?.asJsonArray.let {
                     it?.let {
