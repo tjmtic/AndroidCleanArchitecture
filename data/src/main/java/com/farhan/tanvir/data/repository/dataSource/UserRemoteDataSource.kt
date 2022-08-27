@@ -10,4 +10,5 @@ interface UserRemoteDataSource {
      suspend fun getCurrentUser(): JsonObject?
      fun getAllUsers(): Flow<PagingData<User>>
      suspend fun postLogin(email:String, password:String): JsonObject?
+     suspend fun postLogout()
 }

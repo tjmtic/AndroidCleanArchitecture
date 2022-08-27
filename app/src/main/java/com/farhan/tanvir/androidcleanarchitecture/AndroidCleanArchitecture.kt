@@ -6,4 +6,12 @@ import dagger.hilt.android.HiltAndroidApp
 class AndroidCleanArchitecture : Application(){
     var currentUserToken : String? = null
         get set
+
+    var currentUserSocketId : String? = null
+        get set
+
+    fun logout(){
+        currentUserToken = null
+        currentUserSocketId = null
+    }
 }

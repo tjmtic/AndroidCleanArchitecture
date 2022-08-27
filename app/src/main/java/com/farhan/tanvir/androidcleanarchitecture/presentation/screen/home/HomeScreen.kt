@@ -14,13 +14,26 @@ import com.farhan.tanvir.androidcleanarchitecture.ui.theme.AppThemeColor
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 @Composable
-fun HomeScreen(navController: NavHostController, viewModel: HomeViewModel = hiltViewModel()) {
+fun HomeScreen(navController: NavHostController,
+               onNavigateToProfile: () -> Unit,
+               viewModel: HomeViewModel = hiltViewModel()) {
 
     val systemUiController = rememberSystemUiController()
     val systemBarColor = MaterialTheme.colors.AppThemeColor
     //val allUsers = viewModel.getAllUsers.collectAsLazyPagingItems()
     //viewModel.getCurrentUser()
     val currentUser = viewModel.currentUser.collectAsState()
+
+    val uiState = viewModel.uiState.collectAsState()
+
+    fun showSend(){
+        viewModel.showSend()
+    }
+
+    fun showReceive(){
+        viewModel.showReceive()
+    }
+
 
     println("THIS HOME VIEW TOKEN=="+viewModel.token)
 
@@ -34,10 +47,15 @@ fun HomeScreen(navController: NavHostController, viewModel: HomeViewModel = hilt
         backgroundColor = MaterialTheme.colors.AppThemeColor,
         contentColor = MaterialTheme.colors.AppContentColor,
         topBar = {
-            HomeTopBar()
+            HomeTopBar({onNavigateToProfile()}, {showSend()}, {showReceive()})
         },
         content = {
-            UserItem(user = currentUser.value, navController = navController)
+            when(uiState.value) {
+                is HomeViewModel.HomeUiState.Receive -> ReceiveItem(user = currentUser.value, navController = navController)
+                is HomeViewModel.HomeUiState.Send -> UserItem(user = currentUser.value, navController = navController)
+                is HomeViewModel.HomeUiState.Default -> UserItem(user = currentUser.value, navController = navController)
+                is HomeViewModel.HomeUiState.Error -> UserItem(user = currentUser.value, navController = navController)
+            }
         }
     )
 }

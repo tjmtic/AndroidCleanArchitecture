@@ -16,7 +16,8 @@ import com.farhan.tanvir.androidcleanarchitecture.ui.theme.AppThemeColor
 
 @Composable
 fun UserDetailsTopBar(
-    navController: NavController
+    navController: NavController,
+    onNavigateToHome: () -> Unit,
 ) {
     TopAppBar(
         backgroundColor = MaterialTheme.colors.AppThemeColor,

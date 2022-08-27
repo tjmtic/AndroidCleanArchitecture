@@ -22,16 +22,21 @@ fun NavGraph(navController: NavHostController) {
                                 onNavigateToHome = { navController.navigate(route = Screen.Home.route) })
         }
         composable(route = Screen.Home.route) {
-            HomeScreen(navController = navController)
+            HomeScreen(navController = navController,
+                        onNavigateToProfile = { navController.navigate(route = Screen.UserDetails.route) })
         }
         composable(
             route = Screen.UserDetails.route,
-            arguments = listOf(navArgument(Constant.USER_DETAILS_ARGUMENT_KEY) {
+            /*arguments = listOf(navArgument(Constant.USER_DETAILS_ARGUMENT_KEY) {
                 type = NavType.StringType
-            })
-        ) { backStackEntry ->
+            })*/
+        ) {
+            UserDetailsScreen(navController,
+            onNavigateToHome = { navController.navigate(route = Screen.Home.route) },
+                onNavigateToLogin = { navController.navigate(route = Screen.Login.route) })
+        /*backStackEntry ->
             backStackEntry.arguments?.getString(Constant.USER_DETAILS_ARGUMENT_KEY)
-                ?.let { UserDetailsScreen(it,navController) }
+                ?.let { UserDetailsScreen(it,navController) }*/
         }
     }
 }

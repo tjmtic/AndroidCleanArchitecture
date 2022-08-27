@@ -21,9 +21,33 @@ import com.farhan.tanvir.androidcleanarchitecture.ui.theme.AppThemeColor
 import com.google.gson.JsonObject
 
 @Composable
-fun HomeTopBar(
+fun HomeTopBar(onNavigateToProfile: () -> Unit,
+               onShowSend: () -> Unit,
+               onShowReceive: () -> Unit,
 ) {
     val context = LocalContext.current
+
+    fun navigateToProfile(){
+        onNavigateToProfile()
+    }
+    fun showMessage(context: Context) {
+        /*val browserIntent = Intent(
+            Intent.ACTION_VIEW,
+            Uri.parse("https://github.com/Farhandroid/AndroidCleanArchitecture")
+        )
+        ContextCompat.startActivity(context, browserIntent, null)*/
+
+        navigateToProfile()
+
+    }
+    
+    fun showSend(){
+        onShowSend()
+    }
+
+    fun showReceive(){
+        onShowReceive()
+    }
     TopAppBar(
         backgroundColor = MaterialTheme.colors.AppThemeColor,
         title = {
@@ -45,14 +69,21 @@ fun HomeTopBar(
                     tint = Color.Red
                 )
             }
+            IconButton(onClick = { showSend() }) {
+                Icon(
+                    imageVector = Icons.Default.Favorite,
+                    contentDescription = "Favourite Icon",
+                    tint = Color.Red
+                )
+            }
+            IconButton(onClick = { showReceive() }) {
+                Icon(
+                    imageVector = Icons.Default.Favorite,
+                    contentDescription = "Favourite Icon",
+                    tint = Color.Red
+                )
+            }
         }
     )
 }
 
-fun showMessage(context: Context) {
-    val browserIntent = Intent(
-        Intent.ACTION_VIEW,
-        Uri.parse("https://github.com/Farhandroid/AndroidCleanArchitecture")
-    )
-    ContextCompat.startActivity(context, browserIntent, null)
-}

@@ -68,4 +68,25 @@ class UserRepositoryImpl(
         //set application token
 
     }
+
+    override suspend fun logout(){
+
+        //val result = userRemoteDataSource.postLogout();
+
+        /*if (result is Result.Success) {
+            setLoggedInUser()
+        }*/
+
+        /*result?.get("status")?.let{
+            this.token = null;
+            Log.d("TIME123", "ACtual;ly loging in. 666.." + token)
+            Log.d("TIME123", "ACtual;ly loging in. 777.." + getCurrentToken())
+            //setLoggedInUser(result.data)
+        }*/
+
+        token = null;
+        currentUser = null;
+
+
+    }
 }

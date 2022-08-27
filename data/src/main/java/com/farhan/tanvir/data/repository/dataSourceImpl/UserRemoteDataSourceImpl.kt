@@ -13,6 +13,7 @@ import com.farhan.tanvir.data.repository.dataSource.UserRemoteDataSource
 import com.farhan.tanvir.domain.model.User
 import com.google.gson.JsonObject
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 
 class UserRemoteDataSourceImpl(private val userApi: UserApi, private val userDB: UserDB) :
@@ -34,6 +35,11 @@ class UserRemoteDataSourceImpl(private val userApi: UserApi, private val userDB:
     }
 
     override suspend fun getCurrentUser(): JsonObject?{
+       /* return flow {
+            val response = userApi.getCurrentUser();
+
+            emit(response.body());
+        }*/
         val response = userApi.getCurrentUser()
         return response.body()
     }
@@ -46,6 +52,23 @@ class UserRemoteDataSourceImpl(private val userApi: UserApi, private val userDB:
 
         val resp = response.body();
         return resp;
+
+
+        /*resp?.get("token")?.let{
+            return Result.Success(resp)
+        }
+
+        return Result.Error(Exception("Bad Login"))*/
+    }
+
+    override suspend fun postLogout() {
+
+        val response = userApi.postLogout();
+        Log.d("TIME123", "ACtual;ly loging out 555..." + response)
+        Log.d("TIME123", "ACtual;ly loging out 555aa..." + response.body())
+
+        val resp = response.body();
+       // return resp;
 
 
         /*resp?.get("token")?.let{

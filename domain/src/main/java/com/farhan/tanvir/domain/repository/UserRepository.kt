@@ -13,6 +13,7 @@ interface UserRepository {
     fun getAllUsers(): Flow<PagingData<User>>
     fun getUsersFromDB(userId: Int): Flow<User>
     suspend fun postLogin(email: String, password: String): JsonObject?
+    suspend fun logout()
 }
 
 /**

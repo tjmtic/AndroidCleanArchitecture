@@ -26,7 +26,7 @@ import com.google.gson.JsonObject
 
 
 @Composable
-fun UserItem(user: JsonObject?, navController: NavHostController) {
+fun ReceiveItem(user: JsonObject?, navController: NavHostController) {
     Card(
         modifier = Modifier
             .padding(top = 8.dp)
@@ -59,7 +59,7 @@ fun UserItem(user: JsonObject?, navController: NavHostController) {
                     )
                 }
                 Spacer(modifier = Modifier.height(4.dp))
-                user?.get("payerEmail")?.asString?.let {
+                user?.get("token")?.asString?.let {
                     Text(
                         text = it,
                         style = MaterialTheme.typography.body2,
@@ -79,22 +79,7 @@ fun UserItem(user: JsonObject?, navController: NavHostController) {
                 user?.get("images")?.asJsonArray.let {
                     it?.let {
                         for (image in it) {
-                            if(image.asJsonObject.get("type").asString.equals("cover")) {
-                                Image(
-                                    painter = rememberImagePainter(
-                                        data = image.asJsonObject.get("url").asString, builder = {
-                                            crossfade(true)
-                                            scale(Scale.FIT)
-                                        }),
-                                    contentDescription = null,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(250.dp),
-                                    contentScale = ContentScale.FillWidth
-                                )
-                            }
-
-                            else if(image.asJsonObject.get("type").asString.equals("profile")) {
+                            if(image.asJsonObject.get("type").asString.equals("profile")) {
                                 Image(
                                     painter = rememberImagePainter(
                                         data = image.asJsonObject.get("url").asString, builder = {
@@ -119,12 +104,6 @@ fun UserItem(user: JsonObject?, navController: NavHostController) {
                     Text(text = "NO IMAGES????", style = MaterialTheme.typography.body1)
             }
 
-                user?.get("email")?.asString?.let {
-                    Text(
-                        text = it,
-                        style = MaterialTheme.typography.body1
-                    )
-                }
                 // user?.get("images")?.asString?.let { Text(text = it, style = MaterialTheme.typography.body1) }
                 user?.get("payerBalance")?.asString?.let {
                     Text(
@@ -150,28 +129,7 @@ fun UserItem(user: JsonObject?, navController: NavHostController) {
                         style = MaterialTheme.typography.body1
                     )
                 }
-                user?.get("socketId")?.asString?.let {
-                    Text(
-                        text = it,
-                        style = MaterialTheme.typography.body1
-                    )
-                }
-                user?.get("firebaseDeviceToken")?.asString?.let {
-                    Text(
-                        text = it,
-                        style = MaterialTheme.typography.body1
-                    )
-                }
-                user?.get("contacts")?.toString()
-                    ?.let { Text(text = it, style = MaterialTheme.typography.body1) }
-                user?.get("favorites")?.toString()
-                    ?.let { Text(text = it, style = MaterialTheme.typography.body1) }
-                user?.get("history")?.toString()
-                    ?.let { Text(text = it, style = MaterialTheme.typography.body1) }
-                user?.get("contributors")?.toString()
-                    ?.let { Text(text = it, style = MaterialTheme.typography.body1) }
-                user?.get("sponsors")?.toString()
-                    ?.let { Text(text = it, style = MaterialTheme.typography.body1) }
+
 
             }
         }

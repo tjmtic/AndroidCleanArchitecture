@@ -35,4 +35,7 @@ interface UserApi {
     suspend fun postLogin(
         @Body request: LoginRequest
     ): Response<JsonObject>
+
+    @POST("api/logout")
+    suspend fun postLogout(): Response<JsonObject>
 }
