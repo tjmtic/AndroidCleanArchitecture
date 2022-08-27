@@ -32,6 +32,7 @@ fun HomeScreen(navController: NavHostController,
     val currentUsers = viewModel.allUsers.collectAsState()
 
     val uiState = viewModel.uiState.collectAsState()
+    val uiStateCamera = viewModel.uiStateCamera.collectAsState()
 
     fun showSend(){
         viewModel.showSend()
@@ -39,6 +40,18 @@ fun HomeScreen(navController: NavHostController,
 
     fun showReceive(){
         viewModel.showReceive()
+    }
+
+    fun showCamera(){
+        viewModel.showCamera()
+    }
+
+    fun hideCamera(){
+        viewModel.hideCamera()
+    }
+
+    fun toggleCamera(){
+        viewModel.toggleCamera()
     }
 
 
@@ -54,16 +67,42 @@ fun HomeScreen(navController: NavHostController,
         backgroundColor = MaterialTheme.colors.AppThemeColor,
         contentColor = MaterialTheme.colors.AppContentColor,
         topBar = {
-            HomeTopBar({onNavigateToProfile()}, {showSend()}, {showReceive()})
+            HomeTopBar({onNavigateToProfile()}, {showSend()}, {showReceive()}, {toggleCamera()})
         },
         content = {
-            when(uiState.value) {
-                is HomeViewModel.HomeUiState.Receive -> ReceiveItem(user = currentUser.value, viewModel.qrImage, navController = navController)
-                is HomeViewModel.HomeUiState.Send -> CameraComponent(Modifier.fillMaxSize())
-                // is HomeViewModel.HomeUiState.Send -> UserItem(user = currentUser.value, users = currentUsers.value, navController = navController)
-                is HomeViewModel.HomeUiState.Default -> UserItem(user = currentUser.value, users = currentUsers.value, navController = navController)
-                is HomeViewModel.HomeUiState.Error -> UserItem(user = currentUser.value, users = currentUsers.value, navController = navController)
+            when(uiStateCamera.value) {
+                is HomeViewModel.CameraUiState.Enabled -> CameraComponent(Modifier.fillMaxSize(), {hideCamera()})
+                else -> {
+                    when (uiState.value) {
+                        is HomeViewModel.HomeUiState.Receive -> ReceiveItem(
+                            user = currentUser.value,
+                            viewModel.qrImage,
+                            users = currentUsers.value,
+                            navController = navController
+                        )
+                        //is HomeViewModel.HomeUiState.Send -> CameraComponent(Modifier.fillMaxSize())
+                        // is HomeViewModel.HomeUiState.Send -> UserItem(user = currentUser.value, users = currentUsers.value, navController = navController)
+                        is HomeViewModel.HomeUiState.Send -> SendItem(
+                            user = currentUser.value,
+                            users = currentUsers.value,
+                            navController = navController
+                        )
+                        is HomeViewModel.HomeUiState.Default -> SendItem(
+                            user = currentUser.value,
+                            users = currentUsers.value,
+                            navController = navController
+                        )
+                        is HomeViewModel.HomeUiState.Error -> SendItem(
+                            user = currentUser.value,
+                            users = currentUsers.value,
+                            navController = navController
+                        )
+                    }
+                }
             }
+        },
+        bottomBar = {
+            HomeBottomBar({showSend()}, {showReceive()})
         }
     )
 }

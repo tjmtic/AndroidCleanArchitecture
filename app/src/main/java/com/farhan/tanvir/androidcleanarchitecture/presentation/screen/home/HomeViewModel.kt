@@ -32,6 +32,9 @@ class HomeViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Default)
     val uiState: StateFlow<HomeUiState> = _uiState
 
+    private val _uiStateCamera = MutableStateFlow<CameraUiState>(CameraUiState.Disabled)
+    val uiStateCamera: StateFlow<CameraUiState> = _uiStateCamera
+
     private val _currentUser: MutableLiveData<User> = MutableLiveData(null)
     private val _selectedUser: MutableStateFlow<JsonObject?> = MutableStateFlow(JsonObject())
     val currentUser: MutableStateFlow<JsonObject?> = _selectedUser
@@ -82,12 +85,33 @@ class HomeViewModel @Inject constructor(
         _uiState.value = HomeUiState.Default
     }
 
+    fun showCamera(){
+        _uiStateCamera.value = CameraUiState.Enabled
+    }
+
+    fun hideCamera(){
+        _uiStateCamera.value = CameraUiState.Disabled
+    }
+
+    fun toggleCamera(){
+        when(_uiStateCamera.value){
+            is CameraUiState.Enabled -> _uiStateCamera.value = CameraUiState.Disabled
+            is CameraUiState.Disabled -> _uiStateCamera.value = CameraUiState.Enabled
+        }
+    }
+
 
     sealed class HomeUiState {
         object Default: HomeUiState()
         object Send: HomeUiState()
         object Receive: HomeUiState()
         data class Error(val exception: Throwable): HomeUiState()
+    }
+
+    sealed class CameraUiState {
+        object Enabled: CameraUiState()
+        object Disabled: CameraUiState()
+        data class Error(val exception: Throwable): CameraUiState()
     }
 
 }

@@ -29,18 +29,16 @@ import com.google.gson.JsonObject
 
 
 @Composable
-fun ReceiveItem(user: JsonObject?,
-                qrImage: Bitmap?,
-                users: JsonObject?,
-                navController: NavHostController) {
+fun SendItem(user: JsonObject?,
+             users: JsonObject?,
+                navController: NavHostController,
+                ) {
 
     val showUserList = remember { mutableStateOf(false) }
 
     fun toggleUserList(){
         showUserList.value = !showUserList.value
     }
-
-
     Card(
         modifier = Modifier
             .padding(top = 8.dp)
@@ -60,10 +58,11 @@ fun ReceiveItem(user: JsonObject?,
         ) {
             Column(
                 Modifier
-                .height(IntrinsicSize.Max)
-                .padding(
-                    end = 2.dp,
-                ).verticalScroll(rememberScrollState())
+                    .height(IntrinsicSize.Max)
+                    .padding(
+                        end = 2.dp,
+                    )
+                    .verticalScroll(rememberScrollState())
             ) {
                 ButtonComponent(text = "Toggle", onClick = { toggleUserList() }, enabled = true)
 
@@ -92,19 +91,6 @@ fun ReceiveItem(user: JsonObject?,
                         )
                     }
                     user?.get("name")?.asString?.let { RatingComponent(rating = it) }
-
-                    Image(
-                        painter = rememberImagePainter(
-                            data = qrImage, builder = {
-                                crossfade(true)
-                                scale(Scale.FIT)
-                            }),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(125.dp),
-                        contentScale = ContentScale.FillWidth
-                    )
 
                     user?.get("images")?.asJsonArray.let {
                         it?.let {
@@ -164,20 +150,8 @@ fun ReceiveItem(user: JsonObject?,
                 }
 
                 else {
-
-
                     users?.let {
-                        /*it.get("senders")?.let {
-                        for (userData in it.asJsonArray) {
-                            Text(
-                                text = userData.asJsonObject.get("name").asString,
-                                style = MaterialTheme.typography.body1
-                            )
-                        }
-                    }*/
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        it.get("receivers")?.let {
+                        it.get("senders")?.let {
                             for (userData in it.asJsonArray) {
                                 Text(
                                     text = userData.asJsonObject.get("name").asString,
@@ -185,9 +159,18 @@ fun ReceiveItem(user: JsonObject?,
                                 )
                             }
                         }
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        /*it.get("receivers")?.let {
+                        for (userData in it.asJsonArray) {
+                            Text(
+                                text = userData.asJsonObject.get("name").asString,
+                                style = MaterialTheme.typography.body1
+                            )
+                        }
+                    }*/
 
                     }
-
                 }
 
 

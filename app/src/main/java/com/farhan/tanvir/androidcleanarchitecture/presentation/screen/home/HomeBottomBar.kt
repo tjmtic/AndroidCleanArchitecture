@@ -24,26 +24,10 @@ import com.farhan.tanvir.androidcleanarchitecture.ui.theme.AppThemeColor
 import com.google.gson.JsonObject
 
 @Composable
-fun HomeTopBar(onNavigateToProfile: () -> Unit,
-               onShowSend: () -> Unit,
+fun HomeBottomBar(onShowSend: () -> Unit,
                onShowReceive: () -> Unit,
-               onShowCamera: () -> Unit,
 ) {
     val context = LocalContext.current
-
-    fun navigateToProfile(){
-        onNavigateToProfile()
-    }
-    fun showMessage(context: Context) {
-        /*val browserIntent = Intent(
-            Intent.ACTION_VIEW,
-            Uri.parse("https://github.com/Farhandroid/AndroidCleanArchitecture")
-        )
-        ContextCompat.startActivity(context, browserIntent, null)*/
-
-        navigateToProfile()
-
-    }
     
     fun showSend(){
         onShowSend()
@@ -53,34 +37,24 @@ fun HomeTopBar(onNavigateToProfile: () -> Unit,
         onShowReceive()
     }
 
-    fun showCamera(){
-        onShowCamera()
-    }
 
-    TopAppBar(
+    BottomAppBar(
         backgroundColor = MaterialTheme.colors.AppThemeColor,
-        title = {
-            Text(
-                text = stringResource(R.string.app_name),
-                color = MaterialTheme.colors.AppContentColor,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.fillMaxWidth(),
-                style = MaterialTheme.typography.h5
-            )
-        },
-        elevation = 0.dp,
-        actions = {
 
-            IconButton(onClick = { showCamera() }) {
+        elevation = 0.dp,
+        content = {
+
+
+            IconButton(onClick = { showSend() }) {
                 Icon(
-                    imageVector = Icons.Default.Add,
+                    imageVector = Icons.Default.Favorite,
                     contentDescription = "Favourite Icon",
                     tint = Color.Red
                 )
             }
-            IconButton(onClick = { showMessage(context = context) }) {
+            IconButton(onClick = { showReceive() }) {
                 Icon(
-                    imageVector = Icons.Default.Home,
+                    imageVector = Icons.Default.AccountBox,
                     contentDescription = "Favourite Icon",
                     tint = Color.Red
                 )

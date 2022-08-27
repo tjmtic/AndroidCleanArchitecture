@@ -17,6 +17,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import com.farhan.tanvir.androidcleanarchitecture.presentation.components.ButtonComponent
 import com.farhan.tanvir.androidcleanarchitecture.util.QRCodeFoundListener
 import com.farhan.tanvir.androidcleanarchitecture.util.QRCodeImageAnalyzer
 import kotlinx.coroutines.launch
@@ -25,11 +26,17 @@ import kotlinx.coroutines.launch
 fun CameraPreview(
     modifier: Modifier = Modifier,
     scaleType: PreviewView.ScaleType = PreviewView.ScaleType.FILL_CENTER,
-    cameraSelector: CameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+    cameraSelector: CameraSelector = CameraSelector.DEFAULT_BACK_CAMERA,
+    onHideCamera: () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
     val lifecycleOwner = LocalLifecycleOwner.current
-    val c2 = LocalContext.current
+    //val c2 = LocalContext.current
+
+    fun hideCamera(){
+        onHideCamera()
+    }
+    ButtonComponent(text = "Back", onClick = { hideCamera() }, enabled = true)
     AndroidView(
         modifier = modifier,
         factory = { context ->
@@ -60,11 +67,13 @@ fun CameraPreview(
                     //qrCodeFoundButton!!.visibility = View.VISIBLE
                     println("QR CODE!!:")
                     println(_qrCode);
+                    hideCamera()
                 }
 
                 override fun qrCodeNotFound() {
                     //qrCodeFoundButton!!.visibility = View.INVISIBLE
                     println("no QR CODE!!:...")
+                   // hideCamera()
                 }
             }))
 
