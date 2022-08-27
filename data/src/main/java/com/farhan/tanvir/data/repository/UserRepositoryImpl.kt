@@ -30,7 +30,7 @@ class UserRepositoryImpl(
     override suspend fun getCurrentUser(): JsonObject? =
         userRemoteDataSource.getCurrentUser()
 
-    override fun getAllUsers() =
+    override suspend fun getAllUsers() =
         userRemoteDataSource.getAllUsers()
 
     override fun getUsersFromDB(userId: Int): Flow<User> =

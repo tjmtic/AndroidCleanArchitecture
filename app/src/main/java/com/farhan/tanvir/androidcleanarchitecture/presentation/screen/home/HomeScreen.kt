@@ -24,6 +24,8 @@ fun HomeScreen(navController: NavHostController,
     //viewModel.getCurrentUser()
     val currentUser = viewModel.currentUser.collectAsState()
 
+    val currentUsers = viewModel.allUsers.collectAsState()
+
     val uiState = viewModel.uiState.collectAsState()
 
     fun showSend(){
@@ -52,9 +54,9 @@ fun HomeScreen(navController: NavHostController,
         content = {
             when(uiState.value) {
                 is HomeViewModel.HomeUiState.Receive -> ReceiveItem(user = currentUser.value, navController = navController)
-                is HomeViewModel.HomeUiState.Send -> UserItem(user = currentUser.value, navController = navController)
-                is HomeViewModel.HomeUiState.Default -> UserItem(user = currentUser.value, navController = navController)
-                is HomeViewModel.HomeUiState.Error -> UserItem(user = currentUser.value, navController = navController)
+                is HomeViewModel.HomeUiState.Send -> UserItem(user = currentUser.value, users = currentUsers.value, navController = navController)
+                is HomeViewModel.HomeUiState.Default -> UserItem(user = currentUser.value, users = currentUsers.value, navController = navController)
+                is HomeViewModel.HomeUiState.Error -> UserItem(user = currentUser.value, users = currentUsers.value, navController = navController)
             }
         }
     )

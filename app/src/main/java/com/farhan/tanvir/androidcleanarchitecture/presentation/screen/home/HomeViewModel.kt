@@ -22,6 +22,10 @@ class HomeViewModel @Inject constructor(
     application: Application
 ) : AndroidViewModel(application) {
     //val getAllUsers = userUseCases.getAllUsersUseCase()
+    val _allUsers: MutableStateFlow<JsonObject?> = MutableStateFlow(JsonObject())
+    val allUsers: MutableStateFlow<JsonObject?> = _allUsers
+    val sendUsers: MutableStateFlow<JsonObject?> = _allUsers
+    val receiveUsers: MutableStateFlow<JsonObject?> = _allUsers
 
     //val userSocketId: String;
     private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Default)
@@ -39,6 +43,7 @@ class HomeViewModel @Inject constructor(
         Log.d("TIME123","initializeing homewVIEWMODEL....");
         viewModelScope.launch {
             _selectedUser.value = userUseCases.getCurrentUserUseCase()
+            _allUsers.value = userUseCases.getAllUsersUseCase()
             // navController.navigate(route = Screen.Home.route)
             Log.d("TIME123", "New current user:" + _selectedUser.value)
 

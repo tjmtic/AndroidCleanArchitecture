@@ -22,11 +22,12 @@ import com.farhan.tanvir.androidcleanarchitecture.BuildConfig
 import com.farhan.tanvir.androidcleanarchitecture.presentation.components.RatingComponent
 import com.farhan.tanvir.androidcleanarchitecture.presentation.navigation.Screen
 import com.farhan.tanvir.androidcleanarchitecture.ui.theme.ItemBackgroundColor
+import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 
 
 @Composable
-fun UserItem(user: JsonObject?, navController: NavHostController) {
+fun UserItem(user: JsonObject?, users: JsonObject?, navController: NavHostController) {
     Card(
         modifier = Modifier
             .padding(top = 8.dp)
@@ -162,7 +163,7 @@ fun UserItem(user: JsonObject?, navController: NavHostController) {
                         style = MaterialTheme.typography.body1
                     )
                 }
-                user?.get("contacts")?.toString()
+                /*user?.get("contacts")?.toString()
                     ?.let { Text(text = it, style = MaterialTheme.typography.body1) }
                 user?.get("favorites")?.toString()
                     ?.let { Text(text = it, style = MaterialTheme.typography.body1) }
@@ -171,7 +172,29 @@ fun UserItem(user: JsonObject?, navController: NavHostController) {
                 user?.get("contributors")?.toString()
                     ?.let { Text(text = it, style = MaterialTheme.typography.body1) }
                 user?.get("sponsors")?.toString()
-                    ?.let { Text(text = it, style = MaterialTheme.typography.body1) }
+                    ?.let { Text(text = it, style = MaterialTheme.typography.body1) }*/
+
+                users?.let {
+                    it.get("senders")?.let {
+                        for (userData in it.asJsonArray) {
+                            Text(
+                                text = userData.asJsonObject.get("name").asString,
+                                style = MaterialTheme.typography.body1
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    it.get("receivers")?.let {
+                        for (userData in it.asJsonArray) {
+                            Text(
+                                text = userData.asJsonObject.get("name").asString,
+                                style = MaterialTheme.typography.body1
+                            )
+                        }
+                    }
+
+                }
 
             }
         }

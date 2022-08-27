@@ -20,9 +20,8 @@ class UserRemoteDataSourceImpl(private val userApi: UserApi, private val userDB:
     UserRemoteDataSource {
     private val userDao = userDB.userDao()
 
-    @OptIn(ExperimentalPagingApi::class)
-    override  fun getAllUsers() : Flow<PagingData<User>> {
-        Log.d("TIME123", "LOGGING FOR GET ALL USERS");
+    override suspend fun getAllUsers() : JsonObject? {
+        /*Log.d("TIME123", "LOGGING FOR GET ALL USERS");
         val pagingSourceFactory = { userDao.getAllUsers() }
         return Pager(
             config = PagingConfig(pageSize = 20),
@@ -31,7 +30,10 @@ class UserRemoteDataSourceImpl(private val userApi: UserApi, private val userDB:
                 userDB
             ),
             pagingSourceFactory = pagingSourceFactory,
-        ).flow
+        ).flow*/
+
+        val response = userApi.getAllUsers()
+        return response.body()
     }
 
     override suspend fun getCurrentUser(): JsonObject?{

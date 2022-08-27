@@ -70,7 +70,7 @@ fun UserListItem(user: User, navController: NavHostController) {
                         )
                         .width(120.dp),
                     painter = rememberImagePainter(
-                        data = BuildConfig.POSTER_URL + it, builder = {
+                        data = it, builder = {
                             crossfade(true)
                             scale(Scale.FILL)
                         }),
@@ -78,6 +78,7 @@ fun UserListItem(user: User, navController: NavHostController) {
                     contentScale = ContentScale.Fit
                 )
             }
+
             Column(Modifier
                 .height(IntrinsicSize.Max)
                 .padding(
