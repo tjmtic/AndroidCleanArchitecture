@@ -15,6 +15,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
@@ -27,7 +28,7 @@ object NetworkModule {
         return OkHttpClient.Builder()
             .readTimeout(20, TimeUnit.SECONDS)
             .connectTimeout(20, TimeUnit.SECONDS)
-            .addInterceptor(AuthInterceptor())
+            //.addInterceptor(AuthInterceptor())
             .build()
     }
 

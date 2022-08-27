@@ -12,6 +12,7 @@ import org.json.JSONObject
 class UserRepositoryImpl(
     private val userRemoteDataSource: UserRemoteDataSource,
     private val userLocalDataSource: UserLocalDataSource,
+   // val authToken: String
 ) :
     UserRepository {
     //In-Memory Cache
@@ -29,6 +30,11 @@ class UserRepositoryImpl(
 
     override suspend fun getCurrentUser(): JsonObject? =
         userRemoteDataSource.getCurrentUser()
+
+    override suspend fun getCurrentUserWithToken(token: String): JsonObject? {
+        userRemoteDataSource.setUserToken(token)
+        return userRemoteDataSource.getCurrentUser()
+    }
 
     override suspend fun getAllUsers() =
         userRemoteDataSource.getAllUsers()

@@ -65,9 +65,10 @@ fun ReceiveItem(user: JsonObject?,
                     end = 2.dp,
                 ).verticalScroll(rememberScrollState())
             ) {
-                ButtonComponent(text = "Toggle", onClick = { toggleUserList() }, enabled = true)
 
                 if(!showUserList.value) {
+                    ButtonComponent(text = "Receivers", onClick = { toggleUserList() }, enabled = true)
+
                     Text(text = "Test Text", style = MaterialTheme.typography.body1)
                     user?.get("name")?.asString?.let {
                         Text(
@@ -165,6 +166,9 @@ fun ReceiveItem(user: JsonObject?,
 
                 else {
 
+                    ButtonComponent(text = "Show View", onClick = { toggleUserList() }, enabled = true)
+
+
 
                     users?.let {
                         /*it.get("senders")?.let {
@@ -179,10 +183,11 @@ fun ReceiveItem(user: JsonObject?,
 
                         it.get("receivers")?.let {
                             for (userData in it.asJsonArray) {
-                                Text(
+                                /*Text(
                                     text = userData.asJsonObject.get("name").asString,
                                     style = MaterialTheme.typography.body1
-                                )
+                                )*/
+                                UserListItem(userData.asJsonObject)
                             }
                         }
 

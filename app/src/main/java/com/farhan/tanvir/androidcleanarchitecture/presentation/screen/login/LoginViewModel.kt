@@ -23,6 +23,7 @@ import kotlinx.coroutines.launch
 import org.json.JSONObject
 import javax.inject.Inject
 import com.farhan.tanvir.androidcleanarchitecture.util.Result
+import com.farhan.tanvir.androidcleanarchitecture.util.SessionManager
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
@@ -31,6 +32,8 @@ class LoginViewModel @Inject constructor(
     //val navController: NavHostController
     application: Application
 ) : AndroidViewModel(application) {
+
+    private val sessionManager = SessionManager(application.applicationContext)
 
     private val _uiState = MutableStateFlow<LoginUiState>(LoginUiState.Login)
     val uiState: StateFlow<LoginUiState> = _uiState
@@ -105,6 +108,8 @@ class LoginViewModel @Inject constructor(
                 (getApplication<Application>().applicationContext as AndroidCleanArchitecture).currentUserToken = it.asString;
                 //TODO: Convert to flow of userRepository (token/loggedInUser/getCurrentUser)
                 _uiState.value = LoginUiState.Home
+
+                sessionManager.saveAuthToken(it.asString)
 
             } ?: run {
                // _networkUiState.value = NetworkUiState.Failure(it.value)

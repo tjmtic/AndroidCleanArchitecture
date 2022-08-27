@@ -48,7 +48,9 @@ class HomeViewModel @Inject constructor(
     init {
         Log.d("TIME123","initializeing homewVIEWMODEL....");
         viewModelScope.launch {
-            _selectedUser.value = userUseCases.getCurrentUserUseCase()
+            token?.let {
+                _selectedUser.value = userUseCases.getCurrentUserWithTokenUseCase(token)
+            }
             _allUsers.value = userUseCases.getAllUsersUseCase()
             // navController.navigate(route = Screen.Home.route)
             Log.d("TIME123", "New current user:" + _selectedUser.value)

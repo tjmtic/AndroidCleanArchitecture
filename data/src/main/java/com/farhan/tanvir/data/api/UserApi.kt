@@ -6,14 +6,11 @@ import com.farhan.tanvir.domain.model.UserList
 import com.google.gson.JsonObject
 import org.json.JSONObject
 import retrofit2.Response
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.Query
+import retrofit2.http.*
 
 interface UserApi {
     @GET("api/get/user")
-    suspend fun getCurrentUser(): Response<JsonObject>
+    suspend fun getCurrentUser(@HeaderMap authedHeaders: AuthenticatedHeaders): Response<JsonObject>
 
     @GET("api/get/users")
     suspend fun getAllUsers(): Response<JsonObject>

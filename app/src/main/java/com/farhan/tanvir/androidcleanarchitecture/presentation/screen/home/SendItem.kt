@@ -64,9 +64,10 @@ fun SendItem(user: JsonObject?,
                     )
                     .verticalScroll(rememberScrollState())
             ) {
-                ButtonComponent(text = "Toggle", onClick = { toggleUserList() }, enabled = true)
-
                 if(!showUserList.value) {
+                    ButtonComponent(text = "Senders", onClick = { toggleUserList() }, enabled = true)
+                    ButtonComponent(text = "Show View", onClick = { toggleUserList() }, enabled = false)
+
                     Text(text = "Test Text", style = MaterialTheme.typography.body1)
                     user?.get("name")?.asString?.let {
                         Text(
@@ -150,13 +151,16 @@ fun SendItem(user: JsonObject?,
                 }
 
                 else {
+                    ButtonComponent(text = "Senders", onClick = { toggleUserList() }, enabled = false)
+                    ButtonComponent(text = "Show View", onClick = { toggleUserList() }, enabled = true)
                     users?.let {
                         it.get("senders")?.let {
                             for (userData in it.asJsonArray) {
-                                Text(
+                                /*Text(
                                     text = userData.asJsonObject.get("name").asString,
                                     style = MaterialTheme.typography.body1
-                                )
+                                )*/
+                                UserListItem(userData.asJsonObject)
                             }
                         }
                         Spacer(modifier = Modifier.height(8.dp))

@@ -10,6 +10,7 @@ import org.json.JSONObject
 interface UserRepository {
     fun getCurrentToken(): String?
     suspend fun getCurrentUser(): JsonObject?
+    suspend fun getCurrentUserWithToken(token: String): JsonObject?
     suspend fun getAllUsers(): JsonObject?
     fun getUsersFromDB(userId: Int): Flow<User>
     suspend fun postLogin(email: String, password: String): JsonObject?

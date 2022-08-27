@@ -14,6 +14,7 @@ object UseCaseModule {
     @Provides
     fun provideUserUseCases(userRepository: UserRepository) = UserUseCases(
         getCurrentUserUseCase = GetCurrentUserUseCase(userRepository = userRepository),
+        getCurrentUserWithTokenUseCase = GetCurrentUserWithTokenUseCase(userRepository = userRepository),
         getAllUsersUseCase = GetAllUsersUseCase(userRepository = userRepository),
         getUsersFromDBUseCase = GetUsersFromDBUseCase(userRepository = userRepository),
         postLoginUseCase = PostLoginUseCase(userRepository = userRepository)

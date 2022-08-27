@@ -5,6 +5,7 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import com.farhan.tanvir.data.api.ApiMainHeadersProvider
 import com.farhan.tanvir.data.api.LoginRequest
 import com.farhan.tanvir.data.api.UserApi
 import com.farhan.tanvir.data.db.UserDB
@@ -16,9 +17,17 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
 
-class UserRemoteDataSourceImpl(private val userApi: UserApi, private val userDB: UserDB) :
+class UserRemoteDataSourceImpl(private val userApi: UserApi,
+                               private val userDB: UserDB, ) :
     UserRemoteDataSource {
     private val userDao = userDB.userDao()
+
+    val headersProvider = ApiMainHeadersProvider()
+    var authToken: String = ""
+
+    override fun setUserToken(token: String){
+        authToken = token;
+    }
 
     override suspend fun getAllUsers() : JsonObject? {
         /*Log.d("TIME123", "LOGGING FOR GET ALL USERS");
@@ -42,7 +51,8 @@ class UserRemoteDataSourceImpl(private val userApi: UserApi, private val userDB:
 
             emit(response.body());
         }*/
-        val response = userApi.getCurrentUser()
+        val response = userApi.getCurrentUser(authedHeaders =
+        headersProvider.getAuthenticatedHeaders(authToken))
         return response.body()
     }
 
