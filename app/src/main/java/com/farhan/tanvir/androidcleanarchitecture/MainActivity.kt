@@ -34,16 +34,7 @@ private val PERMISSIONS_REQUIRED = arrayOf(Manifest.permission.CAMERA)
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    companion object {
-        fun hasPermissions(context: Context) = PERMISSIONS_REQUIRED.all {
-            ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
-        }
-    }
 
-    private var previewView: PreviewView? = null
-    private var cameraProviderFuture: ListenableFuture<ProcessCameraProvider>? = null
-    private var qrCodeFoundButton: Button? = null
-    private var qrCode : String? = null
 
     private lateinit var navController: NavHostController
 
@@ -57,17 +48,24 @@ class MainActivity : ComponentActivity() {
         }
 
 
-       // initSocket()
+        initSocket()
+
+
     }
 
     fun initSocket(){
+        println("Initializing socket...")
         SocketHandler.setSocket()
         SocketHandler.establishConnection()
 
         val mSocket = SocketHandler.getSocket()
 
+        //emitSocketCheckIn()
+
         //Define Responses
         mSocket.on("eventName") { args ->
+            println("eventname socket...")
+
             if (args[0] != null) {
                 val counter = args[0] as Int
                 Log.i("I",counter.toString())
@@ -76,12 +74,103 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+
+        mSocket.on("receiver-tip") { args ->
+            println("receiver-tip socket...")
+
+            if (args[0] != null) {
+                val counter = args[0] as Int
+                Log.i("I",counter.toString())
+                runOnUiThread {
+                    // The is where you execute the actions after you receive the data
+                }
+            }
+        }
+
+        mSocket.on("receiver-tip-rain") { args ->
+            println("receiver tip rain socket...")
+
+            if (args[0] != null) {
+                val counter = args[0] as Int
+                Log.i("I",counter.toString())
+                runOnUiThread {
+                    // The is where you execute the actions after you receive the data
+                }
+            }
+        }
+
+        mSocket.on("refresh") { args ->
+            println("refersh  socket...")
+
+            if (args[0] != null) {
+                val counter = args[0] as Int
+                Log.i("I",counter.toString())
+                runOnUiThread {
+                    // The is where you execute the actions after you receive the data
+                }
+            }
+        }
+
+        mSocket.on("ack") { args ->
+            println("ack socket...")
+
+            if (args[0] != null) {
+                val counter = args[0] as Int
+                Log.i("I",counter.toString())
+                runOnUiThread {
+                    // The is where you execute the actions after you receive the data
+                }
+            }
+        }
+
+        mSocket.on("websocketUpgrade") { args ->
+            println("webscoket upgrade socket...")
+
+            if (args[0] != null) {
+                val counter = args[0] as Int
+                Log.i("I",counter.toString())
+                runOnUiThread {
+                    // The is where you execute the actions after you receive the data
+                }
+            }
+        }
+
+       /* mSocket.on("checkIn") { args ->
+            if (args[0] != null) {
+                val counter = args[0] as Int
+                Log.i("I",counter.toString())
+                runOnUiThread {
+                    // The is where you execute the actions after you receive the data
+
+                    //get user id
+                }
+            }
+        }*/
+
+        println("Socket...Initialized.")
+
+       // emitSocket()
+        mSocket.emit("checkIn", "62733392e00b1f1813b0b610")
+        //mSocket.emit("checkIn", "5e22b8a4bf397f08932de490")
+
     }
 
     fun emitSocket(){
         val mSocket = SocketHandler.getSocket()
         //Actions
         mSocket.emit("eventName", "test variable")
+
+        println("emit eventNsame socket...")
+
+    }
+
+    fun emitSocketCheckIn(){
+        val mSocket = SocketHandler.getSocket()
+        //Actions
+        mSocket.emit("checkIn", "5e22b8a4bf397f08932de490")
+
+        println("emit checkit socket...")
+
     }
 
 }
