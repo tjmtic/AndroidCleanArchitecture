@@ -29,23 +29,28 @@ class UserDetailsViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<LoginUiState>(LoginUiState.Default)
     val uiState: StateFlow<LoginUiState> = _uiState
 
+    val token = (getApplication<Application>().applicationContext as AndroidCleanArchitecture).currentUserToken
+
 
     init {
         Log.d("TIME123","initializeing profileVIEWMODEL....");
         viewModelScope.launch {
-            _selectedUser.value = userUseCases.getCurrentUserUseCase()
-            // navController.navigate(route = Screen.Home.route)
-            Log.d("TIME123", "New current user:" + _selectedUser.value)
+            token?.let {
+                _selectedUser.value = userUseCases.getCurrentUserWithTokenUseCase(token)
 
-            //user id to set socket namespace
-            //MainActivity.setSocketNamespace(userId)
-            _selectedUser.value?.get("token")?.let {
-                _uiState.value = LoginUiState.Valid
-                //(getApplication<Application>().applicationContext as AndroidCleanArchitecture).currentUserSocketId =
-                //    it.asString;
-            } ?: run {
-                //_uiState.value = LoginUiState.Invalid
-                println("Selected User Hasw no token, woul dbe loggin out....")
+                // navController.navigate(route = Screen.Home.route)
+                Log.d("TIME123", "New current user:" + _selectedUser.value)
+
+                //user id to set socket namespace
+                //MainActivity.setSocketNamespace(userId)
+                _selectedUser.value?.get("token")?.let {
+                    _uiState.value = LoginUiState.Valid
+                    //(getApplication<Application>().applicationContext as AndroidCleanArchitecture).currentUserSocketId =
+                    //    it.asString;
+                } ?: run {
+                    //_uiState.value = LoginUiState.Invalid
+                    println("Selected User Hasw no token, woul dbe loggin out....")
+                }
             }
         }
     }

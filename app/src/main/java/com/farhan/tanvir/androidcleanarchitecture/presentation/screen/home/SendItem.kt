@@ -31,6 +31,7 @@ import com.google.gson.JsonObject
 @Composable
 fun SendItem(user: JsonObject?,
              users: JsonObject?,
+             onSetSelectedUser: (String) -> Unit,
                 navController: NavHostController,
                 ) {
 
@@ -65,7 +66,7 @@ fun SendItem(user: JsonObject?,
                     .verticalScroll(rememberScrollState())
             ) {
                 if(!showUserList.value) {
-                    ButtonComponent(text = "Senders", onClick = { toggleUserList() }, enabled = true)
+                    ButtonComponent(text = "Receivers", onClick = { toggleUserList() }, enabled = true)
                     ButtonComponent(text = "Show View", onClick = { toggleUserList() }, enabled = false)
 
                     Text(text = "Test Text", style = MaterialTheme.typography.body1)
@@ -151,10 +152,10 @@ fun SendItem(user: JsonObject?,
                 }
 
                 else {
-                    ButtonComponent(text = "Senders", onClick = { toggleUserList() }, enabled = false)
+                    ButtonComponent(text = "Receivers", onClick = { toggleUserList() }, enabled = false)
                     ButtonComponent(text = "Show View", onClick = { toggleUserList() }, enabled = true)
                     users?.let {
-                        it.get("senders")?.let {
+                        /*it.get("senders")?.let {
                             for (userData in it.asJsonArray) {
                                 /*Text(
                                     text = userData.asJsonObject.get("name").asString,
@@ -162,17 +163,18 @@ fun SendItem(user: JsonObject?,
                                 )*/
                                 UserListItem(userData.asJsonObject)
                             }
-                        }
+                        }*/
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        /*it.get("receivers")?.let {
+                        it.get("receivers")?.let {
                         for (userData in it.asJsonArray) {
-                            Text(
-                                text = userData.asJsonObject.get("name").asString,
-                                style = MaterialTheme.typography.body1
-                            )
+                            /*Text(
+                                    text = userData.asJsonObject.get("name").asString,
+                                    style = MaterialTheme.typography.body1
+                                )*/
+                            UserListItem(userData.asJsonObject, {id -> onSetSelectedUser(id)})
                         }
-                    }*/
+                    }
 
                     }
                 }

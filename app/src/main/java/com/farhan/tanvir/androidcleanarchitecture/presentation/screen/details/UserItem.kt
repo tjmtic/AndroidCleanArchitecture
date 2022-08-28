@@ -196,11 +196,14 @@ fun UserItem(user: JsonObject?,
                             style = MaterialTheme.typography.body1
                         )
                     }
-                    user?.get("firebaseDeviceToken")?.asString?.let {
-                        Text(
-                            text = it,
-                            style = MaterialTheme.typography.body1
-                        )
+                    user?.get("firebaseDeviceToken")?.let {
+                            if(!it.isJsonNull) {
+                                Text(
+                                    text = it.asString,
+                                    style = MaterialTheme.typography.body1
+                                )
+                            }
+
                     }
                     user?.get("contacts")?.toString()
                         ?.let { Text(text = it, style = MaterialTheme.typography.body1) }

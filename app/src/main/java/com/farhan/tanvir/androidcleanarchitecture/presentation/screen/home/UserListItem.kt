@@ -26,7 +26,11 @@ import com.google.gson.JsonObject
 
 
 @Composable
-fun UserListItem(user: JsonObject?) {
+fun UserListItem(user: JsonObject?, onClickUser: (String) -> Unit = {}) {
+
+    fun getUserId(id: String){
+        onClickUser(id)
+    }
     Card(
         modifier = Modifier
             .padding(top = 8.dp)
@@ -43,7 +47,12 @@ fun UserListItem(user: JsonObject?) {
                     Log.d("TIME123", "Console Log Clicked on USER CARD!" + user);
                     user?.get("socketId")?.asString?.let {
                         println("Clicked user list item with socket id: ${it}")
-                }},
+                }
+                    user?.get("id")?.asString?.let {
+                        println("Clicked user list item with id: ${it}")
+                        getUserId(it)
+                    }
+                           },
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(

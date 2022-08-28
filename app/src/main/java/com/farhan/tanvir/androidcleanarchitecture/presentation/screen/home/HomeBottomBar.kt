@@ -26,6 +26,7 @@ import com.google.gson.JsonObject
 @Composable
 fun HomeBottomBar(onShowSend: () -> Unit,
                onShowReceive: () -> Unit,
+                  onShowCamera: () -> Unit,
 ) {
     val context = LocalContext.current
     
@@ -35,6 +36,10 @@ fun HomeBottomBar(onShowSend: () -> Unit,
 
     fun showReceive(){
         onShowReceive()
+    }
+
+    fun showCamera(){
+        onShowCamera()
     }
 
 
@@ -52,6 +57,15 @@ fun HomeBottomBar(onShowSend: () -> Unit,
                     tint = Color.Red
                 )
             }
+
+            IconButton(onClick = { showCamera() }) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Favourite Icon",
+                    tint = Color.Red
+                )
+            }
+
             IconButton(onClick = { showReceive() }) {
                 Icon(
                     imageVector = Icons.Default.AccountBox,

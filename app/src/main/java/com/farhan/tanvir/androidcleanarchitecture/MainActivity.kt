@@ -56,7 +56,6 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-       // cameraProviderFuture = ProcessCameraProvider.getInstance(this);
 
        // initSocket()
     }
@@ -85,57 +84,5 @@ class MainActivity : ComponentActivity() {
         mSocket.emit("eventName", "test variable")
     }
 
-    //Permissions
-    override fun onRequestPermissionsResult(
-        requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-        if (requestCode == PERMISSIONS_REQUEST_CODE) {
-            if (PackageManager.PERMISSION_GRANTED == grantResults.firstOrNull() && hasPermissions(this)) {
-                //success, show camera
-                Log.d("TIME123", "Permissions granted.")
-
-            } else {
-                //request denied, keep loading screen visible
-            }
-        }
-    }
-
-    private fun startCamera() {
-        cameraProviderFuture!!.addListener({
-            try {
-                val cameraProvider = cameraProviderFuture!!.get()
-                bindCameraPreview(cameraProvider)
-            } catch (e: Exception) {
-                Toast.makeText(this, "Error starting camera " + e.message, Toast.LENGTH_SHORT).show()
-            }
-        }, ContextCompat.getMainExecutor(this))
-    }
-
-    private fun bindCameraPreview(cameraProvider: ProcessCameraProvider) {
-        //previewView!!.preferredImplementationMode = PreviewView.ImplementationMode.SURFACE_VIEW
-        val preview = Preview.Builder()
-            .build()
-        val cameraSelector = CameraSelector.Builder()
-            .requireLensFacing(CameraSelector.LENS_FACING_BACK)
-            .build()
-        //preview.setSurfaceProvider(previewView!!.createSurfaceProvider())
-        val imageAnalysis = ImageAnalysis.Builder()
-            .setTargetResolution(Size(1280, 720))
-            .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-            .build()
-        imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(this), QRCodeImageAnalyzer(object :
-            QRCodeFoundListener {
-            override fun onQRCodeFound(_qrCode: String) {
-                qrCode = _qrCode
-                qrCodeFoundButton!!.visibility = View.VISIBLE
-            }
-
-            override fun qrCodeNotFound() {
-                qrCodeFoundButton!!.visibility = View.INVISIBLE
-            }
-        }))
-        val camera = cameraProvider.bindToLifecycle((this as LifecycleOwner), cameraSelector, imageAnalysis, preview)
-    }
 }
 

@@ -28,6 +28,7 @@ fun HomeScreen(navController: NavHostController,
     //val allUsers = viewModel.getAllUsers.collectAsLazyPagingItems()
     //viewModel.getCurrentUser()
     val currentUser = viewModel.currentUser.collectAsState()
+    val selectedUser = viewModel.selectedUser.collectAsState()
 
     val currentUsers = viewModel.allUsers.collectAsState()
 
@@ -52,6 +53,11 @@ fun HomeScreen(navController: NavHostController,
 
     fun toggleCamera(){
         viewModel.toggleCamera()
+    }
+
+    fun setSelectedUserById(id: String){
+        println("set selected user...")
+        viewModel.setSelectedById(id)
     }
 
 
@@ -83,18 +89,21 @@ fun HomeScreen(navController: NavHostController,
                         //is HomeViewModel.HomeUiState.Send -> CameraComponent(Modifier.fillMaxSize())
                         // is HomeViewModel.HomeUiState.Send -> UserItem(user = currentUser.value, users = currentUsers.value, navController = navController)
                         is HomeViewModel.HomeUiState.Send -> SendItem(
-                            user = currentUser.value,
+                            user = selectedUser.value,
                             users = currentUsers.value,
+                            {id -> setSelectedUserById(id)},
                             navController = navController
                         )
                         is HomeViewModel.HomeUiState.Default -> SendItem(
-                            user = currentUser.value,
+                            user = selectedUser.value,
                             users = currentUsers.value,
+                            {id -> setSelectedUserById(id)},
                             navController = navController
                         )
                         is HomeViewModel.HomeUiState.Error -> SendItem(
-                            user = currentUser.value,
+                            user = selectedUser.value,
                             users = currentUsers.value,
+                            {id -> setSelectedUserById(id)},
                             navController = navController
                         )
                     }
@@ -102,7 +111,7 @@ fun HomeScreen(navController: NavHostController,
             }
         },
         bottomBar = {
-            HomeBottomBar({showSend()}, {showReceive()})
+            HomeBottomBar({showSend()}, {showReceive()}, {toggleCamera()})
         }
     )
 }

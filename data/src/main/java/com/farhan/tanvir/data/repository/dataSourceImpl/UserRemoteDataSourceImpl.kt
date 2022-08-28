@@ -41,7 +41,7 @@ class UserRemoteDataSourceImpl(private val userApi: UserApi,
             pagingSourceFactory = pagingSourceFactory,
         ).flow*/
 
-        val response = userApi.getAllUsers()
+        val response = userApi.getAllUsers(authedHeaders = headersProvider.getAuthenticatedHeaders(authToken))
         return response.body()
     }
 
@@ -51,8 +51,7 @@ class UserRemoteDataSourceImpl(private val userApi: UserApi,
 
             emit(response.body());
         }*/
-        val response = userApi.getCurrentUser(authedHeaders =
-        headersProvider.getAuthenticatedHeaders(authToken))
+        val response = userApi.getCurrentUser(authedHeaders = headersProvider.getAuthenticatedHeaders(authToken))
         return response.body()
     }
 

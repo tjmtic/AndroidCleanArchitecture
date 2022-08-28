@@ -67,7 +67,7 @@ fun ReceiveItem(user: JsonObject?,
             ) {
 
                 if(!showUserList.value) {
-                    ButtonComponent(text = "Receivers", onClick = { toggleUserList() }, enabled = true)
+                    ButtonComponent(text = "Senders", onClick = { toggleUserList() }, enabled = true)
 
                     Text(text = "Test Text", style = MaterialTheme.typography.body1)
                     user?.get("name")?.asString?.let {
@@ -171,17 +171,18 @@ fun ReceiveItem(user: JsonObject?,
 
 
                     users?.let {
-                        /*it.get("senders")?.let {
+                        it.get("senders")?.let {
                         for (userData in it.asJsonArray) {
-                            Text(
-                                text = userData.asJsonObject.get("name").asString,
-                                style = MaterialTheme.typography.body1
-                            )
+                            /*Text(
+                                    text = userData.asJsonObject.get("name").asString,
+                                    style = MaterialTheme.typography.body1
+                                )*/
+                            UserListItem(userData.asJsonObject)
                         }
-                    }*/
+                    }
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        it.get("receivers")?.let {
+                     /*   it.get("receivers")?.let {
                             for (userData in it.asJsonArray) {
                                 /*Text(
                                     text = userData.asJsonObject.get("name").asString,
@@ -189,7 +190,7 @@ fun ReceiveItem(user: JsonObject?,
                                 )*/
                                 UserListItem(userData.asJsonObject)
                             }
-                        }
+                        }*/
 
                     }
 

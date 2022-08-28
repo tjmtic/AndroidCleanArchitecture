@@ -13,7 +13,7 @@ interface UserApi {
     suspend fun getCurrentUser(@HeaderMap authedHeaders: AuthenticatedHeaders): Response<JsonObject>
 
     @GET("api/get/users")
-    suspend fun getAllUsers(): Response<JsonObject>
+    suspend fun getAllUsers(@HeaderMap authedHeaders: AuthenticatedHeaders): Response<JsonObject>
 
     @GET("api/get/sender/sessions")
     suspend fun getSenderTipSessions(): Response<List<TipSession>>

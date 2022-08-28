@@ -10,6 +10,7 @@ import com.farhan.tanvir.androidcleanarchitecture.presentation.screen.details.Lo
 import com.farhan.tanvir.androidcleanarchitecture.util.SocketHandler
 import com.farhan.tanvir.domain.model.User
 import com.farhan.tanvir.domain.useCase.UserUseCases
+import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,9 +36,12 @@ class HomeViewModel @Inject constructor(
     private val _uiStateCamera = MutableStateFlow<CameraUiState>(CameraUiState.Disabled)
     val uiStateCamera: StateFlow<CameraUiState> = _uiStateCamera
 
-    private val _currentUser: MutableLiveData<User> = MutableLiveData(null)
+    //private val _currentUser: MutableLiveData<User> = MutableLiveData(null)
+    private val _currentUser: MutableStateFlow<JsonObject?> = MutableStateFlow(JsonObject())
+    val currentUser: MutableStateFlow<JsonObject?> = _currentUser
+
     private val _selectedUser: MutableStateFlow<JsonObject?> = MutableStateFlow(JsonObject())
-    val currentUser: MutableStateFlow<JsonObject?> = _selectedUser
+    val selectedUser: MutableStateFlow<JsonObject?> = _selectedUser
 
 
 
@@ -49,31 +53,22 @@ class HomeViewModel @Inject constructor(
         Log.d("TIME123","initializeing homewVIEWMODEL....");
         viewModelScope.launch {
             token?.let {
-                _selectedUser.value = userUseCases.getCurrentUserWithTokenUseCase(token)
+                _currentUser.value = userUseCases.getCurrentUserWithTokenUseCase(token)
+                _allUsers.value = userUseCases.getAllUsersWithTokenUseCase(token)
             }
-            _allUsers.value = userUseCases.getAllUsersUseCase()
+
             // navController.navigate(route = Screen.Home.route)
-            Log.d("TIME123", "New current user:" + _selectedUser.value)
+            Log.d("TIME123", "New current user:" + _currentUser.value)
 
             //user id to set socket namespace
             //MainActivity.setSocketNamespace(userId)
-            _selectedUser.value?.get("socketId")?.let {
+            _currentUser.value?.get("socketId")?.let {
                 (getApplication<Application>().applicationContext as AndroidCleanArchitecture).currentUserSocketId =
                     it.asString;
             }
         }
     }
 
-    fun getCurrentUser() {
-        viewModelScope.launch {
-            _selectedUser.value = userUseCases.getCurrentUserUseCase()
-            // navController.navigate(route = Screen.Home.route)
-            Log.d("TIME123", "New current user:" + _selectedUser.value)
-
-            //user id to set socket namespace
-            //MainActivity.setSocketNamespace(userId)
-        }
-    }
 
     fun showSend(){
         _uiState.value = HomeUiState.Send
@@ -99,6 +94,25 @@ class HomeViewModel @Inject constructor(
         when(_uiStateCamera.value){
             is CameraUiState.Enabled -> _uiStateCamera.value = CameraUiState.Disabled
             is CameraUiState.Disabled -> _uiStateCamera.value = CameraUiState.Enabled
+        }
+    }
+
+    fun setSelectedById(id: String){
+        _allUsers.value?.get("receivers")?.let {
+            println("USER ELEMENT ${it}")
+
+            for (item in it as JsonArray) {
+                println(" ${id} USER ARRAY ${item}")
+
+                if((item as JsonObject).get("id").asString.equals(id)){
+                    _selectedUser.value = item
+                    println("SET SELECTED USER OBJECT ${item}")
+                }
+                else{
+                    println((item as JsonObject).get("id").asString)
+                    println(id)
+                }
+            }
         }
     }
 

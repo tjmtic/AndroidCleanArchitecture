@@ -39,6 +39,11 @@ class UserRepositoryImpl(
     override suspend fun getAllUsers() =
         userRemoteDataSource.getAllUsers()
 
+    override suspend fun getAllUsersWithToken(token: String): JsonObject? {
+        userRemoteDataSource.setUserToken(token)
+        return userRemoteDataSource.getAllUsers()
+    }
+
     override fun getUsersFromDB(userId: Int): Flow<User> =
         userLocalDataSource.getUsersFromDB(userId)
 

@@ -16,6 +16,7 @@ object UseCaseModule {
         getCurrentUserUseCase = GetCurrentUserUseCase(userRepository = userRepository),
         getCurrentUserWithTokenUseCase = GetCurrentUserWithTokenUseCase(userRepository = userRepository),
         getAllUsersUseCase = GetAllUsersUseCase(userRepository = userRepository),
+        getAllUsersWithTokenUseCase = GetAllUsersWithTokenUseCase(userRepository = userRepository),
         getUsersFromDBUseCase = GetUsersFromDBUseCase(userRepository = userRepository),
         postLoginUseCase = PostLoginUseCase(userRepository = userRepository)
     )

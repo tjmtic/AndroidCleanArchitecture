@@ -71,13 +71,13 @@ fun HomeTopBar(onNavigateToProfile: () -> Unit,
         elevation = 0.dp,
         actions = {
 
-            IconButton(onClick = { showCamera() }) {
+           /* IconButton(onClick = { showCamera() }) {
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = "Favourite Icon",
                     tint = Color.Red
                 )
-            }
+            }*/
             IconButton(onClick = { showMessage(context = context) }) {
                 Icon(
                     imageVector = Icons.Default.Home,

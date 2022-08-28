@@ -6,6 +6,7 @@ import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
+import com.farhan.tanvir.data.api.ApiMainHeadersProvider
 import com.farhan.tanvir.data.api.UserApi
 import com.farhan.tanvir.data.db.UserDB
 import com.farhan.tanvir.domain.model.User
@@ -21,6 +22,8 @@ class UserRemoteMediator(private val userApi: UserApi, private val userDB: UserD
 
     private val userDao = userDB.userDao()
     private val userRemoteKeysDao = userDB.userRemoteKeysDao()
+
+    val headersProvider = ApiMainHeadersProvider()
 
     override suspend fun load(loadType: LoadType, state: PagingState<Int, User>): MediatorResult {
         return try {
@@ -46,8 +49,9 @@ class UserRemoteMediator(private val userApi: UserApi, private val userDB: UserD
                     nextPage
                 }
             }
+
             Log.d("TIME123", "REMOTE MEDIATOR - LOGGING FOR GET ALL USERS");
-            val response = userApi.getAllUsers()
+            val response = userApi.getAllUsers(authedHeaders = headersProvider.getAuthenticatedHeaders(""))
             var endOfPaginationReached = false
             if (response.isSuccessful) {
                 val responseData = response.body()

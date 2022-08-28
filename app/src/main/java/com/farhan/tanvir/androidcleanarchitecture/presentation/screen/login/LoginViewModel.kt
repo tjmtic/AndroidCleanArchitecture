@@ -79,8 +79,8 @@ class LoginViewModel @Inject constructor(
             _networkUiState.value = NetworkUiState.Loading
             //Send Request
             ////TODO: Should make a UseCaseFactory , implement invoke() method calls for injection / hoisting
-            userUseCases.postLoginUseCase.username = username.value
-            userUseCases.postLoginUseCase.password = password.value
+            userUseCases.postLoginUseCase.username = "jay@0260tech.com"//username.value
+            userUseCases.postLoginUseCase.password = "Admin123!"//password.value
 
             //Should set value as current user token in user repository in use case
             //This object should hold the network response (success/err/err)

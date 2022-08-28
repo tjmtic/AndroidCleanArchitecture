@@ -5,6 +5,7 @@ data class UserUseCases(
     val getCurrentUserUseCase: GetCurrentUserUseCase,
     val getCurrentUserWithTokenUseCase: GetCurrentUserWithTokenUseCase,
     val getAllUsersUseCase: GetAllUsersUseCase,
+    val getAllUsersWithTokenUseCase: GetAllUsersWithTokenUseCase,
     val getUsersFromDBUseCase: GetUsersFromDBUseCase,
     val postLoginUseCase: PostLoginUseCase
 )

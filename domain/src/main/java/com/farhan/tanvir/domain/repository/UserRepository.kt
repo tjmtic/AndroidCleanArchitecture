@@ -12,6 +12,7 @@ interface UserRepository {
     suspend fun getCurrentUser(): JsonObject?
     suspend fun getCurrentUserWithToken(token: String): JsonObject?
     suspend fun getAllUsers(): JsonObject?
+    suspend fun getAllUsersWithToken(token: String): JsonObject?
     fun getUsersFromDB(userId: Int): Flow<User>
     suspend fun postLogin(email: String, password: String): JsonObject?
     suspend fun logout()
