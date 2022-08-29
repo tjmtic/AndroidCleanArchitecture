@@ -13,7 +13,12 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Green
+import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.graphics.Color.Companion.Yellow
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
@@ -42,8 +47,8 @@ fun LoginItem(onLoginClick: () -> Unit,
             .padding(top = 8.dp)
             .height(IntrinsicSize.Max)
             .fillMaxWidth(),
-        elevation = 4.dp,
-        backgroundColor = MaterialTheme.colors.ItemBackgroundColor
+        elevation = 0.dp,
+        backgroundColor = Color.Blue
     ) {
         Row(
             modifier = Modifier
@@ -53,45 +58,48 @@ fun LoginItem(onLoginClick: () -> Unit,
         ) {
             Column(
                 Modifier
-                    .height(IntrinsicSize.Max)
+                    .height(IntrinsicSize.Max).fillMaxWidth()
                     .padding(
                         end = 2.dp,
-                    )) {
+                    ),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
 
-                Image(
-                    painter = rememberImagePainter(
-                        data = BuildConfig.POSTER_URL, builder = {
-                            crossfade(true)
-                            scale(Scale.FIT)
-                        }),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(250.dp),
-                    contentScale = ContentScale.FillWidth
-                )
 
                 OutlinedTextField(
                     value = username,
                     onValueChange = { username = it ; viewModel.updateUsername(username)},
-                    label = { Text("Username") }
+                    label = { Text("Username", style = TextStyle(color = White)) },
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = White,
+                        unfocusedBorderColor = White,
+                        cursorColor = White,
+                        focusedLabelColor = White
+                    )
                 )
 
-                Spacer(modifier = Modifier.height(4.dp))
+
+                Spacer(modifier = Modifier.height(12.dp))
 
                 OutlinedTextField(
                         value = password,
                         onValueChange = { password = it ; viewModel.updatePassword(password) },
-                        label = { Text("Enter password") },
+                    label = { Text("Enter Password", style = TextStyle(color = White)) },
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = White,
+                        unfocusedBorderColor = White,
+                        cursorColor = White,
+                        focusedLabelColor = White
+                    ),
                         visualTransformation = PasswordVisualTransformation(),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
                     )
 
 
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(50.dp))
 
-                ButtonComponent(text = "Login Button", {onLoginClick()}, enabled)
+                ButtonComponent(text = "Log In", {onLoginClick()}, enabled)
             }
         }
     }

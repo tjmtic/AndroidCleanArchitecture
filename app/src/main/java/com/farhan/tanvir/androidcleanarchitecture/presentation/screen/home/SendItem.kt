@@ -15,14 +15,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
 import coil.size.Scale
-import com.farhan.tanvir.androidcleanarchitecture.presentation.components.ButtonComponent
-import com.farhan.tanvir.androidcleanarchitecture.presentation.components.RatingComponent
+import com.farhan.tanvir.androidcleanarchitecture.presentation.components.*
 import com.farhan.tanvir.androidcleanarchitecture.presentation.navigation.Screen
 import com.farhan.tanvir.androidcleanarchitecture.ui.theme.ItemBackgroundColor
 import com.google.gson.JsonObject
@@ -31,6 +31,7 @@ import com.google.gson.JsonObject
 @Composable
 fun SendItem(user: JsonObject?,
              users: JsonObject?,
+             currentUser: JsonObject?,
              onSetSelectedUser: (String) -> Unit,
                 navController: NavHostController,
                 ) {
@@ -46,7 +47,7 @@ fun SendItem(user: JsonObject?,
             .fillMaxHeight()
             .fillMaxWidth(),
         elevation = 4.dp,
-        backgroundColor = MaterialTheme.colors.ItemBackgroundColor
+        backgroundColor = Color.Blue
     ) {
         Row(
             modifier = Modifier
@@ -66,10 +67,28 @@ fun SendItem(user: JsonObject?,
                     .verticalScroll(rememberScrollState())
             ) {
                 if(!showUserList.value) {
-                    ButtonComponent(text = "Receivers", onClick = { toggleUserList() }, enabled = true)
-                    ButtonComponent(text = "Show View", onClick = { toggleUserList() }, enabled = false)
+                    ButtonComponent(text = "Following", onClick = { toggleUserList() }, enabled = true)
+                    //ButtonComponent(text = "Show View", onClick = { toggleUserList() }, enabled = false)
+                    var isFull = false;
+                    user?.get("name")?.isJsonNull?.let {
+                        println("full")
+                        FullSendItemComponent(user = user)
+                        isFull = true;
+                    } ?: run {
+                        println("e,pty")
 
-                    Text(text = "Test Text", style = MaterialTheme.typography.body1)
+                        EmptySendItemComponent(user = currentUser)
+                    }
+
+                    if(!isFull) {
+                        EmptySendItemComponent(user = currentUser)
+                    }
+
+                    println("user")
+                    println(user)
+                    println("currentuser")
+                    println(currentUser)
+                    /*Text(text = "Test Text", style = MaterialTheme.typography.body1)
                     user?.get("name")?.asString?.let {
                         Text(
                             text = it,
@@ -148,13 +167,15 @@ fun SendItem(user: JsonObject?,
                             text = it,
                             style = MaterialTheme.typography.body1
                         )
-                    }
+                    }*/
                 }
 
                 else {
-                    ButtonComponent(text = "Receivers", onClick = { toggleUserList() }, enabled = false)
+                   // ButtonComponent(text = "Receivers", onClick = { toggleUserList() }, enabled = false)
                     ButtonComponent(text = "Show View", onClick = { toggleUserList() }, enabled = true)
-                    users?.let {
+
+                    UserListComponent(users = users, onClick = {id -> onSetSelectedUser(id) ; toggleUserList()})
+                    /*users?.let {
                         /*it.get("senders")?.let {
                             for (userData in it.asJsonArray) {
                                 /*Text(
@@ -174,9 +195,9 @@ fun SendItem(user: JsonObject?,
                                 )*/
                             UserListItem(userData.asJsonObject, {id -> onSetSelectedUser(id)})
                         }
-                    }
+                    }*/
 
-                    }
+                   // }
                 }
 
 

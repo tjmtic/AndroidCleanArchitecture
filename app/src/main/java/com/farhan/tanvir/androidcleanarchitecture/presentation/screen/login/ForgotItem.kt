@@ -12,13 +12,18 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.farhan.tanvir.androidcleanarchitecture.BuildConfig
 import com.farhan.tanvir.androidcleanarchitecture.presentation.components.ButtonComponent
+import com.farhan.tanvir.androidcleanarchitecture.presentation.components.LoginHeaderComponent
 import com.farhan.tanvir.androidcleanarchitecture.presentation.components.RatingComponent
+import com.farhan.tanvir.androidcleanarchitecture.presentation.components.TextButtonComponent
 import com.farhan.tanvir.androidcleanarchitecture.presentation.navigation.Screen
 import com.farhan.tanvir.androidcleanarchitecture.ui.theme.ItemBackgroundColor
 import com.google.gson.JsonObject
@@ -44,40 +49,39 @@ fun ForgotItem(onButtonClick: (String) -> Unit,
             .padding(top = 8.dp)
             .height(IntrinsicSize.Max)
             .fillMaxWidth(),
-        elevation = 4.dp,
-        backgroundColor = MaterialTheme.colors.ItemBackgroundColor
+        elevation = 0.dp,
+        backgroundColor = Color.Blue
     ) {
-        Row(
+        Column(
             modifier = Modifier
                 .height(IntrinsicSize.Max)
                 .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Column(
-                Modifier
-                    .height(IntrinsicSize.Max)
-                    .padding(
-                        end = 2.dp,
-                    )) {
 
+                LoginHeaderComponent("FORGOT PASSWORD", BuildConfig.POSTER_URL)
                 OutlinedTextField(
                     value = username,
                     onValueChange = { username = it ; viewModel.updateUsername(username)},
-                    label = { Text("Username") }
+                    label = { Text("Account Email", style = TextStyle(color = Color.White)) },
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = Color.White,
+                        unfocusedBorderColor = Color.White,
+                        cursorColor = Color.White,
+                        focusedLabelColor = Color.White
+                    )
                 )
 
 
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(50.dp))
 
-                ButtonComponent(text = "Forgot Button", {validateButtonClick()}, enabled)
+                ButtonComponent(text = "Reset Password", {validateButtonClick()}, enabled)
 
                 //Back to Login
-                ButtonComponent(text = "User a Login", {showLoginClick()}, enabled)
+                TextButtonComponent(text = "Cancel", {showLoginClick()}, enabled)
 
-                //Forgot
-                ButtonComponent(text = "Let me Sign Up", {showSignupClick()}, enabled)
-            }
+
         }
     }
 }

@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -70,7 +71,7 @@ fun HomeScreen(navController: NavHostController,
     }
 
     Scaffold(
-        backgroundColor = MaterialTheme.colors.AppThemeColor,
+        backgroundColor = Color.Blue,
         contentColor = MaterialTheme.colors.AppContentColor,
         topBar = {
             HomeTopBar({onNavigateToProfile()}, {showSend()}, {showReceive()}, {toggleCamera()})
@@ -91,19 +92,22 @@ fun HomeScreen(navController: NavHostController,
                         is HomeViewModel.HomeUiState.Send -> SendItem(
                             user = selectedUser.value,
                             users = currentUsers.value,
-                            {id -> setSelectedUserById(id)},
+                            currentUser = currentUser.value,
+                            onSetSelectedUser = {id -> setSelectedUserById(id)},
                             navController = navController
                         )
                         is HomeViewModel.HomeUiState.Default -> SendItem(
                             user = selectedUser.value,
                             users = currentUsers.value,
-                            {id -> setSelectedUserById(id)},
+                            currentUser = currentUser.value,
+                            onSetSelectedUser = {id -> setSelectedUserById(id)},
                             navController = navController
                         )
                         is HomeViewModel.HomeUiState.Error -> SendItem(
                             user = selectedUser.value,
                             users = currentUsers.value,
-                            {id -> setSelectedUserById(id)},
+                            currentUser = currentUser.value,
+                            onSetSelectedUser = {id -> setSelectedUserById(id)},
                             navController = navController
                         )
                     }

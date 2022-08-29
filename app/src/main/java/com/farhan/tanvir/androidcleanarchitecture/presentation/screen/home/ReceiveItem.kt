@@ -15,6 +15,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -22,6 +23,7 @@ import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
 import coil.size.Scale
 import com.farhan.tanvir.androidcleanarchitecture.presentation.components.ButtonComponent
+import com.farhan.tanvir.androidcleanarchitecture.presentation.components.FullReceiveItemComponent
 import com.farhan.tanvir.androidcleanarchitecture.presentation.components.RatingComponent
 import com.farhan.tanvir.androidcleanarchitecture.presentation.navigation.Screen
 import com.farhan.tanvir.androidcleanarchitecture.ui.theme.ItemBackgroundColor
@@ -47,7 +49,7 @@ fun ReceiveItem(user: JsonObject?,
             .fillMaxHeight()
             .fillMaxWidth(),
         elevation = 4.dp,
-        backgroundColor = MaterialTheme.colors.ItemBackgroundColor
+        backgroundColor = Color.Blue
     ) {
         Row(
             modifier = Modifier
@@ -60,16 +62,19 @@ fun ReceiveItem(user: JsonObject?,
         ) {
             Column(
                 Modifier
-                .height(IntrinsicSize.Max)
-                .padding(
-                    end = 2.dp,
-                ).verticalScroll(rememberScrollState())
+                    .height(IntrinsicSize.Max)
+                    .padding(
+                        end = 2.dp,
+                    )
+                    .verticalScroll(rememberScrollState())
             ) {
 
                 if(!showUserList.value) {
-                    ButtonComponent(text = "Senders", onClick = { toggleUserList() }, enabled = true)
+                    ButtonComponent(text = "Contributors", onClick = { toggleUserList() }, enabled = true)
 
-                    Text(text = "Test Text", style = MaterialTheme.typography.body1)
+                    FullReceiveItemComponent(user = user, qrImage)
+
+                   /* Text(text = "Test Text", style = MaterialTheme.typography.body1)
                     user?.get("name")?.asString?.let {
                         Text(
                             text = it,
@@ -161,7 +166,7 @@ fun ReceiveItem(user: JsonObject?,
                             text = it,
                             style = MaterialTheme.typography.body1
                         )
-                    }
+                    }*/
                 }
 
                 else {

@@ -13,7 +13,9 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
@@ -23,7 +25,9 @@ import coil.compose.rememberImagePainter
 import coil.size.Scale
 import com.farhan.tanvir.androidcleanarchitecture.BuildConfig
 import com.farhan.tanvir.androidcleanarchitecture.presentation.components.ButtonComponent
+import com.farhan.tanvir.androidcleanarchitecture.presentation.components.LoginHeaderComponent
 import com.farhan.tanvir.androidcleanarchitecture.presentation.components.RatingComponent
+import com.farhan.tanvir.androidcleanarchitecture.presentation.components.TextButtonComponent
 import com.farhan.tanvir.androidcleanarchitecture.presentation.navigation.Screen
 import com.farhan.tanvir.androidcleanarchitecture.ui.theme.ItemBackgroundColor
 import com.google.gson.JsonObject
@@ -58,68 +62,87 @@ fun SignupItem(onSignupClick: (String, String) -> Unit,
             .padding(top = 8.dp)
             .height(IntrinsicSize.Max)
             .fillMaxWidth(),
-        elevation = 4.dp,
-        backgroundColor = MaterialTheme.colors.ItemBackgroundColor
+        elevation = 0.dp,
+        backgroundColor = Color.Blue,
     ) {
-        Row(
+        Column(
             modifier = Modifier
                 .height(IntrinsicSize.Max)
                 .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Column(
-                Modifier
-                    .height(IntrinsicSize.Max)
-                    .padding(
-                        end = 2.dp,
-                    )) {
+                LoginHeaderComponent("SIGNUP", BuildConfig.POSTER_URL)
 
 
                 OutlinedTextField(
                     value = username,
                     onValueChange = { username = it ; viewModel.updateUsername(username)},
-                    label = { Text("Username") }
+                    label = { Text("Username", style = TextStyle(color = Color.White)) },
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = Color.White,
+                        unfocusedBorderColor = Color.White,
+                        cursorColor = Color.White,
+                        focusedLabelColor = Color.White
+                    )
                 )
 
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
                 OutlinedTextField(
                     value = usernameConfirm,
                     onValueChange = { usernameConfirm = it ;},
-                    label = { Text("Confirm Username") }
+                    label = { Text("Confirm Username", style = TextStyle(color = Color.White)) },
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = Color.White,
+                        unfocusedBorderColor = Color.White,
+                        cursorColor = Color.White,
+                        focusedLabelColor = Color.White
+                    )
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
 
                 OutlinedTextField(
                         value = password,
                         onValueChange = { password = it ; viewModel.updatePassword(password) },
-                        label = { Text("Password") },
+                        label = { Text("Password", style = TextStyle(color = Color.White)) },
                         visualTransformation = PasswordVisualTransformation(),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = Color.White,
+                        unfocusedBorderColor = Color.White,
+                        cursorColor = Color.White,
+                        focusedLabelColor = Color.White
                     )
-                Spacer(modifier = Modifier.height(4.dp))
+                    )
+                Spacer(modifier = Modifier.height(12.dp))
 
                 OutlinedTextField(
                     value = passwordConfirm,
                     onValueChange = { passwordConfirm = it ; },
-                    label = { Text("Confirm password") },
+                    label = { Text("Confirm password", style = TextStyle(color = Color.White)) },
                     visualTransformation = PasswordVisualTransformation(),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = Color.White,
+                        unfocusedBorderColor = Color.White,
+                        cursorColor = Color.White,
+                        focusedLabelColor = Color.White
+                    )
                 )
 
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(50.dp))
 
-                ButtonComponent(text = "Signup Button", {validateSignup()}, enabled)
+                ButtonComponent(text = "Signup", {validateSignup()}, enabled)
 
                 //Back to Login
-                ButtonComponent(text = "User a Login", {showLoginClick()}, enabled)
+                TextButtonComponent(text = "Already have an account? Log in here", {showLoginClick()}, enabled)
 
                 //Forgot
-                ButtonComponent(text = "Actually I Forgot", {showForgotClick()}, enabled)
-            }
+               // TextButtonComponent(text = "Actually I Forgot", {showForgotClick()}, enabled)
+
         }
     }
 }

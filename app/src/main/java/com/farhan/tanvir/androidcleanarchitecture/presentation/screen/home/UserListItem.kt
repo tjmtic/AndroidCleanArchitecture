@@ -12,7 +12,9 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -37,7 +39,7 @@ fun UserListItem(user: JsonObject?, onClickUser: (String) -> Unit = {}) {
             .height(50.dp)
             .fillMaxWidth(),
         elevation = 4.dp,
-        backgroundColor = MaterialTheme.colors.ItemBackgroundColor
+        backgroundColor = Color.Magenta
     ) {
         Row(
             modifier = Modifier
@@ -55,25 +57,13 @@ fun UserListItem(user: JsonObject?, onClickUser: (String) -> Unit = {}) {
                            },
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column(
-                Modifier
-                .height(IntrinsicSize.Max)
-                .padding(
-                    end = 2.dp,
-                )
-            ) {
-                user?.get("name")?.asString?.let {
-                    Text(
-                        text = it,
-                        style = MaterialTheme.typography.body1
-                    )
-                }
 
-
+                var selected = false;
                 user?.get("images")?.asJsonArray.let {
                     it?.let {
                         for (image in it) {
                             if(image.asJsonObject.get("type").asString.equals("cover")) {
+                                selected = true
                                 Image(
                                     painter = rememberImagePainter(
                                         data = image.asJsonObject.get("url").asString, builder = {
@@ -83,12 +73,15 @@ fun UserListItem(user: JsonObject?, onClickUser: (String) -> Unit = {}) {
                                     contentDescription = null,
                                     modifier = Modifier
                                         .width(50.dp)
-                                        .height(50.dp),
+                                        .height(50.dp)
+                                        .padding(end = 8.dp),
                                     contentScale = ContentScale.FillWidth
                                 )
                             }
 
-                            else if(image.asJsonObject.get("type").asString.equals("profile")) {
+
+
+                           /* else if(image.asJsonObject.get("type").asString.equals("profile")) {
                                 Image(
                                     painter = rememberImagePainter(
                                         data = image.asJsonObject.get("url").asString, builder = {
@@ -101,16 +94,24 @@ fun UserListItem(user: JsonObject?, onClickUser: (String) -> Unit = {}) {
                                         .height(125.dp),
                                     contentScale = ContentScale.FillWidth
                                 )
-                            }
+                            }*/
+                        }
 
-                            else {
-                                Text(text = "ELSE NO IMAGES???? ${image.asJsonObject.get("type")}", style = MaterialTheme.typography.body1)
 
-                            }
+                        if(!selected){
+                            Text(
+                                text = "No Image",
+                                style = MaterialTheme.typography.body1
+                            )
                         }
                     }
-                } ?: run {
-                    Text(text = "NO IMAGES????", style = MaterialTheme.typography.body1)
+                }
+
+            user?.get("name")?.asString?.let {
+                Text(
+                    text = it,
+                    style = TextStyle(color = Color.White)
+                )
             }
 
                /* user?.get("socketId")?.asString?.let {
@@ -120,7 +121,7 @@ fun UserListItem(user: JsonObject?, onClickUser: (String) -> Unit = {}) {
                     )
                 }*/
 
-            }
+
         }
     }
 }

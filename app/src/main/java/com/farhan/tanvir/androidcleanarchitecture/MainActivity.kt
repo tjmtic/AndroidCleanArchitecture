@@ -80,10 +80,10 @@ class MainActivity : ComponentActivity() {
 
         //SocketHandler.establishConnection()
 
-        mSocket.connect()
+        val s = mSocket.connect()
 
 
-        if(mSocket.connected()){
+        if(s.connected()){
             println("CONNCEECEECETED")
         }
         else {
@@ -218,14 +218,14 @@ class MainActivity : ComponentActivity() {
         mSocket.emit("test");
 
 
-        if(mSocket.connected()){
+        if(s.connected()){
             println("CONNCEECEECETED")
         }
         else {
             println("NOT OCNNENCERTEDEE")
         }
 
-        doTimeout(mSocket)
+        doTimeout(s)
 
     }
 

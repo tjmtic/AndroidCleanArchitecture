@@ -6,6 +6,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.graphics.Color
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
@@ -67,7 +68,7 @@ fun LoginDetailsScreen(
             LoginDetailsTopBar(navController)
         },*/
         contentColor = MaterialTheme.colors.AppContentColor,
-        backgroundColor = MaterialTheme.colors.AppThemeColor,
+        backgroundColor = Color.Blue,
         content = {
             //icon and title
 

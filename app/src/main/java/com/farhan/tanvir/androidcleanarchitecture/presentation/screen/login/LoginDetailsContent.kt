@@ -10,6 +10,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -18,9 +19,7 @@ import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
 import coil.size.Scale
 import com.farhan.tanvir.androidcleanarchitecture.BuildConfig
-import com.farhan.tanvir.androidcleanarchitecture.presentation.components.ButtonComponent
-import com.farhan.tanvir.androidcleanarchitecture.presentation.components.RatingComponent
-import com.farhan.tanvir.androidcleanarchitecture.presentation.components.ReleaseDateComponent
+import com.farhan.tanvir.androidcleanarchitecture.presentation.components.*
 import com.farhan.tanvir.androidcleanarchitecture.presentation.screen.login.LoginItem
 import com.farhan.tanvir.androidcleanarchitecture.ui.theme.AppThemeColor
 import com.farhan.tanvir.domain.model.User
@@ -37,36 +36,59 @@ fun LoginDetailsContent(
     val scrollState = rememberScrollState()
     Card(
         elevation = 0.dp,
-        backgroundColor = MaterialTheme.colors.AppThemeColor
+        backgroundColor = Color.Blue
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .verticalScroll(scrollState)
+                .verticalScroll(scrollState),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
+            /*Image(
+                painter = rememberImagePainter(
+                    data = BuildConfig.POSTER_URL, builder = {
+                        crossfade(true)
+                        scale(Scale.FIT)
+                    }),
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(100.dp),
+                contentScale = ContentScale.FillWidth
+            )
+
+            Text(
+                text = "RAIN",
+                style = MaterialTheme.typography.h2
+            )*/
+            LoginHeaderComponent("RAIN", BuildConfig.POSTER_URL)
             //input
             //input
             //button - login -
                         // viewModel.postLogin(input1, input2)
+
+
             LoginItem( onLoginClick, enabled)
 
-            Row(
+            Column(
                 modifier = Modifier
                     .height(IntrinsicSize.Max)
                     .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                horizontalAlignment = Alignment.CenterHorizontally
             ){
-                ButtonComponent(text = "Signup", { showSignupClick() }, enabled)
+                TextButtonComponent(text = "Don't have an account? Sign up here", { showSignupClick() }, enabled)
             }
 
-            Row(
+            Column(
                 modifier = Modifier
                     .height(IntrinsicSize.Max)
                     .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                //verticalAlignment = Alignment.CenterVertically,
+                //verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ){
-                ButtonComponent(text = "Forgot", { showForgotClick() }, enabled)
+                TextButtonComponent(text = "Forgot Password", { showForgotClick() }, enabled)
             }
         }
     }
