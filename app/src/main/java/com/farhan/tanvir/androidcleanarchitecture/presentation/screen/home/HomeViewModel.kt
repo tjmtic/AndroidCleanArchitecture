@@ -44,17 +44,18 @@ class HomeViewModel @Inject constructor(
     val selectedUser: MutableStateFlow<JsonObject?> = _selectedUser
 
 
+    private val _currentToken = MutableStateFlow<String>(((application.applicationContext as AndroidCleanArchitecture).getEncryptedPreferencesValue("userToken")) as String)
+    val token : StateFlow<String> = _currentToken
+    //val token = (getApplication<Application>().applicationContext as AndroidCleanArchitecture).currentUserToken
 
-    val token = (getApplication<Application>().applicationContext as AndroidCleanArchitecture).currentUserToken
-
-    val qrImage: Bitmap? = token?.let{(getApplication<Application>().applicationContext as AndroidCleanArchitecture).generateQR(token)}
+    val qrImage: Bitmap? = token?.let{(getApplication<Application>().applicationContext as AndroidCleanArchitecture).generateQR(token.value)}
 
     init {
         Log.d("TIME123","initializeing homewVIEWMODEL....");
         viewModelScope.launch {
             token?.let {
-                _currentUser.value = userUseCases.getCurrentUserWithTokenUseCase(token)
-                _allUsers.value = userUseCases.getAllUsersWithTokenUseCase(token)
+                _currentUser.value = userUseCases.getCurrentUserWithTokenUseCase(token.value)
+                _allUsers.value = userUseCases.getAllUsersWithTokenUseCase(token.value)
             }
 
             // navController.navigate(route = Screen.Home.route)

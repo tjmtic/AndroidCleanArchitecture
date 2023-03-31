@@ -11,10 +11,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.farhan.tanvir.androidcleanarchitecture.R
-import com.farhan.tanvir.androidcleanarchitecture.presentation.navigation.Screen
 import com.farhan.tanvir.androidcleanarchitecture.ui.theme.AppContentColor
 import com.farhan.tanvir.androidcleanarchitecture.ui.theme.AppThemeColor
 

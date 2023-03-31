@@ -1,4 +1,4 @@
-package com.farhan.tanvir.androidcleanarchitecture.presentation.screen.login
+package com.farhan.tanvir.androidcleanarchitecture.presentation.screen.signup
 
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.farhan.tanvir.androidcleanarchitecture.presentation.screen.details.LoginViewModel
@@ -15,7 +15,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -25,7 +24,6 @@ import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
 import coil.size.Scale
 import com.farhan.tanvir.androidcleanarchitecture.BuildConfig
-import com.farhan.tanvir.androidcleanarchitecture.R
 import com.farhan.tanvir.androidcleanarchitecture.presentation.components.ButtonComponent
 import com.farhan.tanvir.androidcleanarchitecture.presentation.components.LoginHeaderComponent
 import com.farhan.tanvir.androidcleanarchitecture.presentation.components.RatingComponent
@@ -62,18 +60,11 @@ fun SignupItem(onSignupClick: (String, String) -> Unit,
     Card(
         modifier = Modifier
             .padding(top = 8.dp)
-            .fillMaxHeight()
+            .height(IntrinsicSize.Max)
             .fillMaxWidth(),
         elevation = 0.dp,
-        backgroundColor = Color.White.copy(alpha = 0.8f)
-
+        backgroundColor = Color.Blue,
     ) {
-        Image(painter = painterResource(id = R.mipmap.rain_raindrop_barcode),
-            contentDescription = null,
-            contentScale = ContentScale.FillHeight,
-            modifier = Modifier
-                .fillMaxHeight()
-            )
         Column(
             modifier = Modifier
                 .height(IntrinsicSize.Max)

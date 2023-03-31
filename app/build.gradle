@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    compileSdk 32
+    compileSdk 33
 
     defaultConfig {
         applicationId "com.farhan.tanvir.androidcleanarchitecture"
-        minSdk 21
+        minSdk 24
         targetSdk 32
         versionCode 1
         versionName "1.0"
@@ -50,6 +50,7 @@ android {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
         }
     }
+    namespace 'com.farhan.tanvir.androidcleanarchitecture'
 }
 
 dependencies {
@@ -85,6 +86,10 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
     implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0")
 
+
+    implementation(platform("com.squareup.okhttp3:okhttp-bom:4.10.0"))
+    implementation("com.squareup.okhttp3:okhttp")
+
     //GSON
     implementation 'com.google.code.gson:gson:2.8.9'
 
@@ -107,9 +112,8 @@ dependencies {
     //Compose State
     implementation 'androidx.compose.runtime:runtime-livedata:1.0.0-beta01'
 
-    implementation ('io.socket:socket.io-client:2.0.0') {
-        exclude group: 'org.json', module: 'json'
-    }
+    //implementation ('com.github.nkzawa:socket.io-client:0.3.0')
+    implementation ("io.socket:socket.io-client:2.0.0")
 
     //CameraX
     def camerax_version = "1.0.1"
@@ -129,6 +133,24 @@ dependencies {
     implementation 'androidx.camera:camera-view:1.0.0-alpha28'
 
     implementation "com.google.accompanist:accompanist-permissions:0.18.0"
+
+    //val splashScreenVersion = "1.0.0-alpha01"
+    // Use: def instead of val if you are not using Kotlin Gradle(.kts)
+    implementation("androidx.core:core-splashscreen:1.0.0-beta01")
+
+    //implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.0-beta01")
+
+
+
+    /////ENCRYPTION//////
+    implementation("androidx.security:security-crypto:1.1.0-alpha05")
+    // For Identity Credential APIs
+    implementation("androidx.security:security-identity-credential:1.0.0-alpha03")
+    // For App Authentication APIs
+    implementation("androidx.security:security-app-authenticator:1.0.0-alpha02")
+    // For App Authentication API testing
+    androidTestImplementation("androidx.security:security-app-authenticator:1.0.0-alpha01")
+
 
 }
 

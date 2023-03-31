@@ -1,7 +1,10 @@
 package com.farhan.tanvir.androidcleanarchitecture.presentation.screen.details
 
+import android.app.Activity
 import android.app.Application
+import android.content.Context
 import android.util.Log
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.*
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
@@ -14,37 +17,112 @@ import com.farhan.tanvir.domain.useCase.GetCurrentUserUseCase
 import com.farhan.tanvir.domain.useCase.UserUseCases
 import com.google.gson.JsonObject
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineStart
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.launch
 import org.json.JSONObject
 import javax.inject.Inject
 import com.farhan.tanvir.androidcleanarchitecture.util.Result
 import com.farhan.tanvir.androidcleanarchitecture.util.SessionManager
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.*
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.WebSocket
+import okhttp3.WebSocketListener
+import java.util.*
+import java.util.concurrent.Executors
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val userUseCases: UserUseCases,
     private val userRepository: UserRepository,
+    private val networkClient: OkHttpClient,
     //val navController: NavHostController
-    application: Application
+    application: Application,
+    @ApplicationContext context: Context
 ) : AndroidViewModel(application) {
 
     private val sessionManager = SessionManager(application.applicationContext)
+    private val context1 = context
 
     private val _uiState = MutableStateFlow<LoginUiState>(LoginUiState.Login)
     val uiState: StateFlow<LoginUiState> = _uiState
     private val _networkUiState = MutableStateFlow<NetworkUiState>(NetworkUiState.Neutral)
 
-
+    private val _currentToken = MutableStateFlow<String>(((context1 as AndroidCleanArchitecture).getEncryptedPreferencesValue("userToken")) as String)
+    val currentToken : StateFlow<String> = _currentToken
 
     private val _username = MutableStateFlow<String>("");
     val username: StateFlow<String> = _username
     private val _password = MutableStateFlow<String>("");
     val password: StateFlow<String> = _password
+
+
+    var ws: WebSocket? = null
+    val client by lazy { OkHttpClient() }
+
+    val coroutineExceptionHandler = CoroutineExceptionHandler{_, throwable ->
+        throwable.printStackTrace()
+    }
+
+    var thread = Executors.newSingleThreadExecutor()
+
+
+    fun start() {
+        val token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjYzMWJhZWM3OTA0ZDQ3ZmExMzQ4YzgyZCIsInVzZXJuYW1lIjoiMTIxMzU1NTEyMTIiLCJleHBpcmUiOjE2ODI3NDQ5MDQ5Mzh9.WAnFXtzPFeWsff6iXv_zUF5CBZhdadbSzNcjgtRCLk0";
+
+        val request: Request =
+            //   Request.Builder().url("ws://34.122.212.113/").build()
+            Request.Builder().url("ws://3.239.168.240").addHeader("Authorization", "Bearer $token").build()
+            //Request.Builder().url("ws://10.0.2.2:8082").addHeader("Authorization", "Bearer $token").build()
+
+        val listener = object: WebSocketListener() {
+            override fun onMessage(webSocket: WebSocket, text: String) {
+                val currentTime: Date = Calendar.getInstance().time
+                //exampleUiState.addMessage(
+                //   Message("Web", text, currentTime.toString()))
+                Log.d("TIME123", "From SOCKET:" + text)
+
+            }
+        }
+
+        viewModelScope.launch(thread.asCoroutineDispatcher() + coroutineExceptionHandler, CoroutineStart.DEFAULT) {
+            ws = client.newWebSocket(request, listener)
+
+            Log.d("TIME123", "SOCKET CONNECTED?")
+            val send = ws?.send("ANDROID MESSAGE SENT");
+
+            ws?.let {
+                println("TIME123 Sending message... SENT?" + send)
+            }
+        }
+
+        /*lifecycleScope.launch(Dispatchers.IO, CoroutineStart.DEFAULT) {
+            delay(5000)
+            contentHasLoaded = true;
+
+            ws?.send("ANDROID MESSAGE SENT");
+        }*/
+         // timer();
+
+    }
+
+    fun timer(){
+        viewModelScope.launch(thread.asCoroutineDispatcher() , CoroutineStart.DEFAULT) {
+        //   delay(5000)
+        // contentHasLoaded = true;
+        println("TIME123 Sending message...")
+
+        ws?.send("ANDROID MESSAGE SENT");
+
+        ws?.let {
+            println("TIME123 Sending message... SENT")
+        }
+
+        //    timer()
+         }
+    }
 
 
     fun updateUsername(update: String){ _username.value = update;}
@@ -54,8 +132,8 @@ class LoginViewModel @Inject constructor(
     //CONVERT TO FLOW
     //ON COLLECT IF STATE IS LOGIN.SUCCESS -> navigateToHOme
 
-    private val _selectedUser: MutableStateFlow<JsonObject?> = MutableStateFlow(null)
-    val selectedUser: StateFlow<JsonObject?> = _selectedUser
+    private val _selectedUser: MutableStateFlow<User?> = MutableStateFlow(null)
+    val selectedUser: StateFlow<User?> = _selectedUser
 
     private val _selectedToken = userRepository.getCurrentToken();//MutableStateFlow<String> = MutableStateFlow("")
     //val selectedToken: StateFlow<String> = _selectedToken
@@ -66,61 +144,67 @@ class LoginViewModel @Inject constructor(
     fun getUserDetails(userID: Int) {
         viewModelScope.launch {
             userUseCases.getUsersFromDBUseCase.invoke(userID).collect {
-               // _selectedUser.value = it
+                _selectedUser.value = it
             }
         }
     }
 
     fun postLogin() {
         viewModelScope.launch (
-            Dispatchers.IO, CoroutineStart.DEFAULT
-        ){
-            //Show Loading
-            _networkUiState.value = NetworkUiState.Loading
-            //Send Request
-            ////TODO: Should make a UseCaseFactory , implement invoke() method calls for injection / hoisting
-            userUseCases.postLoginUseCase.username = "jay@0260tech.com"//username.value
-            userUseCases.postLoginUseCase.password = "Admin123!"//password.value
+            Dispatchers.Main, CoroutineStart.DEFAULT
+        ) {
+            withContext(Dispatchers.IO) {
+                //Show Loading
+                _networkUiState.value = NetworkUiState.Loading
+                //Send Request
+                ////TODO: Should make a UseCaseFactory , implement invoke() method calls for injection / hoisting
+                userUseCases.postLoginUseCase.username = "13234856140"//username.value
+                userUseCases.postLoginUseCase.password = "admin"//password.value
 
-            //Should set value as current user token in user repository in use case
-            //This object should hold the network response (success/err/err)
-            val response: JsonObject? = userUseCases.postLoginUseCase.invoke()
 
-            //val response: Result<String> = userUseCases.postLoginUseCase.invoke()
-           /* response?.get("token")?.let{
+                //Should set value as current user token in user repository in use case
+                //This object should hold the network response (success/err/err)
+                val response: JsonObject? = userUseCases.postLoginUseCase.invoke()
+
+                //val response: Result<String> = userUseCases.postLoginUseCase.invoke()
+                /* response?.get("token")?.let{
                            // _selectedToken.value = it.asString;
                 println(_selectedToken.value)
 
             }*/
 
-            //Remove Loading, Display Error
-            when (response) {
-            //    is Result.Success -> networkUiState.value = NetworkUiState.Success
-                //is Response.Failure -> networkUiState.value = NetworkUiState.Failure(it.value)
-             //   is Result.Error -> networkUiState.value = NetworkUiState.Error(it.value)
-            }
+                //Remove Loading, Display Error
+                when (response) {
+                    //    is Result.Success -> networkUiState.value = NetworkUiState.Success
+                    //is Response.Failure -> networkUiState.value = NetworkUiState.Failure(it.value)
+                    //   is Result.Error -> networkUiState.value = NetworkUiState.Error(it.value)
+                }
 
-            response?.get("token")?.let{
-                // _selectedToken.value = it.asString;
-                //println(_selectedToken.value)
-                _networkUiState.value = NetworkUiState.Success
+                response?.get("token")?.let {
+                    // _selectedToken.value = it.asString;
+                    //println(_selectedToken.value)
+                    _networkUiState.value = NetworkUiState.Success
 
-                (getApplication<Application>().applicationContext as AndroidCleanArchitecture).currentUserToken = it.asString;
-                //TODO: Convert to flow of userRepository (token/loggedInUser/getCurrentUser)
-                _uiState.value = LoginUiState.Home
+                    (getApplication<Application>().applicationContext as AndroidCleanArchitecture).currentUserToken =
+                        it.asString;
+                    //TODO: Convert to flow of userRepository (token/loggedInUser/getCurrentUser)
+                    _uiState.value = LoginUiState.Home
 
-                sessionManager.saveAuthToken(it.asString)
+                    sessionManager.saveAuthToken(it.asString)
 
-            } ?: run {
-               // _networkUiState.value = NetworkUiState.Failure(it.value)
-                _networkUiState.value = NetworkUiState.Failure("Network Error")
-            }
+                    (context1 as AndroidCleanArchitecture).setEncryptedPreferences("userToken", it.asString)
 
-            println("current user token = " + userRepository.getCurrentToken())
-            if(userRepository.getCurrentToken() != null){
-                _uiState.value = LoginUiState.Home
+                } ?: run {
+                    // _networkUiState.value = NetworkUiState.Failure(it.value)
+                    _networkUiState.value = NetworkUiState.Failure("Network Error")
+                }
 
-               // navController.navigate(Screen.Home.route)
+                println("current user token = " + userRepository.getCurrentToken())
+                if (userRepository.getCurrentToken() != null) {
+                    _uiState.value = LoginUiState.Home
+
+                    // navController.navigate(Screen.Home.route)
+                }
             }
         }
     }

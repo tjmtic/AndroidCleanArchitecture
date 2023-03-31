@@ -3,7 +3,7 @@ import androidx.paging.PagingSource
 import com.farhan.tanvir.domain.model.User
 import kotlinx.coroutines.flow.Flow
 
-interface UserLocalDataSource {
-    fun getUsersFromDB(userId : Int): Flow<User>
+interface UserLocalEncryptedDataSource {
+    fun getUserStoredCredentials(): Flow<String>
 }
 

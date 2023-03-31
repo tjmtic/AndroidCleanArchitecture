@@ -1,12 +1,16 @@
 package com.farhan.tanvir.androidcleanarchitecture
 
 import android.Manifest
+import android.animation.ObjectAnimator
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.util.Size
 import android.view.View
+import android.view.ViewTreeObserver
+import android.view.animation.AnticipateInterpolator
+import android.view.animation.DecelerateInterpolator
 import android.widget.Button
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -16,21 +20,35 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
+import androidx.core.animation.doOnEnd
 import androidx.core.content.ContextCompat
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
 import com.farhan.tanvir.androidcleanarchitecture.presentation.navigation.NavGraph
 import com.farhan.tanvir.androidcleanarchitecture.ui.theme.AndroidCleanArchitectureTheme
 import com.farhan.tanvir.androidcleanarchitecture.util.QRCodeFoundListener
 import com.farhan.tanvir.androidcleanarchitecture.util.QRCodeImageAnalyzer
 import com.farhan.tanvir.androidcleanarchitecture.util.SocketHandler
+//import com.github.nkzawa.engineio.client.Socket
+//import com.github.nkzawa.socketio.client.IO
 import com.google.common.util.concurrent.ListenableFuture
 import dagger.hilt.android.AndroidEntryPoint
-import io.socket.client.IO
-import io.socket.client.Socket
+//import io.socket.client.IO
+//import io.socket.client.Socket
 import kotlinx.coroutines.*
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.WebSocket
+import okhttp3.WebSocketListener
+import java.time.Duration
+import java.time.Instant
+import java.util.*
+import kotlin.time.Duration.Companion.milliseconds
 
 private const val PERMISSIONS_REQUEST_CODE = 0
 private val PERMISSIONS_REQUIRED = arrayOf(Manifest.permission.CAMERA)
@@ -41,9 +59,58 @@ class MainActivity : ComponentActivity() {
 
 
     private lateinit var navController: NavHostController
+    var contentHasLoaded = false;
+
+    private var ws: WebSocket? = null
+    private val client by lazy { OkHttpClient() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val splashScreen = installSplashScreen()
+
+       // var remainingDuration: Long = 0L;
+
+        splashScreen.setOnExitAnimationListener { splashScreenView ->
+
+            // Create your custom animation.
+            val slideUp = ObjectAnimator.ofFloat(
+                splashScreenView.view,
+                View.TRANSLATION_Y,
+                0f,
+                -splashScreenView.view.height.toFloat()
+            )
+            slideUp.interpolator = AnticipateInterpolator()
+            slideUp.duration = 200L
+
+            // Call SplashScreenView.remove at the end of your custom animation.
+            slideUp.doOnEnd { splashScreenView.remove() }
+
+            // Run your animation.
+            slideUp.start()
+        }
+
+/*
+        splashScreen.setOnExitAnimationListener { splashScreenView ->
+            val slideBack = ObjectAnimator.ofFloat(
+                splashScreenView.view,
+                View.TRANSLATION_X,
+                0f,
+                -splashScreenView.view.width.toFloat()
+            ).apply {
+                interpolator = DecelerateInterpolator()
+                duration = 800L
+                doOnEnd { splashScreenView.remove() }
+            }
+
+            slideBack.start()
+        }
+*/
+
+        val loggedInUser = (applicationContext as AndroidCleanArchitecture).getEncryptedPreferencesValue("userToken");
+
+
+
         setContent {
             AndroidCleanArchitectureTheme {
                 navController = rememberNavController()
@@ -51,13 +118,140 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+        // Set up an OnPreDrawListener to the root view.
+        /*val content: View = findViewById(android.R.id.content)
+        content.viewTreeObserver.addOnPreDrawListener(
+            object : ViewTreeObserver.OnPreDrawListener {
+                override fun onPreDraw(): Boolean {
+                    // Check if the initial data is ready.
 
-        initSocket()
+                    return if (contentHasLoaded) {
+                        // The content is ready; start drawing.
+                        content.viewTreeObserver.removeOnPreDrawListener(this)
+                        true
+                    } else {
+
+                        false
+                    }
+                }
+            }
+        )*/
+
+
+        //initSocket()
+       // start()
 
 
     }
 
-    fun initSocket(){
+    private fun setupEncryptedPreferences(){
+        val context = applicationContext
+        val mainKey = MasterKey.Builder(applicationContext)
+            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+            .build()
+
+        val sharedPreferences = EncryptedSharedPreferences.create(
+            applicationContext,
+            "TipHubSharPrefEncr",
+            mainKey,
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        )
+
+        with (sharedPreferences.edit()) {
+
+            // write all the data entered by the user in SharedPreference and apply
+            putString("test", "test text")
+            putString("userToken", "0x0")
+            apply()
+        }
+    }
+
+    private fun setEncryptedPreferences(key: String, value: String){
+        val context = applicationContext
+        val mainKey = MasterKey.Builder(applicationContext)
+            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+            .build()
+
+        val sharedPreferences = EncryptedSharedPreferences.create(
+            applicationContext,
+            "TipHubSharPrefEncr",
+            mainKey,
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        )
+
+        with (sharedPreferences.edit()) {
+
+            // write all the data entered by the user in SharedPreference and apply
+            putString(key, value)
+            apply()
+        }
+    }
+
+    private fun getEncryptedPreferencesValue(key: String): String?{
+        val context = applicationContext
+        val mainKey = MasterKey.Builder(applicationContext)
+            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+            .build()
+
+        val sharedPreferences = EncryptedSharedPreferences.create(
+            applicationContext,
+            "TipHubSharPrefEncr",
+            mainKey,
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        )
+
+        return sharedPreferences.getString(key, "");
+    }
+    private fun start() {
+        val token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjYzMWJhZWM3OTA0ZDQ3ZmExMzQ4YzgyZCIsInVzZXJuYW1lIjoiMTIxMzU1NTEyMTIiLCJleHBpcmUiOjE2ODI3NDQ5MDQ5Mzh9.WAnFXtzPFeWsff6iXv_zUF5CBZhdadbSzNcjgtRCLk0";
+
+        val request: Request =
+         //   Request.Builder().url("ws://34.122.212.113/").build()
+        Request.Builder().url("ws://3.239.168.240/").addHeader("Authorization", "Bearer $token").build()
+        val listener = object: WebSocketListener() {
+            override fun onMessage(webSocket: WebSocket, text: String) {
+                val currentTime: Date = Calendar.getInstance().time
+                //exampleUiState.addMessage(
+                 //   Message("Web", text, currentTime.toString()))
+                Log.d("TIME123", "From SOCKET:" + text)
+
+            }
+        }
+        ws = client.newWebSocket(request, listener)
+
+        Log.d("TIME123", "SOCKET CONNECTED?")
+        ws?.send("ANDROID MESSAGE SENT");
+
+        /*lifecycleScope.launch(Dispatchers.IO, CoroutineStart.DEFAULT) {
+            delay(5000)
+            contentHasLoaded = true;
+
+            ws?.send("ANDROID MESSAGE SENT");
+        }*/
+        timer();
+
+    }
+
+    fun timer(){
+        //lifecycleScope.launch(Dispatchers.Main, CoroutineStart.DEFAULT) {
+         //   delay(5000)
+            contentHasLoaded = true;
+            println("TIME123 Sending message...")
+
+            ws?.send("ANDROID MESSAGE SENT");
+
+            ws?.let {
+                println("TIME123 Sending message... SENT")
+            }
+
+        //    timer()
+       // }
+    }
+
+    /*fun initSocket(){
         println("Initializing socket...")
         //SocketHandler.setSocket()
         val authToken = "eyJraWQiOiJ1WnFRMFlBQk45N0VUY0JWZ3NBR2N0NFdab0cxVzhuQThtUWhXSFV3R0NrPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiJjMmUyY2U5Yi0yYTRmLTQ3ZmYtYWFkYS1kZWIyY2M2MDkxNDgiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImlzcyI6Imh0dHBzOlwvXC9jb2duaXRvLWlkcC51cy1lYXN0LTEuYW1hem9uYXdzLmNvbVwvdXMtZWFzdC0xX2xXb0lZRWJwZyIsImNvZ25pdG86dXNlcm5hbWUiOiJjMmUyY2U5Yi0yYTRmLTQ3ZmYtYWFkYS1kZWIyY2M2MDkxNDgiLCJhdWQiOiIzaTBtZDZrM2s0OTkyNWY2ZWsxYmRyNTFlYiIsImV2ZW50X2lkIjoiNDFlZWY3NWMtOTQ0Zi00ZDgxLWE4MjUtYjgwNTlhZDhiZDlhIiwidG9rZW5fdXNlIjoiaWQiLCJhdXRoX3RpbWUiOjE2NjE2NTIzODMsIm5hbWUiOiJKYXkiLCJleHAiOjE2NjE2NTU5ODMsImlhdCI6MTY2MTY1MjM4MywiZW1haWwiOiJqYXlAMDI2MHRlY2guY29tIn0.IbPgoHI43KiQ1gi-quPtP-4Y4AC-XesQ2mqaGKdtlmMq5pSnuO3sRNeCUjNMZzMRPsJnasx5Bh9lQwF6NGMjUO4c10vu6SnM4SLz2OGUEWccYU01QclgIyYaEbLNii6j8NtIfLt0Tc2GNUkFWMdfj9Y7JC0oFjswlABZO8FtfHDyUMhENOEpJzqTMFqWIxOVHBo4_A5lxoIX9b18jDBOnFC7osQrCXcx4etemmnHetxQvftRyBB0FZBmXwrmCJaqOjW2CrHrlXjkDW-oZS9LPVcIFLVvSPywYDpNKkKV1qAfQWYf3r4k5iHtm0TWD_VBeO1IMXbG0TADx-NCULpCQQ"
@@ -74,9 +268,10 @@ class MainActivity : ComponentActivity() {
         opts.reconnectionDelay = 3
         opts.reconnectionDelayMax = 3
         opts.forceNew = true
-        opts.extraHeaders = headers
+        //opts.extraHeaders = headers
+        opts.path = "/socket.io"
         opts.query = "token=" + authToken;
-        var mSocket: Socket = IO.socket(BuildConfig.SOCKET_URL, opts)
+        var mSocket: com.github.nkzawa.socketio.client.Socket = IO.socket(BuildConfig.SOCKET_URL, opts)
 
         //SocketHandler.establishConnection()
 
@@ -227,9 +422,9 @@ class MainActivity : ComponentActivity() {
 
         doTimeout(s)
 
-    }
+    }*/
 
-    fun doTimeout(socket: Socket, count:Int = 0){
+    /*fun doTimeout(socket: com.github.nkzawa.socketio.client.Socket, count:Int = 0){
         lifecycleScope.launch(Dispatchers.IO, CoroutineStart.DEFAULT) {
            // withTimeout(5000, {
             delay(5000)
@@ -238,8 +433,11 @@ class MainActivity : ComponentActivity() {
                     println("CONNCEECEECETED${count}")
                 } else {
                     println("NOT OCNNENCERTEDEE${count}")
-                    doTimeout(socket, count+1)
+                   // doTimeout(socket, count+1)
                 }
+
+                contentHasLoaded = true;
+
            // })
 
           //  delay(5000)
@@ -262,6 +460,11 @@ class MainActivity : ComponentActivity() {
 
         println("emit checkit socket...")
 
+    }*/
+
+    override fun onResume() {
+        super.onResume()
+       // start()
     }
 
 }

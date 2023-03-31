@@ -29,6 +29,7 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    namespace 'com.farhan.tanvir.data'
 }
 
 dependencies {
@@ -58,5 +59,10 @@ dependencies {
     // Paging 3.0
     implementation 'androidx.paging:paging-compose:1.0.0-alpha14'
 
-    
+    //Encryption
+    def sqlcipher_version = "4.5.0"
+    implementation "net.zetetic:android-database-sqlcipher:$sqlcipher_version"
+
+
+
 }

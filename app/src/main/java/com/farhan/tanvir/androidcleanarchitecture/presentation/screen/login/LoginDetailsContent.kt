@@ -3,26 +3,24 @@ package com.farhan.tanvir.androidcleanarchitecture.presentation.screen.details
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.BlurredEdgeTreatment
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import coil.compose.rememberImagePainter
-import coil.size.Scale
 import com.farhan.tanvir.androidcleanarchitecture.BuildConfig
+import com.farhan.tanvir.androidcleanarchitecture.R
 import com.farhan.tanvir.androidcleanarchitecture.presentation.components.*
 import com.farhan.tanvir.androidcleanarchitecture.presentation.screen.login.LoginItem
-import com.farhan.tanvir.androidcleanarchitecture.ui.theme.AppThemeColor
-import com.farhan.tanvir.domain.model.User
 
 @Composable
 fun LoginDetailsContent(
@@ -36,15 +34,25 @@ fun LoginDetailsContent(
     val scrollState = rememberScrollState()
     Card(
         elevation = 0.dp,
-        backgroundColor = Color.Blue
     ) {
+        Image(painter = painterResource(id = R.mipmap.rain_raindrop_barcode),
+            contentDescription = null,
+            contentScale = ContentScale.FillHeight,
+            modifier = Modifier
+                .fillMaxHeight()
+                /*.blur(
+                    radiusX = 10.dp,
+                    radiusY = 10.dp,
+                    edgeTreatment = BlurredEdgeTreatment(RoundedCornerShape(8.dp))
+                )*/)
+
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .verticalScroll(scrollState),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
             /*Image(
                 painter = rememberImagePainter(
                     data = BuildConfig.POSTER_URL, builder = {

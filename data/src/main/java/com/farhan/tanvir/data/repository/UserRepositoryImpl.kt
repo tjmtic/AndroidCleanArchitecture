@@ -53,6 +53,7 @@ class UserRepositoryImpl(
 
 
         val result = userRemoteDataSource.postLogin(email, password)
+        Log.d("TIME123", "ACtual;ly loging in. 444xxx.." + result.toString())
 
         /*if (result is Result.Success) {
             setLoggedInUser(result.data)
@@ -61,7 +62,7 @@ class UserRepositoryImpl(
             this.token = it.asString;
             Log.d("TIME123", "ACtual;ly loging in. 666.." + token)
             Log.d("TIME123", "ACtual;ly loging in. 777.." + getCurrentToken())
-            //setLoggedInUser(result.data)
+            setLoggedInUser(it.asString)
         }
 
         return result
@@ -77,6 +78,7 @@ class UserRepositoryImpl(
         // @see https://developer.android.com/training/articles/keystore
 
         //set application token
+
 
     }
 

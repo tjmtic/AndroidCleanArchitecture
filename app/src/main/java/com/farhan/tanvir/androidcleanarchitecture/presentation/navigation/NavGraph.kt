@@ -2,14 +2,11 @@ package com.farhan.tanvir.androidcleanarchitecture.presentation.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
-import com.farhan.tanvir.androidcleanarchitecture.presentation.screen.details.LoginDetailsScreen
+import com.farhan.tanvir.androidcleanarchitecture.presentation.screen.login.LoginDetailsScreen
 import com.farhan.tanvir.androidcleanarchitecture.presentation.screen.details.UserDetailsScreen
 import com.farhan.tanvir.androidcleanarchitecture.presentation.screen.home.HomeScreen
-import com.farhan.tanvir.androidcleanarchitecture.util.Constant
 
 @Composable
 fun NavGraph(navController: NavHostController) {
