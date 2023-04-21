@@ -1,18 +1,21 @@
 package com.farhan.tanvir.androidcleanarchitecture.presentation.screen.home
 
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.farhan.tanvir.androidcleanarchitecture.presentation.components.CameraComponent
+import com.farhan.tanvir.androidcleanarchitecture.presentation.screen.details.LoginViewModel
 import com.farhan.tanvir.androidcleanarchitecture.ui.theme.AppContentColor
 import com.farhan.tanvir.androidcleanarchitecture.ui.theme.AppThemeColor
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -35,6 +38,17 @@ fun HomeScreen(navController: NavHostController,
 
     val uiState = viewModel.uiState.collectAsState()
     val uiStateCamera = viewModel.uiStateCamera.collectAsState()
+    val uiStateEvent = viewModel.uiStateEvent.collectAsState()
+
+    val token = viewModel.token.collectAsState()
+
+
+    val backgroundColor by animateColorAsState(
+        when(uiStateEvent.value){
+            is HomeViewModel.EventUiState.TIP -> Color.Green
+            else -> Color.Magenta
+        }
+    )
 
     fun showSend(){
         viewModel.showSend()
@@ -62,7 +76,7 @@ fun HomeScreen(navController: NavHostController,
     }
 
 
-    println("THIS HOME VIEW TOKEN=="+viewModel.token)
+    println("THIS HOME VIEW TOKEN=="+token.value)
 
     SideEffect {
         systemUiController.setStatusBarColor(
@@ -71,7 +85,7 @@ fun HomeScreen(navController: NavHostController,
     }
 
     Scaffold(
-        backgroundColor = Color.Blue,
+        backgroundColor = backgroundColor,
         contentColor = MaterialTheme.colors.AppContentColor,
         topBar = {
             HomeTopBar({onNavigateToProfile()}, {showSend()}, {showReceive()}, {toggleCamera()})

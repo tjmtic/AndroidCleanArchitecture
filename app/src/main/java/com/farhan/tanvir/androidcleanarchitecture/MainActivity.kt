@@ -37,6 +37,7 @@ import com.farhan.tanvir.androidcleanarchitecture.util.SocketHandler
 //import com.github.nkzawa.engineio.client.Socket
 //import com.github.nkzawa.socketio.client.IO
 import com.google.common.util.concurrent.ListenableFuture
+import com.google.gson.JsonParser
 import dagger.hilt.android.AndroidEntryPoint
 //import io.socket.client.IO
 //import io.socket.client.Socket
@@ -217,6 +218,7 @@ class MainActivity : ComponentActivity() {
                 //exampleUiState.addMessage(
                  //   Message("Web", text, currentTime.toString()))
                 Log.d("TIME123", "From SOCKET:" + text)
+                handleReceivedText(text)
 
             }
         }
@@ -231,7 +233,7 @@ class MainActivity : ComponentActivity() {
 
             ws?.send("ANDROID MESSAGE SENT");
         }*/
-        timer();
+       // timer();
 
     }
 
@@ -461,6 +463,50 @@ class MainActivity : ComponentActivity() {
         println("emit checkit socket...")
 
     }*/
+
+
+    private fun handleReceivedText(text: String) {
+        // 1. Parse the incoming text as a JSON object
+        // Replace this part with your JSON parsing library if you use a different one
+        val jsonObject = JsonParser.parseString(text).asJsonObject
+
+        // 2. Extract the 'action' property from the JSON object
+        val action = jsonObject["action"]?.asString
+
+        // 3. Use the extracted 'action' in the when statement
+        when (action) {
+            // Handle actions here
+            // Make sure to update the code to match your current Swift implementation
+            "RECEIVER_TIP" -> {
+                // Handle the RECEIVER_TIP action
+                println("Socket Action: RECEIVER_TIP")
+
+            }
+            "RECEIVER_TIP_RAIN" -> {
+                // Handle the RECEIVER_TIP_RAIN action
+                println("Socket Action: RECEIVER_TIP_RAIN")
+            }
+            "THANK_YOU" -> {
+                // Handle the THANK_YOU action
+                println("Socket Action: THANK_YOU")
+            }
+            "ACK" -> {
+                // Handle the ACK action
+                println("Socket Action: ACK")
+            }
+            "REFRESH" -> {
+                // Handle the REFRESH action
+                println("Socket Action: REFRESH")
+            }
+            "RECEIVER_TIP_BAG" -> {
+                // Handle the RECEIVER_TIP_BAG action
+                println("Socket Action: RECEIVER_TIP_BAG")
+            }
+            else -> {
+                println("Unknown action")
+            }
+        }
+    }
 
     override fun onResume() {
         super.onResume()

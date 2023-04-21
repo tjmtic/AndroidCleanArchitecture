@@ -24,6 +24,7 @@ import org.json.JSONObject
 import javax.inject.Inject
 import com.farhan.tanvir.androidcleanarchitecture.util.Result
 import com.farhan.tanvir.androidcleanarchitecture.util.SessionManager
+import com.google.gson.JsonParser
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.*
 import okhttp3.OkHttpClient
@@ -67,10 +68,10 @@ class LoginViewModel @Inject constructor(
     }
 
     var thread = Executors.newSingleThreadExecutor()
+    val token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjYzMWJhZWM3OTA0ZDQ3ZmExMzQ4YzgyZCIsInVzZXJuYW1lIjoiMTIxMzU1NTEyMTIiLCJleHBpcmUiOjE2ODI3NDQ5MDQ5Mzh9.WAnFXtzPFeWsff6iXv_zUF5CBZhdadbSzNcjgtRCLk0";
 
 
     fun start() {
-        val token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjYzMWJhZWM3OTA0ZDQ3ZmExMzQ4YzgyZCIsInVzZXJuYW1lIjoiMTIxMzU1NTEyMTIiLCJleHBpcmUiOjE2ODI3NDQ5MDQ5Mzh9.WAnFXtzPFeWsff6iXv_zUF5CBZhdadbSzNcjgtRCLk0";
 
         val request: Request =
             //   Request.Builder().url("ws://34.122.212.113/").build()
@@ -84,6 +85,8 @@ class LoginViewModel @Inject constructor(
                 //   Message("Web", text, currentTime.toString()))
                 Log.d("TIME123", "From SOCKET:" + text)
 
+                handleReceivedText(text)
+
             }
         }
 
@@ -91,7 +94,13 @@ class LoginViewModel @Inject constructor(
             ws = client.newWebSocket(request, listener)
 
             Log.d("TIME123", "SOCKET CONNECTED?")
-            val send = ws?.send("ANDROID MESSAGE SENT");
+            //val send = ws?.send("ANDROID MESSAGE SENT");
+            var jsonOb = JSONObject();
+            jsonOb.put("action", "SEND_TIP");
+            jsonOb.put("from", token);
+            jsonOb.put("text", '1')
+
+            val send = ws?.send(jsonOb.toString());
 
             ws?.let {
                 println("TIME123 Sending message... SENT?" + send)
@@ -104,7 +113,7 @@ class LoginViewModel @Inject constructor(
 
             ws?.send("ANDROID MESSAGE SENT");
         }*/
-         // timer();
+          //timer();
 
     }
 
@@ -113,8 +122,13 @@ class LoginViewModel @Inject constructor(
         //   delay(5000)
         // contentHasLoaded = true;
         println("TIME123 Sending message...")
+        //{ action: 'RECEIVE_MESSAGE', from: token, text: "test ,mess" }.
+            var jsonOb = JSONObject();
+            jsonOb.put("action", "SEND_TIP");
+            jsonOb.put("from", token);
+            jsonOb.put("text", '1')
 
-        ws?.send("ANDROID MESSAGE SENT");
+        ws?.send(jsonOb.toString());
 
         ws?.let {
             println("TIME123 Sending message... SENT")
@@ -253,6 +267,55 @@ class LoginViewModel @Inject constructor(
                 //Failure -> networkUiState.value = NetworkUiState.Failure(errorMsg) ; errorCallback(errorMsg);
                 //Unknown -> networkUiState.value = NetworkUiState.Failure("Unknown Error");
           //  }
+    }
+
+
+
+    private fun handleReceivedText(text: String) {
+        // 1. Parse the incoming text as a JSON object
+        // Replace this part with your JSON parsing library if you use a different one
+        val jsonObject = JsonParser.parseString(text).asJsonObject
+
+        // 2. Extract the 'action' property from the JSON object
+        val action = jsonObject["action"]?.asString
+
+        // 3. Use the extracted 'action' in the when statement
+        when (action) {
+            // Handle actions here
+            "RECEIVER_TIP" -> {
+                // Handle the RECEIVER_TIP action
+                println("Socket Action: RECEIVER_TIP")
+
+            }
+            "RECEIVE_MESSAGE" -> {
+                // Handle the RECEIVER_TIP action
+                println("Socket Action: RECEIVER_MESSAGE")
+
+            }
+            "RECEIVER_TIP_RAIN" -> {
+                // Handle the RECEIVER_TIP_RAIN action
+                println("Socket Action: RECEIVER_TIP_RAIN")
+            }
+            "THANK_YOU" -> {
+                // Handle the THANK_YOU action
+                println("Socket Action: THANK_YOU")
+            }
+            "ACK" -> {
+                // Handle the ACK action
+                println("Socket Action: ACK")
+            }
+            "REFRESH" -> {
+                // Handle the REFRESH action
+                println("Socket Action: REFRESH")
+            }
+            "RECEIVER_TIP_BAG" -> {
+                // Handle the RECEIVER_TIP_BAG action
+                println("Socket Action: RECEIVER_TIP_BAG")
+            }
+            else -> {
+                println("Unknown action")
+            }
+        }
     }
 
     fun showLogin(){

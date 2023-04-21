@@ -42,7 +42,7 @@ fun LoginDetailsScreen(
 
     val backgroundColor by animateColorAsState(when(uiState.value){ is LoginViewModel.LoginUiState.Login -> {Color.Blue}
                                                                     else -> Color.Magenta})
-
+    val backgroundColor2 by animateColorAsState(when(uiState.value){ else -> Color.Magenta})
 
     fun navigateHome(){
         onNavigateToHome()
@@ -51,8 +51,8 @@ fun LoginDetailsScreen(
 
     fun onLoginClick(){
        // activity.timer();
-       // viewModel.start();
-        viewModel.postLogin()//username, password)
+        viewModel.start();
+       // viewModel.postLogin()//username, password)
     }
 
     fun onDisplayLogin(){
@@ -60,8 +60,8 @@ fun LoginDetailsScreen(
     }
 
     fun onSignupClick(username: String, password: String){
-       // viewModel.timer();
-        viewModel.postSignup(username, password)
+        viewModel.timer();
+       // viewModel.postSignup(username, password)
     }
 
     fun onDisplaySignup(){
