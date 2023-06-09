@@ -15,12 +15,12 @@ class AndroidCleanArchitecture : Application(){
     var currentUserToken : String? = null
         get set
 
-    var currentUserSocketId : String? = null
+    var currentUserSocketId : String = "none"
         get set
 
     fun logout(){
         currentUserToken = null
-        currentUserSocketId = null
+        currentUserSocketId = "none"
 
         setEncryptedPreferences("userToken", "0x0");
     }

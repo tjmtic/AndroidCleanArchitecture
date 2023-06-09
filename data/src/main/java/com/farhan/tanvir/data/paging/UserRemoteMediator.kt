@@ -59,13 +59,13 @@ class UserRemoteMediator(private val userApi: UserApi, private val userDB: UserD
 
                 Log.d("TIME123", "REMOTE MEDIATOR RESPONSE - LOGGING FOR GET ALL USERS " + responseData);
 
-                val rec = responseData?.getAsJsonArray("receivers");
+                /*val rec = responseData?.getAsJsonArray("receivers");
                 //val rec2 = rec?.asString;
                 val con = responseData?.getAsJsonArray("contributors");
                 val spon = responseData?.getAsJsonArray("sponsors");
                 val history = responseData?.getAsJsonArray("history");
                 val contacts = responseData?.getAsJsonArray("contacts");
-                val favorites = responseData?.getAsJsonArray("sponsors");
+                val favorites = responseData?.getAsJsonArray("sponsors");*/
 
                 /*val list: List<User> = mapper.readValue(
                     rec,
@@ -79,12 +79,12 @@ class UserRemoteMediator(private val userApi: UserApi, private val userDB: UserD
                 val userList: List<User> = gson.fromJson(rec2, type)
 
                 Log.d("TIME123", "User lists..:" + userList)*/
-                Log.d("TIME123", "rec..:" + rec);
+               /* Log.d("TIME123", "rec..:" + rec);
                 Log.d("TIME123", "con..:" + con);
                 Log.d("TIME123", "spon..:" + spon);
                 Log.d("TIME123", "history..:" + history);
                 Log.d("TIME123", "contacs..:" + contacts);
-                Log.d("TIME123", "favorites..:" + favorites);
+                Log.d("TIME123", "favorites..:" + favorites);*/
 
 
                 endOfPaginationReached = true;//responseData == null

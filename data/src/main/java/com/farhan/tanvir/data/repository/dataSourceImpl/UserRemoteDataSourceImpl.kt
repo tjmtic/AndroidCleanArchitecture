@@ -12,6 +12,7 @@ import com.farhan.tanvir.data.db.UserDB
 import com.farhan.tanvir.data.paging.UserRemoteMediator
 import com.farhan.tanvir.data.repository.dataSource.UserRemoteDataSource
 import com.farhan.tanvir.domain.model.User
+import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -29,7 +30,7 @@ class UserRemoteDataSourceImpl(private val userApi: UserApi,
         authToken = token;
     }
 
-    override suspend fun getAllUsers() : JsonObject? {
+    override suspend fun getAllUsers() : JsonArray? {
         /*Log.d("TIME123", "LOGGING FOR GET ALL USERS");
         val pagingSourceFactory = { userDao.getAllUsers() }
         return Pager(
@@ -40,8 +41,19 @@ class UserRemoteDataSourceImpl(private val userApi: UserApi,
             ),
             pagingSourceFactory = pagingSourceFactory,
         ).flow*/
+        Log.d("TIME123","GETTING ALL USERS 3");
 
         val response = userApi.getAllUsers(authedHeaders = headersProvider.getAuthenticatedHeaders(authToken))
+
+        Log.d("TIME123","GETTING ALL USERS 4");
+
+        response?.let{
+            Log.d("TIME123", it.body().toString())
+            Log.d("TIME123","GETTING ALL USERS 5");
+
+        }
+
+
         return response.body()
     }
 
@@ -55,7 +67,41 @@ class UserRemoteDataSourceImpl(private val userApi: UserApi,
         return response.body()
     }
 
+    override suspend fun getUserById(id: String): JsonObject?{
+        /* return flow {
+             val response = userApi.getCurrentUser();
+
+             emit(response.body());
+         }*/
+        val body = JsonObject().also{
+            it.addProperty("id", id)
+        }
+        val response = userApi.getUserById(id = body, authedHeaders = headersProvider.getAuthenticatedHeaders(authToken))
+        Log.d("TIME123", "RAW RESPONSE 1: " + response.toString())
+        return response.body()
+    }
+
+    override suspend fun getAllUsersById(historyIds: JsonArray, contributorIds: JsonArray): JsonObject?{
+        /* return flow {
+             val response = userApi.getCurrentUser();
+
+             emit(response.body());
+         }*/
+        val body = JsonObject().also{
+            it.addProperty("history", historyIds.toString())
+            it.addProperty("contributors", contributorIds.toString())
+        }
+
+        Log.d("TIME123", "Checkming BODY:"+body)
+
+        val response = userApi.getUsersByIds(history = body, authedHeaders = headersProvider.getAuthenticatedHeaders(authToken))
+
+        Log.d("TIME123", "Checkming BODY response:"+ response)
+        return response.body()
+    }
+
     override suspend fun postLogin(email:String, password:String): JsonObject? {
+        Log.d("TIME123", "ACtual;ly loging in aaa posting 555..." + email + password)
 
         val response = userApi.postLogin(LoginRequest(email, password))
         Log.d("TIME123", "ACtual;ly loging in 555..." + response)

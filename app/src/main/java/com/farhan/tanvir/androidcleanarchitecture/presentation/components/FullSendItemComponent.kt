@@ -12,9 +12,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.semantics.Role.Companion.Image
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import coil.size.Scale
+import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 
 @Composable
@@ -56,14 +58,14 @@ fun FullSendItemComponent(user: JsonObject?) {
         Column(
             Modifier
                 .height(IntrinsicSize.Max)
-                .padding(
+                /*.padding(
                     end = 2.dp,
-                )
+                )*/
         ) {
             user?.get("name")?.asString?.let {
                 Text(
                     text = it,
-                    style = TextStyle(color = Color.White)
+//                    style = TextStyle(color = Color.White)
                 )
             }
             //Text(text = "it", style = MaterialTheme.typography.body1)
@@ -75,7 +77,7 @@ fun FullSendItemComponent(user: JsonObject?) {
     user?.get("payerBalance")?.asString?.let {
         Text(
             text = "Tip Total: ${it}",
-            style = TextStyle(color = Color.White)
+//            style = TextStyle(color = Color.White)
         )
     }
 
@@ -102,4 +104,16 @@ fun FullSendItemComponent(user: JsonObject?) {
         }
     }
 
+}
+
+@Preview
+@Composable
+fun test(){
+    val user = JsonObject();
+    val images = JsonArray();
+    user.addProperty("name", "test");
+    user.addProperty("payerBalance", 100);
+    user.add("images", images);
+
+    FullSendItemComponent(user)
 }

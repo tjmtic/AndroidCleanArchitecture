@@ -5,6 +5,7 @@ import com.farhan.tanvir.data.repository.dataSource.UserLocalDataSource
 import com.farhan.tanvir.data.repository.dataSource.UserRemoteDataSource
 import com.farhan.tanvir.domain.model.User
 import com.farhan.tanvir.domain.repository.UserRepository
+import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import kotlinx.coroutines.flow.Flow
 import org.json.JSONObject
@@ -36,12 +37,25 @@ class UserRepositoryImpl(
         return userRemoteDataSource.getCurrentUser()
     }
 
+    override suspend fun getUserById(id: String, token: String): JsonObject? {
+        userRemoteDataSource.setUserToken(token)
+        return userRemoteDataSource.getUserById(id)
+    }
+    override suspend fun getUsersById(historyIds: JsonArray, contributorIds: JsonArray, token: String): JsonObject? {
+        userRemoteDataSource.setUserToken(token)
+        return userRemoteDataSource.getAllUsersById(historyIds, contributorIds)
+    }
+
     override suspend fun getAllUsers() =
         userRemoteDataSource.getAllUsers()
 
-    override suspend fun getAllUsersWithToken(token: String): JsonObject? {
+    override suspend fun getAllUsersWithToken(token: String): JsonArray? {
         userRemoteDataSource.setUserToken(token)
-        return userRemoteDataSource.getAllUsers()
+        Log.d("TIME123","GETTING ALL USERS 2");
+        val allUsersResp = userRemoteDataSource.getAllUsers()
+        Log.d("TIME123","GETTING ALL USERS RESPONSE 2" + allUsersResp.toString());
+
+        return allUsersResp;
     }
 
     override fun getUsersFromDB(userId: Int): Flow<User> =

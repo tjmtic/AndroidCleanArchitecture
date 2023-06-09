@@ -3,8 +3,14 @@ package com.farhan.tanvir.androidcleanarchitecture.presentation.screen.home
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.FabPosition
+import androidx.compose.material.FloatingActionButton
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
@@ -29,6 +35,8 @@ fun HomeScreen(navController: NavHostController,
 
     val systemUiController = rememberSystemUiController()
     val systemBarColor = MaterialTheme.colors.AppThemeColor
+    val scaffoldState = rememberScaffoldState()
+
     //val allUsers = viewModel.getAllUsers.collectAsLazyPagingItems()
     //viewModel.getCurrentUser()
     val currentUser = viewModel.currentUser.collectAsState()
@@ -75,6 +83,10 @@ fun HomeScreen(navController: NavHostController,
         viewModel.setSelectedById(id)
     }
 
+    fun setUnselectedUser(){
+        viewModel.setUnselectedUser();
+    }
+
 
     println("THIS HOME VIEW TOKEN=="+token.value)
 
@@ -108,6 +120,7 @@ fun HomeScreen(navController: NavHostController,
                             users = currentUsers.value,
                             currentUser = currentUser.value,
                             onSetSelectedUser = {id -> setSelectedUserById(id)},
+                            onUnsetSelectedUser = {setUnselectedUser()},
                             navController = navController
                         )
                         is HomeViewModel.HomeUiState.Default -> SendItem(
@@ -115,6 +128,7 @@ fun HomeScreen(navController: NavHostController,
                             users = currentUsers.value,
                             currentUser = currentUser.value,
                             onSetSelectedUser = {id -> setSelectedUserById(id)},
+                            onUnsetSelectedUser = {setUnselectedUser()},
                             navController = navController
                         )
                         is HomeViewModel.HomeUiState.Error -> SendItem(
@@ -122,6 +136,7 @@ fun HomeScreen(navController: NavHostController,
                             users = currentUsers.value,
                             currentUser = currentUser.value,
                             onSetSelectedUser = {id -> setSelectedUserById(id)},
+                            onUnsetSelectedUser = {setUnselectedUser()},
                             navController = navController
                         )
                     }
@@ -131,7 +146,18 @@ fun HomeScreen(navController: NavHostController,
         },
         bottomBar = {
             HomeBottomBar({showSend()}, {showReceive()}, {toggleCamera()})
-        }
+        },
+        floatingActionButton = {
+            FloatingActionButton(onClick = {
+                // FAB onClick
+                toggleCamera()
+            }) {
+                Icon(imageVector = Icons.Default.Add, contentDescription = "Add")
+            }
+        },
+        scaffoldState = scaffoldState,
+        isFloatingActionButtonDocked = true,
+        floatingActionButtonPosition = FabPosition.Center
     )
 }
 

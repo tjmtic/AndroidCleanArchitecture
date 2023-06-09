@@ -3,6 +3,7 @@ package com.farhan.tanvir.data.api
 import com.farhan.tanvir.domain.model.TipSession
 import com.farhan.tanvir.domain.model.User
 import com.farhan.tanvir.domain.model.UserList
+import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import org.json.JSONObject
 import retrofit2.Response
@@ -12,8 +13,14 @@ interface UserApi {
     @GET("api/get/user")
     suspend fun getCurrentUser(@HeaderMap authedHeaders: AuthenticatedHeaders): Response<JsonObject>
 
+    @POST("api/get/user/id")
+    suspend fun getUserById(@Body id: JsonObject, @HeaderMap authedHeaders: AuthenticatedHeaders): Response<JsonObject>
+
+    @POST("api/get/users/id")
+    suspend fun getUsersByIds(@Body history: JsonObject, @HeaderMap authedHeaders: AuthenticatedHeaders): Response<JsonObject>
+
     @GET("api/get/users")
-    suspend fun getAllUsers(@HeaderMap authedHeaders: AuthenticatedHeaders): Response<JsonObject>
+    suspend fun getAllUsers(@HeaderMap authedHeaders: AuthenticatedHeaders): Response<JsonArray>
 
     @GET("api/get/sender/sessions")
     suspend fun getSenderTipSessions(): Response<List<TipSession>>

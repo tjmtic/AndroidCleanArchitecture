@@ -29,14 +29,15 @@ class UserDetailsViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<LoginUiState>(LoginUiState.Default)
     val uiState: StateFlow<LoginUiState> = _uiState
 
-    val token = (getApplication<Application>().applicationContext as AndroidCleanArchitecture).currentUserToken
+    private val _currentToken = MutableStateFlow<String>(((application.applicationContext as AndroidCleanArchitecture).getEncryptedPreferencesValue("userToken")) as String)
+    val token : StateFlow<String> = _currentToken
 
 
     init {
         Log.d("TIME123","initializeing profileVIEWMODEL....");
         viewModelScope.launch {
-            token?.let {
-                _selectedUser.value = userUseCases.getCurrentUserWithTokenUseCase(token)
+            token.let {
+                _selectedUser.value = userUseCases.getCurrentUserWithTokenUseCase(it.value)
 
                 // navController.navigate(route = Screen.Home.route)
                 Log.d("TIME123", "New current user:" + _selectedUser.value)

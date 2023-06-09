@@ -25,6 +25,8 @@ import com.farhan.tanvir.androidcleanarchitecture.presentation.navigation.Screen
 import com.farhan.tanvir.androidcleanarchitecture.ui.theme.ItemBackgroundColor
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import androidx.compose.runtime.getValue
+
 
 
 @Composable
@@ -39,7 +41,8 @@ fun UserListItem(user: JsonObject?, onClickUser: (String) -> Unit = {}) {
             .height(50.dp)
             .fillMaxWidth(),
         elevation = 4.dp,
-        backgroundColor = Color.Magenta
+        backgroundColor = Color.Magenta,
+
     ) {
         Row(
             modifier = Modifier
@@ -49,12 +52,12 @@ fun UserListItem(user: JsonObject?, onClickUser: (String) -> Unit = {}) {
                     Log.d("TIME123", "Console Log Clicked on USER CARD!" + user);
                     user?.get("socketId")?.asString?.let {
                         println("Clicked user list item with socket id: ${it}")
-                }
-                    user?.get("id")?.asString?.let {
+                    }
+                    user?.get("_id")?.asString?.let {
                         println("Clicked user list item with id: ${it}")
                         getUserId(it)
                     }
-                           },
+                },
             verticalAlignment = Alignment.CenterVertically
         ) {
 
@@ -99,10 +102,20 @@ fun UserListItem(user: JsonObject?, onClickUser: (String) -> Unit = {}) {
 
 
                         if(!selected){
-                            Text(
-                                text = "No Image",
-                                style = MaterialTheme.typography.body1
+                            Image(
+                                painter = rememberImagePainter(
+                                    data = "https://tip-hub.s3.amazonaws.com/users/img/5e22b8a4bf397f08932de490-profile.png", builder = {
+                                        crossfade(true)
+                                        scale(Scale.FIT)
+                                    }),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .width(50.dp)
+                                    .height(50.dp)
+                                    .padding(end = 8.dp),
+                                contentScale = ContentScale.FillWidth
                             )
+
                         }
                     }
                 }
@@ -113,6 +126,12 @@ fun UserListItem(user: JsonObject?, onClickUser: (String) -> Unit = {}) {
                     style = TextStyle(color = Color.White)
                 )
             }
+
+                Text(
+                    text = "Unknown",
+                    style = TextStyle(color = Color.White)
+                )
+
 
                /* user?.get("socketId")?.asString?.let {
                     Text(

@@ -29,7 +29,7 @@ fun SignupDetailsScreen(
 
 
     fun onLoginClick(){
-        viewModel.postLogin()//username, password)
+       // viewModel.postLogin()//username, password)
     }
 
     fun onDisplayLogin(){

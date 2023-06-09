@@ -1,5 +1,8 @@
 package com.farhan.tanvir.androidcleanarchitecture.presentation.screen.login
 
+import GPTForgot
+import GPTLogin
+import GPTSignUp
 import android.app.Activity
 import android.util.Log
 import androidx.compose.animation.animateColorAsState
@@ -49,10 +52,10 @@ fun LoginDetailsScreen(
     }
 
 
-    fun onLoginClick(){
+    fun onLoginClick(username: String, password: String){
        // activity.timer();
-        viewModel.start();
-       // viewModel.postLogin()//username, password)
+        //viewModel.start();
+        viewModel.postLogin(username, password)
     }
 
     fun onDisplayLogin(){
@@ -60,8 +63,8 @@ fun LoginDetailsScreen(
     }
 
     fun onSignupClick(username: String, password: String){
-        viewModel.timer();
-       // viewModel.postSignup(username, password)
+       // viewModel.timer();
+        viewModel.postSignup(username, password)
     }
 
     fun onDisplaySignup(){
@@ -74,6 +77,10 @@ fun LoginDetailsScreen(
 
     fun onDisplayForgot(){
         viewModel.showForgot();
+    }
+
+    fun onEvent(event: LoginViewModel.LoginViewEvent){
+        viewModel.onEvent(event)
     }
 
 
@@ -97,21 +104,30 @@ fun LoginDetailsScreen(
 
             when(uiState.value){
                 //logindetailscontent
-                is LoginViewModel.LoginUiState.Login -> LoginDetailsContent(navController = navController,
+                is LoginViewModel.LoginUiState.Login -> GPTLogin({username, password -> onLoginClick(username, password)},
+                    {onDisplaySignup()},
+                    {onDisplayForgot()}, { event ->
+                        onEvent(event)
+                    }
+                );/*LoginDetailsContent(navController = navController,
                                                                             {onLoginClick()},
                     {onDisplaySignup()},
                     {onDisplayForgot()},
-                                                                            true)
+                                                                            true)*/
                 //signupitem
-                is LoginViewModel.LoginUiState.Signup -> SignupItem({ username, password -> onSignupClick(username, password)},
+                is LoginViewModel.LoginUiState.Signup -> GPTSignUp({ username, password -> onSignupClick(username, password)},
+                                                                    {onDisplayLogin()})
+                /*SignupItem({ username, password -> onSignupClick(username, password)},
                     {onDisplayLogin()},
                     {onDisplayForgot()},
-                    true)
+                    true)*/
                 //forgotitem
-                is LoginViewModel.LoginUiState.Forgot -> ForgotItem({ username -> onForgotClick(username) },
+                is LoginViewModel.LoginUiState.Forgot -> GPTForgot({ username -> onForgotClick(username) },
+                                                                    {onDisplayLogin()})
+                /*ForgotItem({ username -> onForgotClick(username) },
                     {onDisplayLogin()},
                     {onDisplaySignup()},
-                    true)
+                    true)*/
                 //After Login Success
                 is LoginViewModel.LoginUiState.Home -> {
                     LaunchedEffect(uiState){
@@ -119,8 +135,13 @@ fun LoginDetailsScreen(
                     }
                 }
                 //error
-                else -> LoginDetailsContent(navController = navController, { onLoginClick() }, {onDisplaySignup()},
-                    {onDisplayForgot()}, true)
+                else -> GPTLogin({username, password -> onLoginClick(username, password)},
+                    {onDisplaySignup()},
+                    {onDisplayForgot()},
+                    { event ->
+                        onEvent(event)
+                    })/*LoginDetailsContent(navController = navController, { onLoginClick() }, {onDisplaySignup()},
+                    {onDisplayForgot()}, true)*/
             }
 
             //oAuth Login

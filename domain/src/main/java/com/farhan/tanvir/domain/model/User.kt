@@ -2,6 +2,7 @@ package com.farhan.tanvir.domain.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.google.gson.JsonElement
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
@@ -12,29 +13,29 @@ data class User(
     @SerializedName("_id")
     val id: Int,
     @SerializedName("id")
-    val userId: String,
+    val userId: String?,
     @SerializedName("payerBalance")
-    val payerBalance: Int,
+    val payerBalance: Int?,
     @SerializedName("receiverBalance")
-    val receiverBalance: Int,
+    val receiverBalance: Int?,
     @SerializedName("available")
-    val available: Int,
+    val available: Int?,
     @SerializedName("contacts")
-    val contacts: String,
+    val contacts: String?,
     @SerializedName("favorites")
-    val favorites: String,
+    val favorites: String?,
     @SerializedName("history")
-    val history: String,
+    val history: String?,
     @SerializedName("contributors")
-    val contributors: String,
+    val contributors: String?,
     @SerializedName("sponsors")
-    val sponsors: String,
+    val sponsors: String?,
     @SerializedName("balance")
-    val balance: Int,
+    val balance: Int?,
     @SerializedName("email")
-    val email: String,
+    val email: String?,
     @SerializedName("name")
-    val name: String,
+    val name: String?,
     @SerializedName("paypal")
     val paypal: String?,
     @SerializedName("socketId")
@@ -44,5 +45,9 @@ data class User(
     @SerializedName("payerEmail")
     val payerEmail: String?,
     @SerializedName("images")
-    val images: String?
+    val images: String?,
+    @SerializedName("coverImage")
+    val coverImage: String?,
+    @SerializedName("profileImage")
+    val profileImage: String?
 ) : Serializable

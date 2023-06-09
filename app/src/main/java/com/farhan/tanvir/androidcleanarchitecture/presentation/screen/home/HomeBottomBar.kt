@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
@@ -11,8 +12,12 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -22,6 +27,10 @@ import com.farhan.tanvir.androidcleanarchitecture.R
 import com.farhan.tanvir.androidcleanarchitecture.ui.theme.AppContentColor
 import com.farhan.tanvir.androidcleanarchitecture.ui.theme.AppThemeColor
 import com.google.gson.JsonObject
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+
+
 
 @Composable
 fun HomeBottomBar(onShowSend: () -> Unit,
@@ -42,39 +51,92 @@ fun HomeBottomBar(onShowSend: () -> Unit,
         onShowCamera()
     }
 
+    fun prepareBottomMenu(): List<BottomMenuItem> {
+        val bottomMenuItemsList = arrayListOf<BottomMenuItem>()
+
+        // add menu items
+        bottomMenuItemsList.add(BottomMenuItem(label = "Receive", icon = Icons.Default.Favorite))
+        bottomMenuItemsList.add(BottomMenuItem(label = "Send", icon = Icons.Default.Add))
+
+        return bottomMenuItemsList
+    }
+
+    val bottomMenuItemsList = prepareBottomMenu()
+    var selectedItem by remember {
+        mutableStateOf("Receive")
+    }
 
     BottomAppBar(
         backgroundColor = MaterialTheme.colors.AppThemeColor,
-
         elevation = 0.dp,
+        cutoutShape = CircleShape,
         content = {
 
 
-            IconButton(onClick = { showSend() }) {
+            /*IconButton(onClick = { showSend() }) {
                 Icon(
                     imageVector = Icons.Default.Favorite,
-                    contentDescription = "Favourite Icon",
+                    contentDescription = "Receive",
                     tint = Color.Red
                 )
-            }
+            }*/
 
-            IconButton(onClick = { showCamera() }) {
+            BottomNavigationItem(
+                selected = (false),
+                onClick = {
+                    showSend()
+                },
+                icon = {
+                    Icon(
+                        imageVector = Icons.Default.Favorite,
+                        contentDescription = "Receive"
+                    )
+                },
+                enabled = true
+            )
+
+            /*IconButton(onClick = { showCamera() }) {
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = "Favourite Icon",
                     tint = Color.Red
                 )
-            }
+            }*/
 
-            IconButton(onClick = { showReceive() }) {
+            BottomNavigationItem(
+                selected = false,
+                onClick = {},
+                icon = {},
+                enabled = false
+            )
+
+            /*IconButton(onClick = { showReceive() }) {
                 Icon(
                     imageVector = Icons.Default.AccountBox,
                     contentDescription = "Favourite Icon",
                     tint = Color.Red
                 )
-            }
+            }*/
+
+            BottomNavigationItem(
+                selected = (false),
+                onClick = {
+                    showReceive()
+                },
+                icon = {
+                    Icon(
+                        imageVector = Icons.Default.AccountBox,
+                        contentDescription = "Receive"
+                    )
+                },
+                enabled = true
+            )
 
         }
     )
 }
+
+
+
+data class BottomMenuItem(val label: String, val icon: ImageVector)
 

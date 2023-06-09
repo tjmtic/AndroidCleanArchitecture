@@ -71,7 +71,7 @@ fun ForgotItem(onButtonClick: (String) -> Unit,
                 LoginHeaderComponent("FORGOT PASSWORD", BuildConfig.POSTER_URL)
                 OutlinedTextField(
                     value = username,
-                    onValueChange = { username = it; viewModel.updateUsername(username) },
+                    onValueChange = { username = it; /*viewModel.updateUsername(username) */},
                     label = { Text("Account Email", style = TextStyle(color = Color.White)) },
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = Color.White,

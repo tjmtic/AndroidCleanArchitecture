@@ -38,8 +38,6 @@ import java.util.concurrent.Executors
 class LoginViewModel @Inject constructor(
     private val userUseCases: UserUseCases,
     private val userRepository: UserRepository,
-    private val networkClient: OkHttpClient,
-    //val navController: NavHostController
     application: Application,
     @ApplicationContext context: Context
 ) : AndroidViewModel(application) {
@@ -54,116 +52,14 @@ class LoginViewModel @Inject constructor(
     private val _currentToken = MutableStateFlow<String>(((context1 as AndroidCleanArchitecture).getEncryptedPreferencesValue("userToken")) as String)
     val currentToken : StateFlow<String> = _currentToken
 
-    private val _username = MutableStateFlow<String>("");
-    val username: StateFlow<String> = _username
-    private val _password = MutableStateFlow<String>("");
-    val password: StateFlow<String> = _password
-
-
-    var ws: WebSocket? = null
-    val client by lazy { OkHttpClient() }
-
-    val coroutineExceptionHandler = CoroutineExceptionHandler{_, throwable ->
-        throwable.printStackTrace()
-    }
-
-    var thread = Executors.newSingleThreadExecutor()
     val token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjYzMWJhZWM3OTA0ZDQ3ZmExMzQ4YzgyZCIsInVzZXJuYW1lIjoiMTIxMzU1NTEyMTIiLCJleHBpcmUiOjE2ODI3NDQ5MDQ5Mzh9.WAnFXtzPFeWsff6iXv_zUF5CBZhdadbSzNcjgtRCLk0";
-
-
-    fun start() {
-
-        val request: Request =
-            //   Request.Builder().url("ws://34.122.212.113/").build()
-            Request.Builder().url("ws://3.239.168.240").addHeader("Authorization", "Bearer $token").build()
-            //Request.Builder().url("ws://10.0.2.2:8082").addHeader("Authorization", "Bearer $token").build()
-
-        val listener = object: WebSocketListener() {
-            override fun onMessage(webSocket: WebSocket, text: String) {
-                val currentTime: Date = Calendar.getInstance().time
-                //exampleUiState.addMessage(
-                //   Message("Web", text, currentTime.toString()))
-                Log.d("TIME123", "From SOCKET:" + text)
-
-                handleReceivedText(text)
-
-            }
-        }
-
-        viewModelScope.launch(thread.asCoroutineDispatcher() + coroutineExceptionHandler, CoroutineStart.DEFAULT) {
-            ws = client.newWebSocket(request, listener)
-
-            Log.d("TIME123", "SOCKET CONNECTED?")
-            //val send = ws?.send("ANDROID MESSAGE SENT");
-            var jsonOb = JSONObject();
-            jsonOb.put("action", "SEND_TIP");
-            jsonOb.put("from", token);
-            jsonOb.put("text", '1')
-
-            val send = ws?.send(jsonOb.toString());
-
-            ws?.let {
-                println("TIME123 Sending message... SENT?" + send)
-            }
-        }
-
-        /*lifecycleScope.launch(Dispatchers.IO, CoroutineStart.DEFAULT) {
-            delay(5000)
-            contentHasLoaded = true;
-
-            ws?.send("ANDROID MESSAGE SENT");
-        }*/
-          //timer();
-
-    }
-
-    fun timer(){
-        viewModelScope.launch(thread.asCoroutineDispatcher() , CoroutineStart.DEFAULT) {
-        //   delay(5000)
-        // contentHasLoaded = true;
-        println("TIME123 Sending message...")
-        //{ action: 'RECEIVE_MESSAGE', from: token, text: "test ,mess" }.
-            var jsonOb = JSONObject();
-            jsonOb.put("action", "SEND_TIP");
-            jsonOb.put("from", token);
-            jsonOb.put("text", '1')
-
-        ws?.send(jsonOb.toString());
-
-        ws?.let {
-            println("TIME123 Sending message... SENT")
-        }
-
-        //    timer()
-         }
-    }
-
-
-    fun updateUsername(update: String){ _username.value = update;}
-    fun updatePassword(update: String){ _password.value = update;}
 
 
     //CONVERT TO FLOW
     //ON COLLECT IF STATE IS LOGIN.SUCCESS -> navigateToHOme
 
-    private val _selectedUser: MutableStateFlow<User?> = MutableStateFlow(null)
-    val selectedUser: StateFlow<User?> = _selectedUser
 
-    private val _selectedToken = userRepository.getCurrentToken();//MutableStateFlow<String> = MutableStateFlow("")
-    //val selectedToken: StateFlow<String> = _selectedToken
-
-    val isLoggedIn : MutableStateFlow<Boolean> = MutableStateFlow(false)
-    //combineAndCompute( selectedUser && selectedToken )
-
-    fun getUserDetails(userID: Int) {
-        viewModelScope.launch {
-            userUseCases.getUsersFromDBUseCase.invoke(userID).collect {
-                _selectedUser.value = it
-            }
-        }
-    }
-
-    fun postLogin() {
+    fun postLogin(username: String, password:String) {
         viewModelScope.launch (
             Dispatchers.Main, CoroutineStart.DEFAULT
         ) {
@@ -172,8 +68,8 @@ class LoginViewModel @Inject constructor(
                 _networkUiState.value = NetworkUiState.Loading
                 //Send Request
                 ////TODO: Should make a UseCaseFactory , implement invoke() method calls for injection / hoisting
-                userUseCases.postLoginUseCase.username = "13234856140"//username.value
-                userUseCases.postLoginUseCase.password = "admin"//password.value
+                userUseCases.postLoginUseCase.username = username
+                userUseCases.postLoginUseCase.password = password
 
 
                 //Should set value as current user token in user repository in use case
@@ -269,55 +165,6 @@ class LoginViewModel @Inject constructor(
           //  }
     }
 
-
-
-    private fun handleReceivedText(text: String) {
-        // 1. Parse the incoming text as a JSON object
-        // Replace this part with your JSON parsing library if you use a different one
-        val jsonObject = JsonParser.parseString(text).asJsonObject
-
-        // 2. Extract the 'action' property from the JSON object
-        val action = jsonObject["action"]?.asString
-
-        // 3. Use the extracted 'action' in the when statement
-        when (action) {
-            // Handle actions here
-            "RECEIVER_TIP" -> {
-                // Handle the RECEIVER_TIP action
-                println("Socket Action: RECEIVER_TIP")
-
-            }
-            "RECEIVE_MESSAGE" -> {
-                // Handle the RECEIVER_TIP action
-                println("Socket Action: RECEIVER_MESSAGE")
-
-            }
-            "RECEIVER_TIP_RAIN" -> {
-                // Handle the RECEIVER_TIP_RAIN action
-                println("Socket Action: RECEIVER_TIP_RAIN")
-            }
-            "THANK_YOU" -> {
-                // Handle the THANK_YOU action
-                println("Socket Action: THANK_YOU")
-            }
-            "ACK" -> {
-                // Handle the ACK action
-                println("Socket Action: ACK")
-            }
-            "REFRESH" -> {
-                // Handle the REFRESH action
-                println("Socket Action: REFRESH")
-            }
-            "RECEIVER_TIP_BAG" -> {
-                // Handle the RECEIVER_TIP_BAG action
-                println("Socket Action: RECEIVER_TIP_BAG")
-            }
-            else -> {
-                println("Unknown action")
-            }
-        }
-    }
-
     fun showLogin(){
         _uiState.value = LoginUiState.Login
     }
@@ -342,5 +189,45 @@ class LoginViewModel @Inject constructor(
         object Success: NetworkUiState()
         data class Failure(val error: String): NetworkUiState()
         data class Error(val exception: Throwable): NetworkUiState()
+    }
+
+
+
+
+
+
+    ////////FULL STATE-EVENT LIFECYCLE/////////
+
+    data class LoginViewState(
+        val email: String = "",
+        val password: String = "",
+        val isLoading: Boolean = false,
+        val error: String = ""
+    )
+
+    sealed class LoginViewEvent {
+        data class EmailChanged(val email: String) : LoginViewEvent()
+        data class PasswordChanged(val password: String) : LoginViewEvent()
+        object LoginClicked : LoginViewEvent()
+    }
+
+    private val _state = MutableStateFlow(LoginViewState())
+    val state : StateFlow<LoginViewState> = _state
+
+    fun onEvent(event: LoginViewEvent) {
+        when (event) {
+            is LoginViewEvent.EmailChanged -> {
+                _state.value = _state.value.copy(email = event.email)
+            }
+            is LoginViewEvent.PasswordChanged -> {
+                _state.value = _state.value.copy(password = event.password)
+            }
+            is LoginViewEvent.LoginClicked -> {
+                // Perform login logic
+                postLogin(_state.value.email, _state.value.password)
+                // Update state based on the result
+                //in postLogin?/////////////////////
+            }
+        }
     }
 }

@@ -22,7 +22,7 @@ fun UserListComponent(users: JsonObject?, onClick: (String) -> Unit) {
         }*/
         Spacer(modifier = Modifier.height(8.dp))
 
-        it.get("receivers")?.let {
+        it.get("contributors")?.let {
             for (userData in it.asJsonArray) {
                 /*Text(
                         text = userData.asJsonObject.get("name").asString,

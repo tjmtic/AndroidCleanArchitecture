@@ -33,10 +33,11 @@ fun CameraPreview(
     val lifecycleOwner = LocalLifecycleOwner.current
     //val c2 = LocalContext.current
 
-    fun hideCamera(){
+    fun hideCamera(qrCode : String){
         onHideCamera()
+        Log.d("TIME123", "Logging for QR CODE:" + qrCode);
     }
-    ButtonComponent(text = "Back", onClick = { hideCamera() }, enabled = true)
+    ButtonComponent(text = "Back", onClick = { hideCamera("none selected") }, enabled = true)
     AndroidView(
         modifier = modifier,
         factory = { context ->
@@ -67,7 +68,7 @@ fun CameraPreview(
                     //qrCodeFoundButton!!.visibility = View.VISIBLE
                     println("QR CODE!!:")
                     println(_qrCode);
-                    hideCamera()
+                    hideCamera(_qrCode)
                 }
 
                 override fun qrCodeNotFound() {

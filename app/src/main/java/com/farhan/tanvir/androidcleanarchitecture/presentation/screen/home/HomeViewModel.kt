@@ -7,10 +7,12 @@ import androidx.lifecycle.*
 import com.farhan.tanvir.androidcleanarchitecture.AndroidCleanArchitecture
 import com.farhan.tanvir.androidcleanarchitecture.MainActivity
 import com.farhan.tanvir.androidcleanarchitecture.presentation.screen.details.LoginViewModel
+import com.farhan.tanvir.androidcleanarchitecture.presentation.screen.details.UserDetailsViewModel
 import com.farhan.tanvir.androidcleanarchitecture.util.SocketHandler
 import com.farhan.tanvir.domain.model.User
 import com.farhan.tanvir.domain.useCase.UserUseCases
 import com.google.gson.JsonArray
+import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,10 +26,13 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
+import org.json.JSONArray
 import org.json.JSONObject
 import java.util.*
 import java.util.concurrent.Executors
 import javax.inject.Inject
+import kotlinx.serialization.*
+//import kotlinx.serialization.json.*
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -40,12 +45,21 @@ class HomeViewModel @Inject constructor(
     val sendUsers: MutableStateFlow<JsonObject?> = _allUsers
     val receiveUsers: MutableStateFlow<JsonObject?> = _allUsers
 
+    val _historyUsers: MutableStateFlow<JsonArray?> = MutableStateFlow(JsonArray())
+    val historyUsers: MutableStateFlow<JsonArray?> = _historyUsers
+
+    val _contributorUsers: MutableStateFlow<JsonObject?> = MutableStateFlow(JsonObject())
+    val contributorUsers: MutableStateFlow<JsonObject?> = _contributorUsers
+
     //val userSocketId: String;
     private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Default)
     val uiState: StateFlow<HomeUiState> = _uiState
 
     private val _uiStateCamera = MutableStateFlow<CameraUiState>(CameraUiState.Disabled)
     val uiStateCamera: StateFlow<CameraUiState> = _uiStateCamera
+
+    private val _uiStateLogin = MutableStateFlow<LoginUiState>(LoginUiState.Default)
+    val uiStateLogin: StateFlow<LoginUiState> = _uiStateLogin
 
     private val _uiStateEvent = MutableStateFlow<EventUiState>(EventUiState.DEFAULT)
     val uiStateEvent: StateFlow<EventUiState> = _uiStateEvent
@@ -56,13 +70,14 @@ class HomeViewModel @Inject constructor(
 
     private val _selectedUser: MutableStateFlow<JsonObject?> = MutableStateFlow(JsonObject())
     val selectedUser: MutableStateFlow<JsonObject?> = _selectedUser
+    val selectedUserToken : MutableStateFlow<String?> = MutableStateFlow("");
 
 
     private val _currentToken = MutableStateFlow<String>(((application.applicationContext as AndroidCleanArchitecture).getEncryptedPreferencesValue("userToken")) as String)
     val token : StateFlow<String> = _currentToken
 
-    private val _socketToken = MutableStateFlow<String>(((application.applicationContext as AndroidCleanArchitecture).currentUserSocketId ) as String)
-    val socketToken : StateFlow<String> = _socketToken
+   // private val _socketToken = MutableStateFlow<String>(((application.applicationContext as AndroidCleanArchitecture).currentUserSocketId ) as String)
+   // val socketToken : StateFlow<String> = _socketToken
     //val token = (getApplication<Application>().applicationContext as AndroidCleanArchitecture).currentUserToken
 
     val qrImage: Bitmap? = token?.let{(getApplication<Application>().applicationContext as AndroidCleanArchitecture).generateQR(token.value)}
@@ -72,21 +87,156 @@ class HomeViewModel @Inject constructor(
 
 
     init {
-        Log.d("TIME123","initializeing homewVIEWMODEL....");
+        Log.d("TIME123","initializeing homewVIEWMODEL....0");
         viewModelScope.launch {
-            token?.let {
+            Log.d("TIME123","initializeing homewVIEWMODEL....1");
+
+            token.let {
+                Log.d("TIME123","initializeing homewVIEWMODEL....2");
+
                 _currentUser.value = userUseCases.getCurrentUserWithTokenUseCase(token.value)
-                _allUsers.value = userUseCases.getAllUsersWithTokenUseCase(token.value)
-            }
+                Log.d("TIME123","initializeing homewVIEWMODEL....3");
 
-            // navController.navigate(route = Screen.Home.route)
-            Log.d("TIME123", "New current user:" + _currentUser.value)
 
-            //user id to set socket namespace
-            //MainActivity.setSocketNamespace(userId)
-            _currentUser.value?.get("socketId")?.let {
-                (getApplication<Application>().applicationContext as AndroidCleanArchitecture).currentUserSocketId =
-                    it.asString;
+                _historyUsers.apply{
+                    value = _currentUser.value?.get("history")?.asJsonArray
+                }
+
+                //_allUsers.value = userUseCases.getAllUsersWithTokenUseCase(token.value)
+
+                //val users: JsonArray? = userUseCases.getAllUsersWithTokenUseCase(token.value)
+                //var ju = JsonObject();
+                //ju.add("contributors", users);
+
+                _allUsers.apply{
+                    Log.d("TIME123","initializeing homewVIEWMODEL....4");
+
+                    //val users: JsonArray? = userUseCases.getAllUsersWithTokenUseCase(token.value)
+                    //var ju = JsonObject();
+                    //var ja = JsonArray();
+                    historyUsers.value?.let { it1 ->
+                        userUseCases.getUsersByIdUseCase(it1,it1, token.value)?.let { users ->
+                            Log.d("TIME123","initializeing homewVIEWMODEL....5");
+
+                            //this.value =
+                            val ja = JsonArray().also { array ->
+                                Log.d("TIME123","initializeing homewVIEWMODEL....6");
+                                try {
+                                users.get("history").asJsonArray.mapNotNull {
+                                        array.add(JsonObject()
+                                            .apply {
+                                                addProperty(
+                                                    "email",
+                                                    it.asJsonObject.get("email").asString
+                                                )
+                                                addProperty(
+                                                    "_id",
+                                                    it.asJsonObject.get("_id").asString
+                                                )
+                                                add(
+                                                    "images",
+                                                    it.asJsonObject.get("images").asJsonArray
+                                                )
+                                            })
+
+                                }
+                                } catch (e: Exception) {
+                                    Log.d("TIME123", "Error:" + e.message)
+                                    null
+                                }
+                            }
+
+                            Log.d("TIME123","initializeing homewVIEWMODEL....8" + ja.toString());
+
+
+                            /*val ju = JsonObject().also{ also ->
+                                                also.add("contributors",ja)
+                                            }
+                                            ju*/
+
+                            /* JsonObject().also{ also ->
+                                                also.add("contributors",ja)
+                                            }*/
+
+                            value = JsonObject().also{
+                                it.add("contributors", ja)
+                                it.add("history", users)
+                            }
+                        }
+                    } ?: run{
+                        Log.d("TIME123","initializeing homewVIEWMODEL....9");
+
+                        performLogout();
+                    }
+                }
+               /* users?.let {
+
+                    var jt: List<JsonObject> = users.map {
+                        try {
+                            var j = JsonObject();
+                            j.addProperty("email", it.asJsonObject.get("email").asString)
+                            // j.addProperty("phoneNumber", it.asJsonObject.get("phoneNumber").asString)
+                            //  j.addProperty("name", it.asJsonObject.get("name").asString)
+                            //j.addProperty("balance", it.asJsonObject.get("balance").asInt)
+                            //j.addProperty("images", it.asJsonArray.get("images"))
+
+                            j.apply {
+                                addProperty("_id", it.asJsonObject.get("_id").asString)
+                                add("images", it.asJsonObject.get("images").asJsonArray)
+                            }
+
+                        } catch (e: Exception) {
+                            Log.d("TIME123", "Exception:" + e.message)
+                            var j = JsonObject();
+                            // j.addProperty("phoneNumber", it.asJsonObject.get("phoneNumber").asString)
+                            //  j.addProperty("name", it.asJsonObject.get("name").asString)
+                            //j.addProperty("balance", it.asJsonObject.get("balance").asInt)
+                            //j.addProperty("images", it.asJsonArray.get("images"))
+
+                            j.apply {
+                                addProperty("email", "none");
+                            }
+                        }
+                    } as List<JsonObject>
+                    // var je = JsonObject();
+                    // _allUsers.value = ;
+                    //val jarray = listOf
+                    //ju.addProperty("contributors", JsonArray.from(jt));
+
+                    val jsonArray = JsonArray().apply {
+                        (jt).forEach { it: JsonObject ->
+                            if (!it.get("email").asString.equals("none")) {
+                                Log.d("TIME123", "GETTING ALL EMAIL 1" + it.get("email").asString);
+                                this.add(it)
+                            }
+                        }
+                    }
+
+                    Log.d("TIME123", "GETTING ALL USERS 1");
+                    Log.d("TIME123", _allUsers.value.toString());
+                    Log.d("TIME123", jsonArray.toString());
+                    Log.d("TIME123", "GETTING ALL USERS X");
+                    ju.add("contributors", jsonArray);
+                    _allUsers.value = ju;
+                }?:run{
+                    (getApplication<Application>().applicationContext as AndroidCleanArchitecture).logout()
+                    _uiStateLogin.value = LoginUiState.Invalid("Invalid User Token")
+                }*/
+
+                // navController.navigate(route = Screen.Home.route)
+                Log.d("TIME123","initializeing homewVIEWMODEL....10");
+
+                Log.d("TIME123", "New current user:" + _currentUser.value)
+
+                //user id to set socket namespace
+                //MainActivity.setSocketNamespace(userId)
+                _currentUser.value?.get("socketId")?.let {
+                    (getApplication<Application>().applicationContext as AndroidCleanArchitecture).currentUserSocketId =
+                        it.asString;
+                }
+
+
+                start();
             }
         }
     }
@@ -107,7 +257,7 @@ class HomeViewModel @Inject constructor(
 
         val request: Request =
             //   Request.Builder().url("ws://34.122.212.113/").build()
-            Request.Builder().url("ws://3.239.168.240").addHeader("Authorization", "Bearer ${socketToken.value}").build()
+            Request.Builder().url("ws://3.239.168.240").addHeader("Authorization", "Bearer ${token.value}").build()
         //Request.Builder().url("ws://10.0.2.2:8082").addHeader("Authorization", "Bearer $token").build()
 
         val listener = object: WebSocketListener() {
@@ -127,7 +277,7 @@ class HomeViewModel @Inject constructor(
 
             Log.d("TIME123", "SOCKET CONNECTED?")
             //val send = ws?.send("ANDROID MESSAGE SENT");
-            var jsonOb = JSONObject();
+           /* var jsonOb = JSONObject();
             jsonOb.put("action", "SEND_TIP");
             jsonOb.put("from", token);
             jsonOb.put("text", '1')
@@ -136,7 +286,9 @@ class HomeViewModel @Inject constructor(
 
             ws?.let {
                 println("TIME123 Sending message... SENT?" + send)
-            }
+            }*/
+
+            sendMessage(ws)
         }
 
     }
@@ -199,6 +351,24 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun sendMessage(ws: WebSocket?){
+        Log.d("TIME123", "SOCKET CONNECTED?")
+        //val send = ws?.send("ANDROID MESSAGE SENT");
+        var jsonOb = JSONObject();
+        jsonOb.put("action", "TIP_USER");
+        jsonOb.put("sender", currentUser.value?.get("id"));
+        jsonOb.put("receiver", "631baec7904d47fa1348c82d"/*selectedUserToken.value*/);
+        jsonOb.put("value", "1")
+        jsonOb.put("previous", "caUp9YtBpIHC8qe+nTkgf3pdVqTycW2g+CkwcwS1N/w=")
+        jsonOb.put("sessionId", "63d89e47f6f0729279562451")
+
+        val send = ws?.send(jsonOb.toString());
+
+        ws?.let {
+            println("TIME123 Sending message... SENT?" + send)
+        }
+    }
+
     fun clearEvents(){
         _uiStateEvent.value = EventUiState.DEFAULT;
     }
@@ -207,6 +377,10 @@ class HomeViewModel @Inject constructor(
 
     fun showSend(){
         _uiState.value = HomeUiState.Send
+
+        Log.d("TIME123", "Logging State:");
+        Log.d("TIME123", currentUser.value.toString() )
+        Log.d("TIME123", selectedUser.value.toString() )
     }
 
     fun showReceive(){
@@ -233,7 +407,26 @@ class HomeViewModel @Inject constructor(
     }
 
     fun setSelectedById(id: String){
-        _allUsers.value?.get("receivers")?.let {
+
+        //selectedUserToken = id;
+        //sendMessage(ws);
+        viewModelScope.launch {
+            Log.d("TIME123","SELECTION BY ID....1 "+id);
+
+            token.let {
+                val respo = userUseCases.getUserByIdUseCase(id , token.value)
+
+                Log.d("TIME123","SELECTION BY ID....2 "+respo.toString());
+
+                _selectedUser.value = respo
+
+            }
+
+            Log.d("TIME123","SELECTION BY ID....3 ");
+
+        }
+
+        /*_allUsers.value?.get("contributors")?.let {
             println("USER ELEMENT ${it}")
 
             for (item in it as JsonArray) {
@@ -242,13 +435,24 @@ class HomeViewModel @Inject constructor(
                 if((item as JsonObject).get("id").asString.equals(id)){
                     _selectedUser.value = item
                     println("SET SELECTED USER OBJECT ${item}")
+
+                    //update websocket connection??
                 }
                 else{
                     println((item as JsonObject).get("id").asString)
                     println(id)
                 }
             }
-        }
+        }*/
+    }
+
+    fun setUnselectedUser(){
+        _selectedUser.value = JsonObject();
+    }
+
+    fun performLogout(){
+        (getApplication<Application>().applicationContext as AndroidCleanArchitecture).logout()
+        _uiStateLogin.value = LoginUiState.Invalid("Invalid User Token")
     }
 
     sealed class EventUiState {
@@ -270,6 +474,13 @@ class HomeViewModel @Inject constructor(
         object Enabled: CameraUiState()
         object Disabled: CameraUiState()
         data class Error(val exception: Throwable): CameraUiState()
+    }
+
+    sealed class LoginUiState {
+        object Default: LoginUiState()
+        data class Valid(val user: User): LoginUiState()
+        data class Invalid(val reason: String): LoginUiState()
+        data class Error(val exception: Throwable): LoginUiState()
     }
 
 }

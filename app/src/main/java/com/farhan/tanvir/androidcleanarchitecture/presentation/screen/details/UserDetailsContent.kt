@@ -58,7 +58,7 @@ fun UserDetailsContent(user: User) {
                     ReleaseDateComponent(releaseDate = it)
                 }
                 Spacer(modifier = Modifier.height(8.dp))
-                user.name.let { RatingComponent(rating = it) }
+                user.name?.let { RatingComponent(rating = it) }
                 Spacer(modifier = Modifier.height(16.dp))
                 user.payerEmail?.let {
                     Text(

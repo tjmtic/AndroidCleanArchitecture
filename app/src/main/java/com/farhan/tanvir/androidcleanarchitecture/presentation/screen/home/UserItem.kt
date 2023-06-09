@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
@@ -26,7 +27,7 @@ import com.google.gson.JsonObject
 
 
 @Composable
-fun UserItem(user: JsonObject?, users: JsonObject?, navController: NavHostController) {
+fun UserItem(user: JsonObject?, users: JsonObject?) {
     Card(
         modifier = Modifier
             .padding(top = 8.dp)
@@ -184,7 +185,7 @@ fun UserItem(user: JsonObject?, users: JsonObject?, navController: NavHostContro
                     }
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    it.get("receivers")?.let {
+                    it.get("contributors")?.let {
                         for (userData in it.asJsonArray) {
                             Text(
                                 text = userData.asJsonObject.get("name").asString,
@@ -198,4 +199,10 @@ fun UserItem(user: JsonObject?, users: JsonObject?, navController: NavHostContro
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun test(){
+    UserItem(null , null)
 }

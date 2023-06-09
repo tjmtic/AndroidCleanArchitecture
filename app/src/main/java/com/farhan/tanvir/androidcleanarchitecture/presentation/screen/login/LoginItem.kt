@@ -50,13 +50,13 @@ fun LoginItem(onLoginClick: () -> Unit,
     var username by remember { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
 
-    Card(
+    Column(
         modifier = Modifier
             .padding(top = 8.dp)
             .height(IntrinsicSize.Max)
             .fillMaxWidth(),
-        elevation = 0.dp,
-        backgroundColor = Color.White.copy(alpha = 0.8f)
+       // elevation = 0.dp,
+       // backgroundColor = Color.White/*.copy(alpha = 0.8f)*/
 
     ) {
         /*Image(painter = painterResource(id = R.mipmap.rain_raindrop_barcode),
@@ -86,7 +86,7 @@ fun LoginItem(onLoginClick: () -> Unit,
 
                 OutlinedTextField(
                     value = username,
-                    onValueChange = { username = it ; viewModel.updateUsername(username)},
+                    onValueChange = { username = it ; /*viewModel.updateUsername(username)*/},
                     label = { Text("Username", style = TextStyle(color = Black)) },
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = Blue,
@@ -97,12 +97,25 @@ fun LoginItem(onLoginClick: () -> Unit,
                     )
                 )
 
+               /* TextField(
+                    value = username,
+                    onValueChange = { username = it ; viewModel.updateUsername(username)},
+                    label = { Text("Username", style = TextStyle(color = Black)) },
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = Blue,
+                        unfocusedBorderColor = Black,
+                        cursorColor = Blue,
+                        focusedLabelColor = Blue,
+                        backgroundColor = White
+                    )
+                )*/
+
 
                 Spacer(modifier = Modifier.height(12.dp))
 
                 OutlinedTextField(
                         value = password,
-                        onValueChange = { password = it ; viewModel.updatePassword(password) },
+                        onValueChange = { password = it ; /*viewModel.updatePassword(password)*/ },
                     label = { Text("Password", style = TextStyle(color = Black)) },
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = Black,

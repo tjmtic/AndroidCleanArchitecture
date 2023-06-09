@@ -1,9 +1,7 @@
 package com.farhan.tanvir.androidcleanarchitecture.data
 
 import android.util.Log
-import com.farhan.tanvir.androidcleanarchitecture.data.model.LoggedInUser
 import com.farhan.tanvir.domain.model.User
-import com.farhan.tanvir.domain.useCase.UserUseCases
 import java.io.IOException
 import javax.inject.Inject
 
@@ -46,7 +44,9 @@ class LoginDataSource @Inject constructor(
                 "Ci3-mOUhcIMXC_cUAADX",
                 null,
                 "sb-khu2t8374628@personal.example.com",
-            "https://tip-hub.s3.amazonaws.com/users/img/5e22b8a4bf397f08932de490-profile.png")
+            "https://tip-hub.s3.amazonaws.com/users/img/5e22b8a4bf397f08932de490-profile.png",
+                "https://tip-hub.s3.amazonaws.com/users/img/5e22b8a4bf397f08932de490-profile.png",
+                "https://tip-hub.s3.amazonaws.com/users/img/5e22b8a4bf397f08932de490-profile.png")
 
             return Result.Error(Exception("No Token Found"))
         } catch (e: Throwable) {

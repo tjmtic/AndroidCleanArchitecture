@@ -24,6 +24,8 @@ fun UserDetailsScreen(
     //val userDetails by viewModel.selectedUser.collectAsState()
     val uiState = viewModel.uiState.collectAsState()
 
+    val token = viewModel.token.collectAsState()
+
 
     val currentUser = viewModel.selectedUser.collectAsState()
     Scaffold(
@@ -45,7 +47,7 @@ fun UserDetailsScreen(
             }
             UserItem(
                 user = currentUser.value,
-                navController = navController
+                extra = token.value
             )
 
         })

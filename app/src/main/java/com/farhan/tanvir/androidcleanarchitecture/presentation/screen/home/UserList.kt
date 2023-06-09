@@ -84,7 +84,7 @@ fun UserListItem(user: User, navController: NavHostController) {
                 .padding(
                     end = 2.dp,
                 )) {
-                user.name.let { Text(text = it, style = MaterialTheme.typography.body1) }
+                user.name?.let { Text(text = it, style = MaterialTheme.typography.body1) }
                 Spacer(modifier = Modifier.height(4.dp))
                 user.payerEmail?.let {
                     Text(
@@ -95,7 +95,7 @@ fun UserListItem(user: User, navController: NavHostController) {
                     )
                 }
                 Spacer(modifier = Modifier.height(8.dp))
-                user.name.let { RatingComponent(rating = it) }
+                user.name?.let { RatingComponent(rating = it) }
             }
         }
     }

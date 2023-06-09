@@ -85,7 +85,7 @@ fun SignupItem(onSignupClick: (String, String) -> Unit,
 
                 OutlinedTextField(
                     value = username,
-                    onValueChange = { username = it ; viewModel.updateUsername(username)},
+                    onValueChange = { username = it ; /*viewModel.updateUsername(username)*/},
                     label = { Text("Username", style = TextStyle(color = Color.White)) },
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = Color.White,
@@ -114,7 +114,7 @@ fun SignupItem(onSignupClick: (String, String) -> Unit,
 
                 OutlinedTextField(
                         value = password,
-                        onValueChange = { password = it ; viewModel.updatePassword(password) },
+                        onValueChange = { password = it ; /*viewModel.updatePassword(password) */},
                         label = { Text("Password", style = TextStyle(color = Color.White)) },
                         visualTransformation = PasswordVisualTransformation(),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),

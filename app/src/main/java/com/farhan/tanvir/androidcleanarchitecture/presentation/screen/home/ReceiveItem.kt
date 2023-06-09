@@ -24,9 +24,11 @@ import coil.compose.rememberImagePainter
 import coil.size.Scale
 import com.farhan.tanvir.androidcleanarchitecture.presentation.components.ButtonComponent
 import com.farhan.tanvir.androidcleanarchitecture.presentation.components.FullReceiveItemComponent
+import com.farhan.tanvir.androidcleanarchitecture.presentation.components.GPTProfileScreen3
 import com.farhan.tanvir.androidcleanarchitecture.presentation.components.RatingComponent
 import com.farhan.tanvir.androidcleanarchitecture.presentation.navigation.Screen
 import com.farhan.tanvir.androidcleanarchitecture.ui.theme.ItemBackgroundColor
+import com.farhan.tanvir.domain.model.User
 import com.google.gson.JsonObject
 
 
@@ -38,6 +40,55 @@ fun ReceiveItem(user: JsonObject?,
 
     val showUserList = remember { mutableStateOf(false) }
 
+    val coverImage = user?.get("images")?.asJsonArray.let {
+        it?.let {
+            var url = "none"
+            for (image in it) {
+                if (image.asJsonObject.get("type").asString.equals("cover")) {
+                    url = image.asJsonObject.get("url").asString
+                }
+            }
+
+            url
+        }
+    }
+
+    val profileImage = user?.get("images")?.asJsonArray.let {
+        it?.let {
+            var url = "none"
+            for (image in it) {
+                if (image.asJsonObject.get("type").asString.equals("profile")) {
+                    url = image.asJsonObject.get("url").asString
+                }
+            }
+
+            url
+        }
+    }
+
+    val currentUserInfo = User(
+        0,
+        0,
+        null,
+        user?.get("payerBalance")?.asInt,
+        user?.get("receiverBalance")?.asInt,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        user?.get("email")?.asString,
+        user?.get("name")?.asString,
+        null,
+        null,
+        null,
+        null,
+        null,
+        coverImage,
+        profileImage)
+
     fun toggleUserList(){
         showUserList.value = !showUserList.value
     }
@@ -45,24 +96,16 @@ fun ReceiveItem(user: JsonObject?,
 
     Card(
         modifier = Modifier
-            .padding(top = 8.dp)
+            //.padding(top = 8.dp)
             .fillMaxHeight()
             .fillMaxWidth(),
         elevation = 4.dp,
         backgroundColor = Color.Blue
     ) {
-        Row(
-            modifier = Modifier
-                .height(IntrinsicSize.Max)
-                .fillMaxWidth()
-                .clickable {
-                    Log.d("TIME123", "Console Log Clicked on USER CARD!" + user);
-                },
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+
             Column(
                 Modifier
-                    .height(IntrinsicSize.Max)
+                    .fillMaxHeight()
                     .padding(
                         end = 2.dp,
                     )
@@ -70,9 +113,14 @@ fun ReceiveItem(user: JsonObject?,
             ) {
 
                 if(!showUserList.value) {
-                    ButtonComponent(text = "Contributors", onClick = { toggleUserList() }, enabled = true)
+                   // ButtonComponent(text = "Contributors", onClick = { toggleUserList() }, enabled = true)
 
-                    FullReceiveItemComponent(user = user, qrImage)
+                    //FullReceiveItemComponent(user = user, qrImage)
+                    if (qrImage != null) {
+                        GPTProfileScreen3(user = currentUserInfo, qrImage = qrImage, { toggleUserList() })
+
+
+                    }
 
                    /* Text(text = "Test Text", style = MaterialTheme.typography.body1)
                     user?.get("name")?.asString?.let {
@@ -203,6 +251,6 @@ fun ReceiveItem(user: JsonObject?,
 
 
             }
-        }
+
     }
 }
