@@ -27,14 +27,14 @@ fun CameraPreview(
     modifier: Modifier = Modifier,
     scaleType: PreviewView.ScaleType = PreviewView.ScaleType.FILL_CENTER,
     cameraSelector: CameraSelector = CameraSelector.DEFAULT_BACK_CAMERA,
-    onHideCamera: () -> Unit
+    onHideCamera: (String) -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
     val lifecycleOwner = LocalLifecycleOwner.current
     //val c2 = LocalContext.current
 
     fun hideCamera(qrCode : String){
-        onHideCamera()
+        onHideCamera(qrCode)
         Log.d("TIME123", "Logging for QR CODE:" + qrCode);
     }
     ButtonComponent(text = "Back", onClick = { hideCamera("none selected") }, enabled = true)

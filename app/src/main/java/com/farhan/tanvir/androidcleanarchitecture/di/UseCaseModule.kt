@@ -16,6 +16,7 @@ object UseCaseModule {
         getCurrentUserUseCase = GetCurrentUserUseCase(userRepository = userRepository),
         getUserByIdUseCase = GetUserByIdUseCase(userRepository = userRepository),
         getUsersByIdUseCase = GetUsersByIdUseCase(userRepository = userRepository),
+        createSessionByUserUseCase = CreateSessionByUsersUseCase(userRepository = userRepository),
         getCurrentUserWithTokenUseCase = GetCurrentUserWithTokenUseCase(userRepository = userRepository),
         getAllUsersUseCase = GetAllUsersUseCase(userRepository = userRepository),
         getAllUsersWithTokenUseCase = GetAllUsersWithTokenUseCase(userRepository = userRepository),

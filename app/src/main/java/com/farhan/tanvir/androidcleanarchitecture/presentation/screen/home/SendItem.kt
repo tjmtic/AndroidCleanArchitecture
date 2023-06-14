@@ -31,6 +31,7 @@ fun SendItem(user: JsonObject?,
              currentUser: JsonObject?,
              onSetSelectedUser: (String) -> Unit,
              onUnsetSelectedUser: () -> Unit,
+             onTip: () -> Unit,
                 navController: NavHostController,
                 ) {
 
@@ -133,7 +134,7 @@ fun SendItem(user: JsonObject?,
                     user?.get("name")?.isJsonNull?.let {
                         println("full")
                         //FullSendItemComponent(user = user)
-                        GPTProfileScreen2 (user, userImage!!, {onUnsetSelectedUser()})
+                        GPTProfileScreen2 (user, userImage!!, {onUnsetSelectedUser()}, {onTip()})
                        // ButtonComponent(text = "Following", onClick = { toggleUserList() }, enabled = true)
                         isFull = true;
                     } ?: run {

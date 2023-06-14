@@ -1,13 +1,17 @@
 package com.farhan.tanvir.androidcleanarchitecture.presentation.screen.home
 
 import android.util.Log
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -26,7 +30,7 @@ import com.farhan.tanvir.androidcleanarchitecture.ui.theme.ItemBackgroundColor
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import androidx.compose.runtime.getValue
-
+import androidx.compose.ui.draw.clip
 
 
 @Composable
@@ -37,10 +41,11 @@ fun UserListItem(user: JsonObject?, onClickUser: (String) -> Unit = {}) {
     }
     Card(
         modifier = Modifier
-            .padding(top = 8.dp)
+            .padding(8.dp)
             .height(50.dp)
             .fillMaxWidth(),
-        elevation = 4.dp,
+        elevation = 12.dp,
+        border = BorderStroke(1.5.dp, Color.LightGray),
         backgroundColor = Color.Magenta,
 
     ) {
@@ -65,26 +70,37 @@ fun UserListItem(user: JsonObject?, onClickUser: (String) -> Unit = {}) {
                 user?.get("images")?.asJsonArray.let {
                     it?.let {
                         for (image in it) {
-                            if(image.asJsonObject.get("type").asString.equals("cover")) {
+                            if (image.asJsonObject.get("type").asString.equals("cover")) {
                                 selected = true
-                                Image(
-                                    painter = rememberImagePainter(
-                                        data = image.asJsonObject.get("url").asString, builder = {
-                                            crossfade(true)
-                                            scale(Scale.FIT)
-                                        }),
-                                    contentDescription = null,
+                                Surface(
                                     modifier = Modifier
-                                        .width(50.dp)
-                                        .height(50.dp)
-                                        .padding(end = 8.dp),
-                                    contentScale = ContentScale.FillWidth
-                                )
+                                        .size(154.dp)
+                                        .padding(5.dp),
+                                    shape = CircleShape,
+                                    border = BorderStroke(0.5.dp, Color.LightGray),
+                                    elevation = 4.dp,
+                                    color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f)
+                                ) {
+                                    Image(
+                                        painter = rememberImagePainter(
+                                            data = image.asJsonObject.get("url").asString,
+                                            builder = {
+                                                crossfade(true)
+                                                scale(Scale.FIT)
+                                            }),
+                                        contentDescription = null,
+                                        modifier = Modifier
+                                            .size(48.dp)
+                                            .clip(MaterialTheme.shapes.medium)
+                                            .background(MaterialTheme.colors.primary),
+                                        contentScale = ContentScale.FillWidth
+                                    )
+                                }
+
                             }
 
 
-
-                           /* else if(image.asJsonObject.get("type").asString.equals("profile")) {
+                            /* else if(image.asJsonObject.get("type").asString.equals("profile")) {
                                 Image(
                                     painter = rememberImagePainter(
                                         data = image.asJsonObject.get("url").asString, builder = {
@@ -97,24 +113,36 @@ fun UserListItem(user: JsonObject?, onClickUser: (String) -> Unit = {}) {
                                         .height(125.dp),
                                     contentScale = ContentScale.FillWidth
                                 )
-                            }*/
+                           }*/
                         }
 
 
+
                         if(!selected){
-                            Image(
-                                painter = rememberImagePainter(
-                                    data = "https://tip-hub.s3.amazonaws.com/users/img/5e22b8a4bf397f08932de490-profile.png", builder = {
-                                        crossfade(true)
-                                        scale(Scale.FIT)
-                                    }),
-                                contentDescription = null,
+                            Surface(
                                 modifier = Modifier
-                                    .width(50.dp)
-                                    .height(50.dp)
-                                    .padding(end = 8.dp),
-                                contentScale = ContentScale.FillWidth
-                            )
+                                    .size(154.dp)
+                                    .padding(5.dp),
+                                shape = CircleShape,
+                                border = BorderStroke(0.5.dp, Color.LightGray),
+                                elevation = 4.dp,
+                                color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f)
+                            ) {
+                                Image(
+                                    painter = rememberImagePainter(
+                                        data = "https://tip-hub.s3.amazonaws.com/users/img/5e22b8a4bf397f08932de490-profile.png",
+                                        builder = {
+                                            crossfade(true)
+                                            scale(Scale.FIT)
+                                        }),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .width(50.dp)
+                                        .height(50.dp)
+                                        .padding(end = 8.dp),
+                                    contentScale = ContentScale.FillWidth
+                                )
+                            }
 
                         }
                     }
@@ -127,10 +155,6 @@ fun UserListItem(user: JsonObject?, onClickUser: (String) -> Unit = {}) {
                 )
             }
 
-                Text(
-                    text = "Unknown",
-                    style = TextStyle(color = Color.White)
-                )
 
 
                /* user?.get("socketId")?.asString?.let {

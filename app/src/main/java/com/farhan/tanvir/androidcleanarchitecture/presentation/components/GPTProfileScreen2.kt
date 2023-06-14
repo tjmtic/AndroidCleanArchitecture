@@ -1,6 +1,7 @@
 package com.farhan.tanvir.androidcleanarchitecture.presentation.components
 
 import android.util.Log
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -15,8 +16,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -37,7 +40,7 @@ import com.google.gson.JsonObject
 
 
 @Composable
-fun GPTProfileScreen2(user: JsonObject?, url: String, onClick: () -> Unit) {
+fun GPTProfileScreen2(user: JsonObject?, url: String, onClick: () -> Unit, onTip: () -> Unit) {
     Log.d("TIME123", "PRIFLE SCREEN CHECK: " + url)
     Box(
         modifier = Modifier.fillMaxSize().defaultMinSize(400.dp)
@@ -63,19 +66,7 @@ fun GPTProfileScreen2(user: JsonObject?, url: String, onClick: () -> Unit) {
             }
         }*/
 
-        Image(
-            painter = rememberImagePainter(
-                data = url,
-                builder = {
-                    crossfade(true)
-                    scale(Scale.FIT)
-                    placeholder(R.drawable.line_rain2a)
-                }
-            ),
-            contentDescription = "some",
-            modifier = Modifier.size(400.dp),
-            contentScale = ContentScale.FillBounds,
-        )
+
 
         /*Image(
             painter = rememberImagePainter(
@@ -97,6 +88,29 @@ fun GPTProfileScreen2(user: JsonObject?, url: String, onClick: () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+            Surface(
+                modifier = Modifier
+                    .size(154.dp)
+                    .padding(5.dp),
+                shape = CircleShape,
+                border = BorderStroke(0.5.dp, Color.LightGray),
+                elevation = 4.dp,
+                color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f)
+            ) {
+                Image(
+                    painter = rememberImagePainter(
+                        data = url,
+                        builder = {
+                            crossfade(true)
+                            scale(Scale.FIT)
+                            placeholder(R.drawable.line_rain2a)
+                        }
+                    ),
+                    contentDescription = "some",
+                    modifier = Modifier.size(400.dp),
+                    contentScale = ContentScale.FillBounds,
+                )
+            }
 
             // Profile icon with two lines of text
             Row(
@@ -141,6 +155,21 @@ fun GPTProfileScreen2(user: JsonObject?, url: String, onClick: () -> Unit) {
                 )
             }
 
+            Button(
+                onClick = { onTip() },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .scale(.95f)
+                    .padding(vertical = 16.dp)
+            ) {
+                Text(
+                    text = "SEND TIP",
+                    style = MaterialTheme.typography.button,
+                    modifier = Modifier.padding(horizontal = 8.dp),
+                    color = Color.White
+                )
+            }
+
 
 
             Button(
@@ -164,5 +193,5 @@ fun GPTProfileScreen2(user: JsonObject?, url: String, onClick: () -> Unit) {
 @Preview
 @Composable
 fun PreviewProfileScreen2() {
-    GPTProfileScreen2(JsonObject(), "", {})
+    GPTProfileScreen2(JsonObject(), "", {}, {})
 }

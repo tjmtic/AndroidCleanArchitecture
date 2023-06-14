@@ -46,6 +46,11 @@ class UserRepositoryImpl(
         return userRemoteDataSource.getAllUsersById(historyIds, contributorIds)
     }
 
+    override suspend fun createSessionByUsers(data: JsonObject, token: String): JsonObject? {
+        userRemoteDataSource.setUserToken(token)
+        return userRemoteDataSource.createSessionByUsers(data)
+    }
+
     override suspend fun getAllUsers() =
         userRemoteDataSource.getAllUsers()
 

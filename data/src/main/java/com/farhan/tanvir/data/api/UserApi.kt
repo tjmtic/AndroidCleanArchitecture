@@ -28,6 +28,9 @@ interface UserApi {
     @GET("api/get/receiver/sessions")
     suspend fun getReceiverTipSessions(): Response<List<TipSession>>
 
+    @POST("api/create/session")
+    suspend fun createSessionByUser(@Body data: JsonObject, @HeaderMap authedHeaders: AuthenticatedHeaders): Response<JsonObject>
+
     @GET("api/get/delete/history")
     suspend fun getDeleteAllHistory(): Response<JsonObject>
 

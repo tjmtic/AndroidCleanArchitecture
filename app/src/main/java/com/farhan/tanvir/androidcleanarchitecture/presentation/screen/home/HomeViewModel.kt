@@ -72,6 +72,12 @@ class HomeViewModel @Inject constructor(
     val selectedUser: MutableStateFlow<JsonObject?> = _selectedUser
     val selectedUserToken : MutableStateFlow<String?> = MutableStateFlow("");
 
+    private val _selectedUserSession: MutableStateFlow<String> = MutableStateFlow("")
+    val selectedUserSession: MutableStateFlow<String> = _selectedUserSession
+    private val _selectedUserSessionId: MutableStateFlow<String> = MutableStateFlow("")
+    val selectedUserSessionId: MutableStateFlow<String> = _selectedUserSessionId
+
+    private val _disabled: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
     private val _currentToken = MutableStateFlow<String>(((application.applicationContext as AndroidCleanArchitecture).getEncryptedPreferencesValue("userToken")) as String)
     val token : StateFlow<String> = _currentToken
@@ -126,8 +132,8 @@ class HomeViewModel @Inject constructor(
                                         array.add(JsonObject()
                                             .apply {
                                                 addProperty(
-                                                    "email",
-                                                    it.asJsonObject.get("email").asString
+                                                    "name",
+                                                    it.asJsonObject.get("name").asString
                                                 )
                                                 addProperty(
                                                     "_id",
@@ -159,8 +165,8 @@ class HomeViewModel @Inject constructor(
                                             }*/
 
                             value = JsonObject().also{
+                                it.add("history", ja)
                                 it.add("contributors", ja)
-                                it.add("history", users)
                             }
                         }
                     } ?: run{
@@ -288,7 +294,7 @@ class HomeViewModel @Inject constructor(
                 println("TIME123 Sending message... SENT?" + send)
             }*/
 
-            sendMessage(ws)
+            //sendMessage(ws)
         }
 
     }
@@ -303,6 +309,13 @@ class HomeViewModel @Inject constructor(
 
         // 2. Extract the 'action' property from the JSON object
         val action = jsonObject["action"]?.asString
+
+        //sessionid
+        //val action = jsonObject["action"]?.asString
+        //previousId
+        //val action = jsonObject["action"]?.asString
+        //amount
+        //val action = jsonObject["action"]?.asString
 
         // 3. Use the extracted 'action' in the when statement
         when (action) {
@@ -333,11 +346,20 @@ class HomeViewModel @Inject constructor(
                 // Handle the ACK action
                 println("Socket Action: ACK")
                 _uiStateEvent.value = EventUiState.DEFAULT;
+                jsonObject["hash"]?.let{
+                    _selectedUserSession.value = it.asString
+
+                    _disabled.value = false
+                };
             }
             "REFRESH" -> {
                 // Handle the REFRESH action
                 println("Socket Action: REFRESH")
                 _uiStateEvent.value = EventUiState.DEFAULT;
+                jsonObject["previous"]?.let{
+                    _selectedUserSession.value = it.asString
+                };
+
             }
             "RECEIVER_TIP_BAG" -> {
                 // Handle the RECEIVER_TIP_BAG action
@@ -351,21 +373,61 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun sendTip(){
+
+       // if(!_disabled.value) {
+            viewModelScope.launch(
+                thread.asCoroutineDispatcher() + coroutineExceptionHandler,
+                CoroutineStart.DEFAULT
+            ) {
+
+                val request: Request =
+                    //   Request.Builder().url("ws://34.122.212.113/").build()
+                    Request.Builder().url("ws://3.239.168.240")
+                        .addHeader("Authorization", "Bearer ${token.value}").build()
+                //Request.Builder().url("ws://10.0.2.2:8082").addHeader("Authorization", "Bearer $token").build()
+
+                val listener = object : WebSocketListener() {
+                    override fun onMessage(webSocket: WebSocket, text: String) {
+                        val currentTime: Date = Calendar.getInstance().time
+                        //exampleUiState.addMessage(
+                        //   Message("Web", text, currentTime.toString()))
+                        Log.d("TIME123", "From SOCKET:" + text)
+
+                        handleReceivedText(text)
+
+                    }
+                }
+
+                ws = client.newWebSocket(request, listener)
+                sendMessage(ws)
+            }
+       // }
+        //sendMessage(ws)
+    }
+
     fun sendMessage(ws: WebSocket?){
+        _disabled.value = true
         Log.d("TIME123", "SOCKET CONNECTED?")
         //val send = ws?.send("ANDROID MESSAGE SENT");
         var jsonOb = JSONObject();
         jsonOb.put("action", "TIP_USER");
-        jsonOb.put("sender", currentUser.value?.get("id"));
-        jsonOb.put("receiver", "631baec7904d47fa1348c82d"/*selectedUserToken.value*/);
+        jsonOb.put("sender", currentUser.value?.get("id")?.asString);
+        jsonOb.put("receiver", selectedUser.value?.get("id")?.asString);
         jsonOb.put("value", "1")
-        jsonOb.put("previous", "caUp9YtBpIHC8qe+nTkgf3pdVqTycW2g+CkwcwS1N/w=")
-        jsonOb.put("sessionId", "63d89e47f6f0729279562451")
+        jsonOb.put("previous", selectedUserSession.value)
+        jsonOb.put("sessionId", selectedUserSessionId.value)
+
+        Log.d("TIME123", "WEBSOCKET DATA:" + jsonOb.toString())
 
         val send = ws?.send(jsonOb.toString());
 
         ws?.let {
             println("TIME123 Sending message... SENT?" + send)
+
+            if(!send!!){
+                _disabled.value = false
+            }
         }
     }
 
@@ -416,7 +478,25 @@ class HomeViewModel @Inject constructor(
             token.let {
                 val respo = userUseCases.getUserByIdUseCase(id , token.value)
 
+                val data = JsonObject().also{
+                    it.addProperty("sender", currentUser.value?.get("id")?.asString )
+                    it.addProperty("receiver", id )
+                }
+
+                val respo2 = userUseCases.createSessionByUserUseCase(data , token.value)
+
+                respo2?.get("previous")?.let{
+                _selectedUserSession.value = it.asString
+            };
+
+                respo2?.get("_id")?.let{
+                    _selectedUserSessionId.value = it.asString
+                };
+
                 Log.d("TIME123","SELECTION BY ID....2 "+respo.toString());
+
+                Log.d("TIME123","SELECTION BY ID....2A "+data.toString()+respo2.toString());
+
 
                 _selectedUser.value = respo
 

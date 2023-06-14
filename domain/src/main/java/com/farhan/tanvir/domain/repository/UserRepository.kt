@@ -14,6 +14,8 @@ interface UserRepository {
     suspend fun getCurrentUserWithToken(token: String): JsonObject?
     suspend fun getUserById(id:String, token: String): JsonObject?
     suspend fun getUsersById(historyIds:JsonArray, contributorIds:JsonArray, token: String): JsonObject?
+
+    suspend fun createSessionByUsers(data: JsonObject, token: String): JsonObject?
     suspend fun getAllUsers(): JsonArray?
     suspend fun getAllUsersWithToken(token: String): JsonArray?
     fun getUsersFromDB(userId: Int): Flow<User>

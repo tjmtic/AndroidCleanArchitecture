@@ -19,7 +19,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 
 @ExperimentalPermissionsApi
 @Composable
-fun CameraComponent(modifier: Modifier = Modifier, onHideCamera: () -> Unit) {
+fun CameraComponent(modifier: Modifier = Modifier, onHideCamera: (String) -> Unit) {
     val context = LocalContext.current
     Permission(
         permission = Manifest.permission.CAMERA,
@@ -42,6 +42,6 @@ fun CameraComponent(modifier: Modifier = Modifier, onHideCamera: () -> Unit) {
             }
         }
     ) {
-        CameraPreview(modifier, onHideCamera = {onHideCamera()})
+        CameraPreview(modifier, onHideCamera = {id -> onHideCamera(id)})
     }
 }

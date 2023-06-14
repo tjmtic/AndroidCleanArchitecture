@@ -81,6 +81,21 @@ class UserRemoteDataSourceImpl(private val userApi: UserApi,
         return response.body()
     }
 
+    override suspend fun createSessionByUsers(d: JsonObject): JsonObject? {
+       // TODO("Not yet implemented")
+        /* return flow {
+             val response = userApi.getCurrentUser();
+
+             emit(response.body());
+         }*/
+        val body = JsonObject().also{
+          //  it.addProperty("id", d)
+        }
+        val response = userApi.createSessionByUser(data = d, authedHeaders = headersProvider.getAuthenticatedHeaders(authToken))
+        Log.d("TIME123", "RAW RESPONSE 1: " + response.toString())
+        return response.body()
+    }
+
     override suspend fun getAllUsersById(historyIds: JsonArray, contributorIds: JsonArray): JsonObject?{
         /* return flow {
              val response = userApi.getCurrentUser();

@@ -19,9 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import androidx.paging.compose.collectAsLazyPagingItems
 import com.farhan.tanvir.androidcleanarchitecture.presentation.components.CameraComponent
-import com.farhan.tanvir.androidcleanarchitecture.presentation.screen.details.LoginViewModel
 import com.farhan.tanvir.androidcleanarchitecture.ui.theme.AppContentColor
 import com.farhan.tanvir.androidcleanarchitecture.ui.theme.AppThemeColor
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -70,8 +68,14 @@ fun HomeScreen(navController: NavHostController,
         viewModel.showCamera()
     }
 
-    fun hideCamera(){
+    fun hideCamera(id: String){
         viewModel.hideCamera()
+        println("set selected user with userid..." + id)
+        val fields = id.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+        val lastField = fields[fields.size - 1]
+        println("set selected user with userid.22.." + id)
+
+        viewModel.setSelectedById(lastField)
     }
 
     fun toggleCamera(){
@@ -85,6 +89,10 @@ fun HomeScreen(navController: NavHostController,
 
     fun setUnselectedUser(){
         viewModel.setUnselectedUser();
+    }
+
+    fun sendTip(){
+        viewModel.sendTip();
     }
 
 
@@ -104,7 +112,7 @@ fun HomeScreen(navController: NavHostController,
         },
         content = {
             when(uiStateCamera.value) {
-                is HomeViewModel.CameraUiState.Enabled -> CameraComponent(Modifier.fillMaxSize(), {hideCamera()})
+                is HomeViewModel.CameraUiState.Enabled -> CameraComponent(Modifier.fillMaxSize(), {id -> hideCamera(id)})
                 else -> {
                     when (uiState.value) {
                         is HomeViewModel.HomeUiState.Receive -> ReceiveItem(
@@ -121,7 +129,8 @@ fun HomeScreen(navController: NavHostController,
                             currentUser = currentUser.value,
                             onSetSelectedUser = {id -> setSelectedUserById(id)},
                             onUnsetSelectedUser = {setUnselectedUser()},
-                            navController = navController
+                            navController = navController,
+                            onTip = {sendTip()},
                         )
                         is HomeViewModel.HomeUiState.Default -> SendItem(
                             user = selectedUser.value,
@@ -129,7 +138,8 @@ fun HomeScreen(navController: NavHostController,
                             currentUser = currentUser.value,
                             onSetSelectedUser = {id -> setSelectedUserById(id)},
                             onUnsetSelectedUser = {setUnselectedUser()},
-                            navController = navController
+                            navController = navController,
+                            onTip = {sendTip()},
                         )
                         is HomeViewModel.HomeUiState.Error -> SendItem(
                             user = selectedUser.value,
@@ -137,7 +147,8 @@ fun HomeScreen(navController: NavHostController,
                             currentUser = currentUser.value,
                             onSetSelectedUser = {id -> setSelectedUserById(id)},
                             onUnsetSelectedUser = {setUnselectedUser()},
-                            navController = navController
+                            navController = navController,
+                            onTip = {sendTip()},
                         )
                     }
 
