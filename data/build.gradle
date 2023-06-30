@@ -29,7 +29,7 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
-    namespace 'com.farhan.tanvir.data'
+    namespace 'com.tiphubapps.ax.data'
 }
 
 dependencies {
