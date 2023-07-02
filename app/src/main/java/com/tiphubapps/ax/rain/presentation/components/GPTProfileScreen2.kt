@@ -1,8 +1,11 @@
 package com.tiphubapps.ax.rain.presentation.components
 
 import android.util.Log
+import android.view.MotionEvent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,14 +17,22 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Button
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.rememberSwipeableState
+import androidx.compose.material.swipeable
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -32,12 +43,38 @@ import coil.size.Scale
 import com.tiphubapps.ax.rain.R
 import com.google.gson.JsonObject
 
-
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun GPTProfileScreen2(user: JsonObject?, url: String, onClick: () -> Unit, onTip: () -> Unit) {
     Log.d("TIME123", "PRIFLE SCREEN CHECK: " + url)
+    var startX by remember { mutableStateOf(0f) }
+    val threshold = 80.dp // Adjust the threshold as needed
     Box(
         modifier = Modifier.fillMaxSize().defaultMinSize(400.dp)
+            .pointerInput(Unit) {
+                detectDragGestures { change, dragAmount ->
+                   // Log.d("TIME123", "drag:start"+change.position)
+                   // Log.d("TIME123", "drag:start"+change.pressed)
+
+                    if (change.pressed) {
+                        startX = dragAmount.x
+                        Log.d("TIME123", "init:"+change.pressed+":"+change.position)
+                        Log.d("TIME123", "previouis:"+change.previousPressed+":"+change.previousPosition)
+
+                    } else if (!change.pressed) {
+                        Log.d("TIME123", "init:"+change.pressed+":"+change.position)
+                        Log.d("TIME123", "previouis:"+change.previousPressed+":"+change.previousPosition)
+
+                        val deltaX = dragAmount.x - startX
+                        if (deltaX > threshold.toPx() || deltaX < -threshold.toPx()) {
+                            //onSwipe()
+                            onTip()
+                        }
+                        Log.d("TIME123", "drag:"+dragAmount.x+":"+startX+":"+deltaX)
+
+                    }
+                }
+            }
     ) {
         // Background image
         /*user?.get("images")?.asJsonArray.let {

@@ -79,7 +79,7 @@ fun HomeTopBar(onNavigateToProfile: () -> Unit,
                 )
             }
 
-        }
+        },
     )
 }
 

@@ -106,7 +106,7 @@ fun SendItem(user: JsonObject?,
             .fillMaxHeight()
             .fillMaxWidth(),
         elevation = 4.dp,
-        backgroundColor = Color.Blue
+        backgroundColor = Color.Black
     ) {
         /*Row(
             modifier = Modifier

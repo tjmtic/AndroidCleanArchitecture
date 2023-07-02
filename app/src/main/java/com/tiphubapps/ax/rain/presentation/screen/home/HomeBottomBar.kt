@@ -6,6 +6,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -21,6 +22,8 @@ import androidx.compose.runtime.setValue
 @Composable
 fun HomeBottomBar(onShowSend: () -> Unit,
                onShowReceive: () -> Unit,
+                  onShowBuy: () -> Unit,
+                  onShowProfile: () -> Unit,
                   onShowCamera: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -42,7 +45,9 @@ fun HomeBottomBar(onShowSend: () -> Unit,
 
         // add menu items
         bottomMenuItemsList.add(BottomMenuItem(label = "Receive", icon = Icons.Default.Favorite))
+        bottomMenuItemsList.add(BottomMenuItem(label = "Buy", icon = Icons.Default.AccountBox))
         bottomMenuItemsList.add(BottomMenuItem(label = "Send", icon = Icons.Default.Add))
+        bottomMenuItemsList.add(BottomMenuItem(label = "Profile", icon = Icons.Default.Home))
 
         return bottomMenuItemsList
     }
@@ -81,6 +86,20 @@ fun HomeBottomBar(onShowSend: () -> Unit,
                 enabled = true
             )
 
+            BottomNavigationItem(
+                selected = (false),
+                onClick = {
+                    onShowBuy()
+                },
+                icon = {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Buy"
+                    )
+                },
+                enabled = true
+            )
+
             /*IconButton(onClick = { showCamera() }) {
                 Icon(
                     imageVector = Icons.Default.Add,
@@ -113,6 +132,20 @@ fun HomeBottomBar(onShowSend: () -> Unit,
                     Icon(
                         imageVector = Icons.Default.AccountBox,
                         contentDescription = "Receive"
+                    )
+                },
+                enabled = true
+            )
+
+            BottomNavigationItem(
+                selected = (false),
+                onClick = {
+                    onShowProfile()
+                },
+                icon = {
+                    Icon(
+                        imageVector = Icons.Default.Home,
+                        contentDescription = "Profile"
                     )
                 },
                 enabled = true

@@ -1,6 +1,7 @@
 package com.tiphubapps.ax.rain.presentation.screen.home
 
 
+import android.util.Log
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.FabPosition
@@ -15,6 +16,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -24,6 +27,7 @@ import com.tiphubapps.ax.rain.ui.theme.AppContentColor
 import com.tiphubapps.ax.rain.ui.theme.AppThemeColor
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.tiphubapps.ax.rain.presentation.components.WebViewComponent
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -56,6 +60,13 @@ fun HomeScreen(navController: NavHostController,
         }
     )
 
+    var showWebView1 = remember { mutableStateOf(false) }
+    var extra = token
+    fun toggleWebview1(){
+        showWebView1.value = !showWebView1.value
+    }
+
+
     fun showSend(){
         viewModel.showSend()
     }
@@ -67,6 +78,8 @@ fun HomeScreen(navController: NavHostController,
     fun showCamera(){
         viewModel.showCamera()
     }
+
+
 
     fun hideCamera(id: String){
         viewModel.hideCamera()
@@ -111,6 +124,10 @@ fun HomeScreen(navController: NavHostController,
             HomeTopBar({onNavigateToProfile()}, {showSend()}, {showReceive()}, {toggleCamera()})
         },
         content = {
+            if(showWebView1.value){
+                Log.d("TIME123", "Showing webview1:"+extra)
+                WebViewComponent(url = "https://tiphubapps.com/webview/checkout/?token=" + extra)
+            }
             when(uiStateCamera.value) {
                 is HomeViewModel.CameraUiState.Enabled -> CameraComponent(Modifier.fillMaxSize(), { id -> hideCamera(id)})
                 else -> {
@@ -156,7 +173,7 @@ fun HomeScreen(navController: NavHostController,
             }
         },
         bottomBar = {
-            HomeBottomBar({showSend()}, {showReceive()}, {toggleCamera()})
+            HomeBottomBar({showSend()}, {showReceive()}, {toggleWebview1()}, {onNavigateToProfile()}, {toggleCamera()})
         },
         floatingActionButton = {
             FloatingActionButton(onClick = {
