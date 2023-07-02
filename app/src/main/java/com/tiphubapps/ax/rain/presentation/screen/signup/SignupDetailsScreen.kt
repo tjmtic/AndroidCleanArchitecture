@@ -7,6 +7,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.tiphubapps.ax.rain.presentation.screen.login.ForgotItem
+import com.tiphubapps.ax.rain.presentation.screen.login.LoginDetailsContent
 import com.tiphubapps.ax.rain.presentation.screen.login.SignupItem
 import com.tiphubapps.ax.rain.ui.theme.AppContentColor
 
@@ -66,7 +67,7 @@ fun SignupDetailsScreen(
 
             when(uiState.value){
                 //logindetailscontent
-                is LoginViewModel.LoginUiState.Login -> LoginDetailsContent(navController = navController,
+                is LoginViewModel.LoginUiState.Login -> LoginDetailsContent(/*navController = navController,*/
                                                                             {onLoginClick()},
                     {onDisplaySignup()},
                     {onDisplayForgot()},
@@ -88,7 +89,7 @@ fun SignupDetailsScreen(
                     }
                 }
                 //error
-                else -> LoginDetailsContent(navController = navController, { onLoginClick() }, {onDisplaySignup()},
+                else -> LoginDetailsContent(/*navController = navController, */{ onLoginClick() }, {onDisplaySignup()},
                     {onDisplayForgot()}, true)
             }
 

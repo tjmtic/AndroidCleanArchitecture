@@ -24,7 +24,7 @@ import com.tiphubapps.ax.rain.presentation.components.ButtonComponent
 @Composable
 fun LoginItem(onLoginClick: () -> Unit,
               enabled: Boolean,
-                viewModel: LoginViewModel = hiltViewModel()) {
+                /*viewModel: LoginViewModel = hiltViewModel()*/) {
 
     var username by remember { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }

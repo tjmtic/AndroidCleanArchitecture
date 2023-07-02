@@ -1,4 +1,4 @@
-package com.tiphubapps.ax.rain.presentation.screen.details
+package com.tiphubapps.ax.rain.presentation.screen.login
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -10,9 +10,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import com.tiphubapps.ax.rain.R
 import com.tiphubapps.ax.rain.BuildConfig
 import com.tiphubapps.ax.rain.presentation.components.*
@@ -22,12 +21,10 @@ import com.tiphubapps.ax.rain.presentation.components.TextButtonComponent
 
 @Composable
 fun LoginDetailsContent(
-    navController: NavHostController,
     onLoginClick: () -> Unit,
     showSignupClick: () -> Unit,
     showForgotClick: () -> Unit,
     enabled: Boolean,
-    viewModel: LoginViewModel = hiltViewModel()
 ) {
     val scrollState = rememberScrollState()
     Card(
@@ -98,4 +95,15 @@ fun LoginDetailsContent(
             }
         }
     }
+}
+
+@Composable
+@Preview
+fun previewLoginDetailsContent(){
+    LoginDetailsContent(
+        onLoginClick = { },
+        showSignupClick = { /*TODO*/ },
+        showForgotClick = { /*TODO*/ },
+        enabled = true
+    )
 }

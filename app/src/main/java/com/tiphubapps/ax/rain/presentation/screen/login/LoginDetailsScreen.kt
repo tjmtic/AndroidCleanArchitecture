@@ -9,6 +9,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 //import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
@@ -18,7 +19,7 @@ import com.tiphubapps.ax.rain.ui.theme.AppContentColor
 
 @Composable
 fun LoginDetailsScreen(
-    navController: NavHostController,
+    //navController: NavHostController,
     onNavigateToHome: () -> Unit,
     viewModel: LoginViewModel = hiltViewModel(),
 ) {
@@ -138,5 +139,11 @@ fun LoginDetailsScreen(
             //oAuth Login
 
         })
+}
+
+@Composable
+@Preview
+fun previewLoginScreen(){
+    LoginDetailsScreen({})
 }
 

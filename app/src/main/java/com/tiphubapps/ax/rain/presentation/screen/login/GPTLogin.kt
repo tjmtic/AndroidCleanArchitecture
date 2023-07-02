@@ -2,11 +2,14 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
+import androidx.compose.material.darkColors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
@@ -38,14 +41,14 @@ fun GPTLogin(onLoginClick: (String, String) -> Unit,
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF36496D))
+            .background(Color(0xFF000000))
     ) {
-        Image(
+        /*Image(
             painter = painterResource(id = R.drawable.background_image),
             contentDescription = null,
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.FillBounds,
-        )
+        )*/
 
         Column(
             modifier = Modifier
@@ -56,13 +59,25 @@ fun GPTLogin(onLoginClick: (String, String) -> Unit,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Log In",
+                text = "RAIN",
                 style = MaterialTheme.typography.h4,
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(bottom = 24.dp)
             )
+            Text(
+                text = "Let's dive into your account",
+                style = MaterialTheme.typography.h6,
+                modifier = Modifier.padding(horizontal = 8.dp),
+                color = Color.White
+            )
 
+            Text(
+                text = "Email",
+                style = MaterialTheme.typography.subtitle2,
+                modifier = Modifier.fillMaxWidth(),
+                color = Color.White
+            )
             TextField(
                 value = email,
                 onValueChange = { email = it ;  onEvent(LoginViewModel.LoginViewEvent.EmailChanged(it))},
@@ -71,6 +86,17 @@ fun GPTLogin(onLoginClick: (String, String) -> Unit,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 16.dp)
+                    .background(color = Color.DarkGray, RoundedCornerShape(15.dp))
+                    .border(2.dp, Color.DarkGray, RoundedCornerShape(15.dp))
+            )
+
+
+
+            Text(
+                text = "Password",
+                style = MaterialTheme.typography.subtitle2,
+                modifier = Modifier.fillMaxWidth(),
+                color = Color.White
             )
 
             TextField(
@@ -81,10 +107,13 @@ fun GPTLogin(onLoginClick: (String, String) -> Unit,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 16.dp)
+                    .background(color = Color.DarkGray, RoundedCornerShape(15.dp))
+                    .border(2.dp, Color.DarkGray, RoundedCornerShape(15.dp))
             )
 
             Button(
                 onClick = { /*onLoginClick(email, password)*/onEvent(LoginViewModel.LoginViewEvent.LoginClicked) },
+                colors = ButtonDefaults.buttonColors(backgroundColor = Color.Magenta),
                 modifier = Modifier
                     .fillMaxWidth()
                     .scale(buttonScale)
@@ -97,41 +126,20 @@ fun GPTLogin(onLoginClick: (String, String) -> Unit,
                         //onPointerCancel { buttonScale = 1f }
                     }
                     .padding(vertical = 16.dp)
+                    .background(color = Color.Magenta, shape = RoundedCornerShape(25.dp))
+
             ) {
                 Text(
-                    text = "Log In",
+                    text = "Login",
                     style = MaterialTheme.typography.button,
-                    modifier = Modifier.padding(horizontal = 8.dp),
-                    color = Color.White
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 10.dp),
+                    color = Color.White,
                 )
             }
-
-            Button(
-                onClick = { onSignupClick() },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .scale(buttonScale)
-                    .pointerInput(interactionSource) {
-                        detectTapGestures(
-                            onPress = { buttonScale = 0.95f },
-                            //l = { buttonScale = 1f }
-                        )
-                        //onPointerUp { buttonScale = 1f }
-                        //onPointerCancel { buttonScale = 1f }
-                    }
-                    .padding(vertical = 16.dp)
-            ) {
-                Text(
-                    text = "Tap Here to Sign Up!",
-                    style = MaterialTheme.typography.button,
-                    modifier = Modifier.padding(horizontal = 8.dp),
-                    color = Color.White
-                )
-            }
-
 
             Button(
                 onClick = { onForgotClick() },
+                colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent),
                 modifier = Modifier
                     .fillMaxWidth()
                     .scale(buttonScale)
@@ -149,7 +157,39 @@ fun GPTLogin(onLoginClick: (String, String) -> Unit,
                     text = "Forgot Password?",
                     style = MaterialTheme.typography.button,
                     modifier = Modifier.padding(horizontal = 8.dp),
-                    color = Color.White
+                    color = Color.Magenta
+                )
+            }
+
+            Button(
+                onClick = { onSignupClick() },
+                colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .scale(buttonScale)
+                    .pointerInput(interactionSource) {
+                        detectTapGestures(
+                            onPress = { buttonScale = 0.95f },
+                            //l = { buttonScale = 1f }
+                        )
+                        //onPointerUp { buttonScale = 1f }
+                        //onPointerCancel { buttonScale = 1f }
+                    }
+                    .padding(vertical = 16.dp)
+                    .background(color = Color.Black, shape = RoundedCornerShape(25.dp))
+
+            ) {
+                Text(
+                    text = "Don't Have an Account?",
+                    //style = MaterialTheme.typography.button,
+                    modifier = Modifier.padding(horizontal = 8.dp),
+                    color = Color.White,
+                )
+                Text(
+                    text = "Click Here",
+                    //style = MaterialTheme.typography.button,
+                    modifier = Modifier.padding(horizontal = 8.dp),
+                    color = Color.Magenta,
                 )
             }
         }
