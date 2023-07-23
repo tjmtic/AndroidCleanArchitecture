@@ -28,7 +28,7 @@ fun ButtonComponent(text: String, onClick: () -> Unit, enabled: Boolean) {
     Button(
         enabled = enabled,
         onClick = { onClick(); buttonState.value =  if(buttonState.value == ButtonState.IDLE) ButtonState.PRESSED else ButtonState.IDLE },
-        colors = ButtonDefaults.buttonColors(backgroundColor = Color.Blue),
+        colors = ButtonDefaults.buttonColors(backgroundColor = Color.Magenta),
         contentPadding = PaddingValues(
             start = 30.dp,
             top = 12.dp,

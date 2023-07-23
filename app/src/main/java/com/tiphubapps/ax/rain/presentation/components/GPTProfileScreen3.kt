@@ -17,7 +17,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -51,15 +53,15 @@ fun GPTProfileScreen3(user: User, qrImage: Bitmap, onClick : () -> Unit) {
 
     Box(
         modifier = Modifier.fillMaxSize()
-            .background(Color(0xFF36496D))
+            .background(Color(0xFF000000))
     ) {
         // Background image
-        Image(
+        /*Image(
             painter = painterResource(id = R.drawable.background_image),
             contentDescription = null,
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.FillBounds,
-        )
+        )*/
 
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -174,6 +176,7 @@ fun GPTProfileScreen3(user: User, qrImage: Bitmap, onClick : () -> Unit) {
                 //ButtonComponent("Contributors", {onClick()}, true)
             Button(
                 onClick = { onClick() },
+                colors = ButtonDefaults.buttonColors(backgroundColor = Color.Magenta),
                 modifier = Modifier
                     .fillMaxWidth()
                     .scale(buttonScale)
@@ -186,6 +189,7 @@ fun GPTProfileScreen3(user: User, qrImage: Bitmap, onClick : () -> Unit) {
                         //onPointerCancel { buttonScale = 1f }
                     }
                     .padding(vertical = 16.dp)
+                    .background(color = Color.Magenta, shape = RoundedCornerShape(25.dp))
             ) {
                 Text(
                     text = "Contributors",

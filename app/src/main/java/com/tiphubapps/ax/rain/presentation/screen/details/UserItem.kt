@@ -6,19 +6,26 @@ import android.webkit.WebViewClient
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -37,6 +44,8 @@ fun UserItem(user: JsonObject?,
              extra: String,
              viewModel: UserDetailsViewModel = hiltViewModel()) {
 
+    val interactionSource = remember { MutableInteractionSource() }
+    var buttonScale by remember { mutableStateOf(1f) }
 
     var showWebView1 = remember {mutableStateOf(false)}
     var showWebView2 = remember {mutableStateOf(false)}
@@ -71,15 +80,15 @@ fun UserItem(user: JsonObject?,
     }
     Box(
         modifier = Modifier.fillMaxSize()
-            .background(Color(0xFF36496D))
+            .background(Color(0xFF000000))
     ) {
         // Background image
-        Image(
+        /*Image(
             painter = painterResource(id = R.drawable.background_image),
             contentDescription = null,
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.FillBounds,
-        )
+        )*/
 
             Column(
                 Modifier
@@ -208,10 +217,20 @@ fun UserItem(user: JsonObject?,
 
                     Button(
                         onClick = { onLogoutClick() },
+                        colors = ButtonDefaults.buttonColors(backgroundColor = Color.Magenta),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .scale(0.95f)
+                            .scale(buttonScale)
+                            .pointerInput(interactionSource) {
+                                detectTapGestures(
+                                    onPress = { buttonScale = 0.95f },
+                                    //l = { buttonScale = 1f }
+                                )
+                                //onPointerUp { buttonScale = 1f }
+                                //onPointerCancel { buttonScale = 1f }
+                            }
                             .padding(vertical = 16.dp)
+                            .background(color = Color.Magenta, shape = RoundedCornerShape(25.dp))
                     ) {
                         Text(
                             text = "Logout",

@@ -34,7 +34,7 @@ fun UserItem(user: JsonObject) {
             Surface(
                 modifier = Modifier
                     .size(154.dp)
-                    .padding(5.dp),
+                    .padding(15.dp),
                 shape = CircleShape,
                 border = BorderStroke(0.5.dp, Color.LightGray),
                 elevation = 4.dp,

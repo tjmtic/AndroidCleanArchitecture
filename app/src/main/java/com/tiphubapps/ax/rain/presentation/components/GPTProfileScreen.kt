@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ProvideTextStyle
 import androidx.compose.material.Surface
@@ -77,6 +78,7 @@ fun GPTProfileScreen(user: User, onClick : () -> Unit) {
                 // Profile icon with two lines of text
                 Button(
                     onClick = { onClick() },
+                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.Magenta),
                     modifier = Modifier
                         .fillMaxWidth()
                         .scale(buttonScale)
@@ -89,6 +91,7 @@ fun GPTProfileScreen(user: User, onClick : () -> Unit) {
                             //onPointerCancel { buttonScale = 1f }
                         }
                         .padding(vertical = 16.dp)
+                        .background(color = Color.Magenta, shape = RoundedCornerShape(25.dp))
                 ) {
                     Text(
                         text = "Following",

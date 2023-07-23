@@ -4,8 +4,11 @@ import android.util.Log
 import android.view.MotionEvent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,7 +19,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -42,6 +47,10 @@ import coil.compose.rememberImagePainter
 import coil.size.Scale
 import com.tiphubapps.ax.rain.R
 import com.google.gson.JsonObject
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
+import java.util.Timer
+import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -49,28 +58,50 @@ fun GPTProfileScreen2(user: JsonObject?, url: String, onClick: () -> Unit, onTip
     Log.d("TIME123", "PRIFLE SCREEN CHECK: " + url)
     var startX by remember { mutableStateOf(0f) }
     val threshold = 80.dp // Adjust the threshold as needed
+
+    val interactionSource = remember { MutableInteractionSource() }
+    var buttonScale by remember { mutableStateOf(1f) }
+
+
+    var showTip by remember { mutableStateOf(false)}
+
+    fun showTip(){
+        showTip = !showTip;
+
+        /*runBlocking {
+            delay(2000)
+            showTip = false;
+        }*/
+    }
+
     Box(
-        modifier = Modifier.fillMaxSize().defaultMinSize(400.dp)
+        modifier = Modifier
+            .fillMaxSize()
+            .defaultMinSize(400.dp)
             .pointerInput(Unit) {
                 detectDragGestures { change, dragAmount ->
-                   // Log.d("TIME123", "drag:start"+change.position)
-                   // Log.d("TIME123", "drag:start"+change.pressed)
-
+                    // Log.d("TIME123", "drag:start"+change.position)
+                    // Log.d("TIME123", "drag:start"+change.pressed)
+                    Log.d("TIME123", "drag:" + dragAmount.x + ":" + dragAmount.y)
                     if (change.pressed) {
                         startX = dragAmount.x
-                        Log.d("TIME123", "init:"+change.pressed+":"+change.position)
-                        Log.d("TIME123", "previouis:"+change.previousPressed+":"+change.previousPosition)
+                        //Log.d("TIME123", "init:"+change.pressed+":"+change.position)
+                        //Log.d("TIME123", "previouis:"+change.previousPressed+":"+change.previousPosition)
+                        //Log.d("TIME123", "drag:"+startX + ":" + dragAmount.y)
 
                     } else if (!change.pressed) {
-                        Log.d("TIME123", "init:"+change.pressed+":"+change.position)
-                        Log.d("TIME123", "previouis:"+change.previousPressed+":"+change.previousPosition)
+                        Log.d("TIME123", "init2:" + change.pressed + ":" + change.position)
+                        Log.d(
+                            "TIME123",
+                            "previouis2:" + change.previousPressed + ":" + change.previousPosition
+                        )
 
                         val deltaX = dragAmount.x - startX
                         if (deltaX > threshold.toPx() || deltaX < -threshold.toPx()) {
                             //onSwipe()
                             onTip()
                         }
-                        Log.d("TIME123", "drag:"+dragAmount.x+":"+startX+":"+deltaX)
+                        Log.d("TIME123", "drag:" + dragAmount.x + ":" + startX + ":" + deltaX)
 
                     }
                 }
@@ -113,6 +144,9 @@ fun GPTProfileScreen2(user: JsonObject?, url: String, onClick: () -> Unit, onTip
         )*/
 
 
+        if(showTip) {
+            GifImageComponent()
+        }
 
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -186,8 +220,10 @@ fun GPTProfileScreen2(user: JsonObject?, url: String, onClick: () -> Unit, onTip
                 )
             }
 
+            //GifImageComponent()
+
             Button(
-                onClick = { onTip() },
+                onClick = { onTip(); showTip() },
                 modifier = Modifier
                     .fillMaxWidth()
                     .scale(.95f)
@@ -205,10 +241,20 @@ fun GPTProfileScreen2(user: JsonObject?, url: String, onClick: () -> Unit, onTip
 
             Button(
                 onClick = { onClick() },
+                colors = ButtonDefaults.buttonColors(backgroundColor = Color.Magenta),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .scale(1f)
+                    .scale(buttonScale)
+                    .pointerInput(interactionSource) {
+                        detectTapGestures(
+                            onPress = { buttonScale = 0.95f },
+                            //l = { buttonScale = 1f }
+                        )
+                        //onPointerUp { buttonScale = 1f }
+                        //onPointerCancel { buttonScale = 1f }
+                    }
                     .padding(vertical = 16.dp)
+                    .background(color = Color.Magenta, shape = RoundedCornerShape(25.dp))
             ) {
                 Text(
                     text = "Disconnect",

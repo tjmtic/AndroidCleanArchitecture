@@ -82,11 +82,11 @@ fun ReceiveItem(user: JsonObject?,
 
     Card(
         modifier = Modifier
-            //.padding(top = 8.dp)
+            .padding(top = 8.dp)
             .fillMaxHeight()
             .fillMaxWidth(),
         elevation = 4.dp,
-        backgroundColor = Color.Blue
+        backgroundColor = Color.Black
     ) {
 
             Column(

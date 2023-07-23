@@ -33,7 +33,7 @@ fun UserListItem(user: JsonObject?, onClickUser: (String) -> Unit = {}) {
     Card(
         modifier = Modifier
             .padding(8.dp)
-            .height(50.dp)
+            //.height(50.dp)
             .fillMaxWidth(),
         elevation = 12.dp,
         border = BorderStroke(1.5.dp, Color.LightGray),
@@ -65,7 +65,7 @@ fun UserListItem(user: JsonObject?, onClickUser: (String) -> Unit = {}) {
                                 selected = true
                                 Surface(
                                     modifier = Modifier
-                                        .size(154.dp)
+                                        .size(77.dp)
                                         .padding(5.dp),
                                     shape = CircleShape,
                                     border = BorderStroke(0.5.dp, Color.LightGray),
