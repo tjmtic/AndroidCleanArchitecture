@@ -83,6 +83,11 @@ fun GPTProfileScreen2(user: JsonObject?, url: String, onClick: () -> Unit, onTip
                     // Log.d("TIME123", "drag:start"+change.position)
                     // Log.d("TIME123", "drag:start"+change.pressed)
                     Log.d("TIME123", "drag:" + dragAmount.x + ":" + dragAmount.y)
+
+                    if(dragAmount.y <= -30){
+                        onTip()
+                        showTip()
+                    }
                     if (change.pressed) {
                         startX = dragAmount.x
                         //Log.d("TIME123", "init:"+change.pressed+":"+change.position)
@@ -222,7 +227,7 @@ fun GPTProfileScreen2(user: JsonObject?, url: String, onClick: () -> Unit, onTip
 
             //GifImageComponent()
 
-            Button(
+            /*Button(
                 onClick = { onTip(); showTip() },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -235,7 +240,7 @@ fun GPTProfileScreen2(user: JsonObject?, url: String, onClick: () -> Unit, onTip
                     modifier = Modifier.padding(horizontal = 8.dp),
                     color = Color.White
                 )
-            }
+            }*/
 
 
 
