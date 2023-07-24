@@ -1,3 +1,6 @@
+package com.tiphubapps.ax.rain.presentation.screen.login
+
+import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -9,7 +12,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
-import androidx.compose.material.darkColors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
@@ -19,24 +21,30 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tiphubapps.ax.rain.R
+import com.tiphubapps.ax.rain.presentation.helper.DismissibleNotificationBox
+import com.tiphubapps.ax.rain.presentation.helper.LoadingOverlay
+import com.tiphubapps.ax.rain.presentation.helper.ToastMessage
 import com.tiphubapps.ax.rain.presentation.screen.details.LoginViewModel
 
 @Composable
-fun GPTLogin(onLoginClick: (String, String) -> Unit,
-             onSignupClick: () -> Unit,
-             onForgotClick: () -> Unit,
-             onEvent: (LoginViewModel.LoginViewEvent) -> Unit ) {
+fun GPTLogin(
+    state: State<LoginViewModel.LoginViewState>,
+    onLoginClick: (String, String) -> Unit,
+    onSignupClick: () -> Unit,
+    onForgotClick: () -> Unit,
+    onEvent: (LoginViewModel.LoginViewEvent) -> Unit ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
     val interactionSource = remember { MutableInteractionSource() }
     var buttonScale by remember { mutableStateOf(1f) }
+
+    var showToast = state.value.error
+
 
     Box(
         modifier = Modifier
@@ -194,10 +202,45 @@ fun GPTLogin(onLoginClick: (String, String) -> Unit,
             }
         }
     }
+
+    //Loading Indicator Overlay
+    when(state.value.isLoading){
+        true -> {Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0x55000000))
+        )
+            LoadingOverlay(isLoading = true)
+        }
+    }
+
+    //Custom Message Box
+    if (showToast.length > 0) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            DismissibleNotificationBox(
+                iconResId = R.drawable.profile_icon,
+                message = showToast,
+                onDismiss = { onEvent(LoginViewModel.LoginViewEvent.ConsumeError) }
+            )
+            ToastMessage(
+                message = showToast,
+                onEvent = { onEvent(LoginViewModel.LoginViewEvent.ConsumeError) })
+            Log.d("TIME123", "LOGGING TOAST:" + showToast)
+        }
+    }
+
+
 }
 
 @Preview
 @Composable
 fun PreviewLoginScreen() {
-    GPTLogin({_,_->},{},{},{})
+    //com.tiphubapps.ax.rain.presentation.screen.login.GPTLogin(stateOf(LoginViewModel.NetworkUiState.Neutral), { _, _->},{},{},{})
 }

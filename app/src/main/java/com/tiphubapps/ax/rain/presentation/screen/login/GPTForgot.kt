@@ -2,7 +2,9 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -21,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tiphubapps.ax.rain.R
+import com.tiphubapps.ax.rain.presentation.screen.details.LoginViewModel
 
 @Composable
 fun GPTForgot(onButtonClick: (String) -> Unit,
@@ -33,7 +36,7 @@ fun GPTForgot(onButtonClick: (String) -> Unit,
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF36496D))
+            .background(Color(0xFF000000))
     ) {
         Image(
             painter = painterResource(id = R.drawable.background_image),
@@ -58,18 +61,27 @@ fun GPTForgot(onButtonClick: (String) -> Unit,
                 modifier = Modifier.padding(bottom = 24.dp)
             )
 
+            Text(
+                text = "Email",
+                style = MaterialTheme.typography.subtitle2,
+                modifier = Modifier.fillMaxWidth(),
+                color = Color.White
+            )
             TextField(
                 value = email,
-                onValueChange = { email = it },
+                onValueChange = { email = it ;  /*onEvent(LoginViewModel.LoginViewEvent.EmailChanged(it))*/},
                 label = { Text(text = "Email", color = Color.White) },
                 leadingIcon = { Icon(Icons.Default.Email, contentDescription = "Email") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 16.dp)
+                    .background(color = Color.DarkGray, RoundedCornerShape(15.dp))
+                    .border(2.dp, Color.DarkGray, RoundedCornerShape(15.dp))
             )
 
             Button(
                 onClick = { onButtonClick(email) },
+                colors = ButtonDefaults.buttonColors(backgroundColor = Color.Magenta),
                 modifier = Modifier
                     .fillMaxWidth()
                     .scale(buttonScale)
@@ -82,6 +94,7 @@ fun GPTForgot(onButtonClick: (String) -> Unit,
                         //onPointerCancel { buttonScale = 1f }
                     }
                     .padding(vertical = 16.dp)
+                    .background(color = Color.Magenta, shape = RoundedCornerShape(25.dp))
             ) {
                 Text(
                     text = "Reset Password",
@@ -94,7 +107,7 @@ fun GPTForgot(onButtonClick: (String) -> Unit,
 
 
 
-            Button(
+            /*Button(
                 onClick = { showLoginClick() },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -114,6 +127,30 @@ fun GPTForgot(onButtonClick: (String) -> Unit,
                     style = MaterialTheme.typography.button,
                     modifier = Modifier.padding(horizontal = 8.dp),
                     color = Color.White
+                )
+            }*/
+
+            Button(
+                onClick = { showLoginClick() },
+                colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .scale(buttonScale)
+                    .pointerInput(interactionSource) {
+                        detectTapGestures(
+                            onPress = { buttonScale = 0.95f },
+                            //l = { buttonScale = 1f }
+                        )
+                        //onPointerUp { buttonScale = 1f }
+                        //onPointerCancel { buttonScale = 1f }
+                    }
+                    .padding(vertical = 16.dp)
+            ) {
+                Text(
+                    text = "Back to Login",
+                    style = MaterialTheme.typography.button,
+                    modifier = Modifier.padding(horizontal = 8.dp),
+                    color = Color.Magenta
                 )
             }
         }

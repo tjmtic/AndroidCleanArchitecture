@@ -2,7 +2,9 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -23,6 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tiphubapps.ax.rain.R
+import com.tiphubapps.ax.rain.presentation.screen.details.LoginViewModel
 
 @Composable
 fun GPTSignUp(onSignupClick: (String, String) -> Unit,
@@ -38,14 +41,14 @@ fun GPTSignUp(onSignupClick: (String, String) -> Unit,
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF36496D))
+            .background(Color(0xFF000000))
     ) {
-        Image(
+        /*Image(
             painter = painterResource(id = R.drawable.background_image),
             contentDescription = null,
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.FillBounds,
-        )
+        )*/
 
         Column(
             modifier = Modifier
@@ -63,48 +66,85 @@ fun GPTSignUp(onSignupClick: (String, String) -> Unit,
                 modifier = Modifier.padding(bottom = 24.dp)
             )
 
+            Text(
+                text = "Name",
+                style = MaterialTheme.typography.subtitle2,
+                modifier = Modifier.fillMaxWidth(),
+                color = Color.White
+            )
             TextField(
                 value = name,
-                onValueChange = { name = it },
+                onValueChange = { name = it ;  /*onEvent(LoginViewModel.LoginViewEvent.EmailChanged(it))*/ },
                 label = { Text(text = "Name", color = Color.White) },
                 leadingIcon = { Icon(Icons.Default.Person, contentDescription = "Name") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 16.dp)
+                    .background(color = Color.DarkGray, RoundedCornerShape(15.dp))
+                    .border(2.dp, Color.DarkGray, RoundedCornerShape(15.dp))
             )
 
+            Text(
+                text = "Email",
+                style = MaterialTheme.typography.subtitle2,
+                modifier = Modifier.fillMaxWidth(),
+                color = Color.White
+            )
             TextField(
                 value = email,
-                onValueChange = { email = it },
+                onValueChange = { email = it ;  /*onEvent(LoginViewModel.LoginViewEvent.EmailChanged(it))*/ },
                 label = { Text(text = "Email", color = Color.White) },
                 leadingIcon = { Icon(Icons.Default.Email, contentDescription = "Email") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 16.dp)
+                    .background(color = Color.DarkGray, RoundedCornerShape(15.dp))
+                    .border(2.dp, Color.DarkGray, RoundedCornerShape(15.dp))
+            )
+
+
+
+            Text(
+                text = "Password",
+                style = MaterialTheme.typography.subtitle2,
+                modifier = Modifier.fillMaxWidth(),
+                color = Color.White
             )
 
             TextField(
                 value = password,
-                onValueChange = { password = it },
+                onValueChange = { password = it ; /*onEvent(LoginViewModel.LoginViewEvent.PasswordChanged(it))*/ },
                 label = { Text(text = "Password", color = Color.White) },
                 leadingIcon = { Icon(Icons.Default.Lock, contentDescription = "Password") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 16.dp)
+                    .background(color = Color.DarkGray, RoundedCornerShape(15.dp))
+                    .border(2.dp, Color.DarkGray, RoundedCornerShape(15.dp))
+            )
+
+            Text(
+                text = "Confirm Password",
+                style = MaterialTheme.typography.subtitle2,
+                modifier = Modifier.fillMaxWidth(),
+                color = Color.White
             )
 
             TextField(
                 value = confirmPassword,
-                onValueChange = { confirmPassword = it },
+                onValueChange = { confirmPassword = it ; /*onEvent(LoginViewModel.LoginViewEvent.PasswordChanged(it))*/ },
                 label = { Text(text = "Confirm Password", color = Color.White) },
-                leadingIcon = { Icon(Icons.Default.Lock, contentDescription = "Confirm Password") },
+                leadingIcon = { Icon(Icons.Default.Lock, contentDescription = "Password") },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 24.dp)
+                    .padding(bottom = 16.dp)
+                    .background(color = Color.DarkGray, RoundedCornerShape(15.dp))
+                    .border(2.dp, Color.DarkGray, RoundedCornerShape(15.dp))
             )
 
             Button(
-                onClick = { onSignupClick(email, password) },
+                onClick = { onSignupClick(email, password) /*onEvent(LoginViewModel.LoginViewEvent.LoginClicked)*/ },
+                colors = ButtonDefaults.buttonColors(backgroundColor = Color.Magenta),
                 modifier = Modifier
                     .fillMaxWidth()
                     .scale(buttonScale)
@@ -117,17 +157,20 @@ fun GPTSignUp(onSignupClick: (String, String) -> Unit,
                         //onPointerCancel { buttonScale = 1f }
                     }
                     .padding(vertical = 16.dp)
+                    .background(color = Color.Magenta, shape = RoundedCornerShape(25.dp))
+
             ) {
                 Text(
                     text = "Sign Up",
                     style = MaterialTheme.typography.button,
-                    modifier = Modifier.padding(horizontal = 8.dp),
-                    color = Color.White
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 10.dp),
+                    color = Color.White,
                 )
             }
 
             Button(
                 onClick = { showLoginClick() },
+                colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent),
                 modifier = Modifier
                     .fillMaxWidth()
                     .scale(buttonScale)
@@ -142,10 +185,10 @@ fun GPTSignUp(onSignupClick: (String, String) -> Unit,
                     .padding(vertical = 16.dp)
             ) {
                 Text(
-                    text = "Back to Log In",
+                    text = "Back to Login",
                     style = MaterialTheme.typography.button,
                     modifier = Modifier.padding(horizontal = 8.dp),
-                    color = Color.White
+                    color = Color.Magenta
                 )
             }
         }

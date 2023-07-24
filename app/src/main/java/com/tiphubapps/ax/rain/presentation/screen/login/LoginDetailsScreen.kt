@@ -1,7 +1,6 @@
 package com.tiphubapps.ax.rain.presentation.screen.login
 
 import GPTForgot
-import GPTLogin
 import GPTSignUp
 import android.util.Log
 import androidx.compose.animation.animateColorAsState
@@ -9,10 +8,10 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 //import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavHostController
 import com.tiphubapps.ax.rain.presentation.screen.details.LoginViewModel
 import com.tiphubapps.ax.rain.ui.theme.AppContentColor
 
@@ -26,9 +25,13 @@ fun LoginDetailsScreen(
 
 
 
-
+    val state = viewModel.state.collectAsState()//WithLifecycle()
     val uiState = viewModel.uiState.collectAsState()//WithLifecycle()
+    val networkUiState = viewModel.networkUiState.collectAsState()
     val currentToken = viewModel.currentToken.collectAsState()
+
+    var hasError by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     //var username by remember { mutableStateOf("") }
     //var password by rememberSaveable { mutableStateOf("") }
@@ -76,7 +79,16 @@ fun LoginDetailsScreen(
     }
 
 
+    /*LaunchedEffect(hasError) {
+        if (hasError) {
+            // Perform the one-off event, in this case, vibrate the device
+            PerformVibration(context)
 
+            // Optional: Reset the error state after a delay (e.g., 2 seconds)
+            delay(2000)
+            hasError = false
+        }
+    }*/
 
     Scaffold(
        /* topBar={
@@ -96,12 +108,12 @@ fun LoginDetailsScreen(
 
             when(uiState.value){
                 //logindetailscontent
-                is LoginViewModel.LoginUiState.Login -> GPTLogin({username, password -> onLoginClick(username, password)},
+                is LoginViewModel.LoginUiState.Login -> GPTLogin(state, {username, password -> onLoginClick(username, password)},
                     {onDisplaySignup()},
-                    {onDisplayForgot()}, { event ->
-                        onEvent(event)
-                    }
-                );/*LoginDetailsContent(navController = navController,
+                    {onDisplayForgot()}
+                ) { event ->
+                    onEvent(event)
+                };/*LoginDetailsContent(navController = navController,
                                                                             {onLoginClick()},
                     {onDisplaySignup()},
                     {onDisplayForgot()},
@@ -123,16 +135,17 @@ fun LoginDetailsScreen(
                 //After Login Success
                 is LoginViewModel.LoginUiState.Home -> {
                     LaunchedEffect(uiState){
+
                         navigateHome()
                     }
                 }
                 //error
-                else -> GPTLogin({username, password -> onLoginClick(username, password)},
+                else -> GPTLogin(state, {username, password -> onLoginClick(username, password)},
                     {onDisplaySignup()},
-                    {onDisplayForgot()},
-                    { event ->
-                        onEvent(event)
-                    })/*LoginDetailsContent(navController = navController, { onLoginClick() }, {onDisplaySignup()},
+                    {onDisplayForgot()}
+                ) { event ->
+                    onEvent(event)
+                }/*LoginDetailsContent(navController = navController, { onLoginClick() }, {onDisplaySignup()},
                     {onDisplayForgot()}, true)*/
             }
 

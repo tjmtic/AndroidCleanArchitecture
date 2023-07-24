@@ -2,12 +2,18 @@ package com.tiphubapps.ax.rain.presentation.screen.details
 
 import android.app.Application
 import android.content.Context
+import android.util.Log
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.*
 import com.tiphubapps.ax.rain.Rain
 import com.tiphubapps.ax.domain.repository.UserRepository
 import com.tiphubapps.ax.domain.useCase.GetCurrentUserUseCase
 import com.tiphubapps.ax.domain.useCase.UserUseCases
 import com.google.gson.JsonObject
+import com.tiphubapps.ax.domain.repository.AppError
+import com.tiphubapps.ax.domain.repository.Result
+import com.tiphubapps.ax.rain.presentation.helper.performVibration
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,9 +33,13 @@ class LoginViewModel @Inject constructor(
     private val sessionManager = SessionManager(application.applicationContext)
     private val context1 = context
 
+
+    //Not necessary from addition of "_state"
     private val _uiState = MutableStateFlow<LoginUiState>(LoginUiState.Login)
     val uiState: StateFlow<LoginUiState> = _uiState
     private val _networkUiState = MutableStateFlow<NetworkUiState>(NetworkUiState.Neutral)
+    val networkUiState: StateFlow<NetworkUiState> = _networkUiState
+    ////////////
 
     private val _currentToken = MutableStateFlow<String>(((context1 as Rain).getEncryptedPreferencesValue("userToken")) as String)
     val currentToken : StateFlow<String> = _currentToken
@@ -40,7 +50,10 @@ class LoginViewModel @Inject constructor(
     //CONVERT TO FLOW
     //ON COLLECT IF STATE IS LOGIN.SUCCESS -> navigateToHOme
 
-
+    private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        val errorMessage = throwable.message ?: "An error occurred"
+        showToast(errorMessage)
+    }
     fun postLogin(username: String, password:String) {
         viewModelScope.launch (
             Dispatchers.Main, CoroutineStart.DEFAULT
@@ -48,49 +61,34 @@ class LoginViewModel @Inject constructor(
             withContext(Dispatchers.IO) {
                 //Show Loading
                 _networkUiState.value = NetworkUiState.Loading
-                //Send Request
-                ////TODO: Should make a UseCaseFactory , implement invoke() method calls for injection / hoisting
-                userUseCases.postLoginUseCase.username = username
-                userUseCases.postLoginUseCase.password = password
+                _state.value = _state.value.copy(isLoading = true)
 
+                //Remove Loading, Display Error or Success
+                when (val response: Result<List<JsonObject>> = userUseCases.useCaseLogin(username, password)) {
+                       is Result.Success -> (response.data as JsonObject).get("token").let {
+                           _networkUiState.value = NetworkUiState.Success
 
-                //Should set value as current user token in user repository in use case
-                //This object should hold the network response (success/err/err)
-                val response: JsonObject? = userUseCases.postLoginUseCase.invoke()
+                           (getApplication<Application>().applicationContext as Rain).currentUserToken =
+                               it.asString;
+                           //TODO: Convert to flow of userRepository (token/loggedInUser/getCurrentUser)
+                           _uiState.value = LoginUiState.Home
 
-                //val response: Result<String> = userUseCases.postLoginUseCase.invoke()
-                /* response?.get("token")?.let{
-                           // _selectedToken.value = it.asString;
-                println(_selectedToken.value)
+                           sessionManager.saveAuthToken(it.asString)
 
-            }*/
+                           (context1 as Rain).setEncryptedPreferences("userToken", it.asString)
 
-                //Remove Loading, Display Error
-                when (response) {
-                    //    is Result.Success -> networkUiState.value = NetworkUiState.Success
-                    //is Response.Failure -> networkUiState.value = NetworkUiState.Failure(it.value)
-                    //   is Result.Error -> networkUiState.value = NetworkUiState.Error(it.value)
+                       }
+                       is Result.Error -> {
+                                            _networkUiState.value = NetworkUiState.Failure(response.error.toString())
+                                            handleError(response.error)
+                       }
                 }
 
-                response?.get("token")?.let {
-                    // _selectedToken.value = it.asString;
-                    //println(_selectedToken.value)
-                    _networkUiState.value = NetworkUiState.Success
 
-                    (getApplication<Application>().applicationContext as Rain).currentUserToken =
-                        it.asString;
-                    //TODO: Convert to flow of userRepository (token/loggedInUser/getCurrentUser)
-                    _uiState.value = LoginUiState.Home
+                _state.value = _state.value.copy(isLoading = false)
 
-                    sessionManager.saveAuthToken(it.asString)
 
-                    (context1 as Rain).setEncryptedPreferences("userToken", it.asString)
-
-                } ?: run {
-                    // _networkUiState.value = NetworkUiState.Failure(it.value)
-                    _networkUiState.value = NetworkUiState.Failure("Network Error")
-                }
-
+                //TODO: Convert to use case
                 println("current user token = " + userRepository.getCurrentToken())
                 if (userRepository.getCurrentToken() != null) {
                     _uiState.value = LoginUiState.Home
@@ -107,6 +105,32 @@ class LoginViewModel @Inject constructor(
 
     fun postForgot(username:String){
         println("FORGOT ACCOUNT WITH ${username}")
+    }
+
+    fun handleError(error: AppError){
+
+
+        val errorMessage = when(error){
+            is AppError.NetworkError, AppError.ServerError  -> {
+                "Service Issue."
+            }
+
+            is AppError.InputError  -> {
+                "Input Error."
+            }
+
+            is AppError.CustomError -> {
+                error.errorMessage
+            }
+        }
+        _state.value = _state.value.copy(error = errorMessage, errors = _state.value.errors.plus(errorMessage))
+
+        performVibration(context = context1)
+
+        Log.d("TME123", "Viewmodel handle eerror1:" + error.toString())
+        Log.d("TME123", "Viewmodel handle eerror2:" + _state.value)
+
+       // showError(error.toString())
     }
 
     fun getCurrentUser() {
@@ -130,6 +154,13 @@ class LoginViewModel @Inject constructor(
     }
     fun showError(msg: String){
         //toast - text
+        showToast(msg)
+    }
+
+    private fun showToast(message: String, duration: Int = Toast.LENGTH_SHORT) {
+        context1.let {
+            Toast.makeText(it, message, duration).show()
+        }
     }
 
     suspend fun withNetworkModal(wrappedContent: GetCurrentUserUseCase,
@@ -180,22 +211,29 @@ class LoginViewModel @Inject constructor(
 
     ////////FULL STATE-EVENT LIFECYCLE/////////
 
+
     data class LoginViewState(
+        val name: String = "",
         val email: String = "",
         val password: String = "",
         val isLoading: Boolean = false,
-        val error: String = ""
+        val error: String = "",
+        val errors: List<String> = emptyList()
     )
-
-    sealed class LoginViewEvent {
-        data class EmailChanged(val email: String) : LoginViewEvent()
-        data class PasswordChanged(val password: String) : LoginViewEvent()
-        object LoginClicked : LoginViewEvent()
-    }
 
     private val _state = MutableStateFlow(LoginViewState())
     val state : StateFlow<LoginViewState> = _state
 
+    sealed class LoginViewEvent {
+        data class EmailChanged(val email: String) : LoginViewEvent()
+        data class PasswordChanged(val password: String) : LoginViewEvent()
+        data class NameChanged(val name: String) : LoginViewEvent()
+        object LoginClicked : LoginViewEvent()
+        object SignupClicked : LoginViewEvent()
+        object ForgotClicked : LoginViewEvent()
+       // data class CreateError(val name: String) : LoginViewEvent()
+        object ConsumeError : LoginViewEvent()
+    }
     fun onEvent(event: LoginViewEvent) {
         when (event) {
             is LoginViewEvent.EmailChanged -> {
@@ -204,11 +242,51 @@ class LoginViewModel @Inject constructor(
             is LoginViewEvent.PasswordChanged -> {
                 _state.value = _state.value.copy(password = event.password)
             }
+            is LoginViewEvent.NameChanged -> {
+                _state.value = _state.value.copy(name = event.name)
+            }
             is LoginViewEvent.LoginClicked -> {
-                // Perform login logic
                 postLogin(_state.value.email, _state.value.password)
-                // Update state based on the result
-                //in postLogin?/////////////////////
+            }
+            is LoginViewEvent.SignupClicked -> {
+                postSignup(_state.value.email, _state.value.password)
+            }
+            is LoginViewEvent.ForgotClicked -> {
+                postForgot(_state.value.email)
+            }
+            is LoginViewEvent.ConsumeError -> {
+                /*_state.value = _state.value.copy(errors = _state.value.errors.filterNot { it  == _state.value.error }).apply{
+                    if (this.errors.isNotEmpty())  _state.value = this.copy(error = _state.value.errors[0])
+                    else _state.value = this.copy(error = "")
+                }*/
+
+                _state.value = _state.value.copy(errors = _state.value.errors.filterNot { it  == _state.value.error }, error = "")
+
+                if (_state.value.errors.isNotEmpty()) { _state.value = _state.value.copy(error = _state.value.errors[0]) }
+                //_state.value = _state.value.copy(error = _state.value.errors[0])
+                   // if (it.errors.isNotEmpty())  it.copy(error = _state.value.errors[0])
+                   // else _state.value = this.copy(error = "")
+
+                Log.d("TIME123", "Consuming error event..." + _state.value)
+
+                /*_state.value = _state.value.apply {
+                    Log.d("TIME123", "Consuming error event11..." )
+
+                    _state.value = this.copy(
+                        errors = _state.value.errors.filterNot { it == _state.value.error },
+                        error = ""
+                    )
+                    Log.d("TIME123", "Consuming error event22..." + _state.value)
+
+                    if (this.errors.isNotEmpty()) { _state.value = this.copy(error = this.errors[0]) }
+
+                    Log.d("TIME123", "Consuming error event33..." + _state.value)
+                }*/
+
+                Log.d("TIME123", "Consuming error event44..." + _state.value)
+
+                //errors.size()
+                //_state.value = _state.value.copy(error =  _state.value.errors[0]?: "")
             }
         }
     }

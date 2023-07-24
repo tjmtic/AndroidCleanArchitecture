@@ -10,7 +10,8 @@ data class UserUseCases(
     val getAllUsersUseCase: GetAllUsersUseCase,
     val getAllUsersWithTokenUseCase: GetAllUsersWithTokenUseCase,
     val getUsersFromDBUseCase: GetUsersFromDBUseCase,
-    val postLoginUseCase: PostLoginUseCase
+    val postLoginUseCase: PostLoginUseCase,
+    val useCaseLogin: UseCaseLogin
 )
 
 interface Invokable{
