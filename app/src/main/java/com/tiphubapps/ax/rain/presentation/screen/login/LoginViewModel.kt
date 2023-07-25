@@ -41,11 +41,13 @@ class LoginViewModel @Inject constructor(
     val networkUiState: StateFlow<NetworkUiState> = _networkUiState
     ////////////
 
+
+    /////TODO: Finalize token handling...1///
     private val _currentToken = MutableStateFlow<String>(((context1 as Rain).getEncryptedPreferencesValue("userToken")) as String)
     val currentToken : StateFlow<String> = _currentToken
 
     val token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjYzMWJhZWM3OTA0ZDQ3ZmExMzQ4YzgyZCIsInVzZXJuYW1lIjoiMTIxMzU1NTEyMTIiLCJleHBpcmUiOjE2ODI3NDQ5MDQ5Mzh9.WAnFXtzPFeWsff6iXv_zUF5CBZhdadbSzNcjgtRCLk0";
-
+    /////////////////////////////////////////
 
     //CONVERT TO FLOW
     //ON COLLECT IF STATE IS LOGIN.SUCCESS -> navigateToHOme
@@ -66,8 +68,9 @@ class LoginViewModel @Inject constructor(
                 //Remove Loading, Display Error or Success
                 when (val response: Result<List<JsonObject>> = userUseCases.useCaseLogin(username, password)) {
                        is Result.Success -> (response.data as JsonObject).get("token").let {
-                           _networkUiState.value = NetworkUiState.Success
 
+
+                           ////TODO: Finalize token handling...2////////////
                            (getApplication<Application>().applicationContext as Rain).currentUserToken =
                                it.asString;
                            //TODO: Convert to flow of userRepository (token/loggedInUser/getCurrentUser)
@@ -76,6 +79,10 @@ class LoginViewModel @Inject constructor(
                            sessionManager.saveAuthToken(it.asString)
 
                            (context1 as Rain).setEncryptedPreferences("userToken", it.asString)
+                           /////////////////////////////////////////////////
+
+                           _networkUiState.value = NetworkUiState.Success
+
 
                        }
                        is Result.Error -> {
@@ -108,6 +115,7 @@ class LoginViewModel @Inject constructor(
     }
 
     fun handleError(error: AppError){
+        performVibration(context = context1)
 
 
         val errorMessage = when(error){
@@ -124,13 +132,6 @@ class LoginViewModel @Inject constructor(
             }
         }
         _state.value = _state.value.copy(error = errorMessage, errors = _state.value.errors.plus(errorMessage))
-
-        performVibration(context = context1)
-
-        Log.d("TME123", "Viewmodel handle eerror1:" + error.toString())
-        Log.d("TME123", "Viewmodel handle eerror2:" + _state.value)
-
-       // showError(error.toString())
     }
 
     fun getCurrentUser() {
@@ -188,6 +189,9 @@ class LoginViewModel @Inject constructor(
         _uiState.value = LoginUiState.Forgot
     }
 
+
+
+    //Should remove these? Extraneous UiState or relevant for other operations?
     sealed class LoginUiState {
         object Home: LoginUiState()
         object Login: LoginUiState()
@@ -204,7 +208,7 @@ class LoginViewModel @Inject constructor(
         data class Error(val exception: Throwable): NetworkUiState()
     }
 
-
+/////////////////////////////////////////////////////////////////////////
 
 
 
@@ -255,38 +259,10 @@ class LoginViewModel @Inject constructor(
                 postForgot(_state.value.email)
             }
             is LoginViewEvent.ConsumeError -> {
-                /*_state.value = _state.value.copy(errors = _state.value.errors.filterNot { it  == _state.value.error }).apply{
-                    if (this.errors.isNotEmpty())  _state.value = this.copy(error = _state.value.errors[0])
-                    else _state.value = this.copy(error = "")
-                }*/
-
                 _state.value = _state.value.copy(errors = _state.value.errors.filterNot { it  == _state.value.error }, error = "")
 
+                //Reset Current Error if one exists
                 if (_state.value.errors.isNotEmpty()) { _state.value = _state.value.copy(error = _state.value.errors[0]) }
-                //_state.value = _state.value.copy(error = _state.value.errors[0])
-                   // if (it.errors.isNotEmpty())  it.copy(error = _state.value.errors[0])
-                   // else _state.value = this.copy(error = "")
-
-                Log.d("TIME123", "Consuming error event..." + _state.value)
-
-                /*_state.value = _state.value.apply {
-                    Log.d("TIME123", "Consuming error event11..." )
-
-                    _state.value = this.copy(
-                        errors = _state.value.errors.filterNot { it == _state.value.error },
-                        error = ""
-                    )
-                    Log.d("TIME123", "Consuming error event22..." + _state.value)
-
-                    if (this.errors.isNotEmpty()) { _state.value = this.copy(error = this.errors[0]) }
-
-                    Log.d("TIME123", "Consuming error event33..." + _state.value)
-                }*/
-
-                Log.d("TIME123", "Consuming error event44..." + _state.value)
-
-                //errors.size()
-                //_state.value = _state.value.copy(error =  _state.value.errors[0]?: "")
             }
         }
     }

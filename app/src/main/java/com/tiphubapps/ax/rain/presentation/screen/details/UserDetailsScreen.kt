@@ -42,6 +42,8 @@ fun UserDetailsScreen(
                         onNavigateToLogin()
                     }
                 }
+
+                else -> {}
             }
             UserItem(
                 user = currentUser.value,

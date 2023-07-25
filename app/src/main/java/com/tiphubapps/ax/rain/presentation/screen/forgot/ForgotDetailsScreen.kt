@@ -80,6 +80,7 @@ fun ForgotDetailsScreen(
                 //error
                 //else -> ForgotDetailsContent(navController = navController, { onLoginClick() }, {onDisplaySignup()},
                  //   {onDisplayForgot()}, true)
+                else -> {}
             }
 
             //oAuth Login

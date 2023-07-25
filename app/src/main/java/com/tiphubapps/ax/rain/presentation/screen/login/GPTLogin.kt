@@ -216,6 +216,8 @@ fun GPTLogin(
         )
             LoadingOverlay(isLoading = true)
         }
+
+        else -> {}
     }
 
     //Custom Message Box

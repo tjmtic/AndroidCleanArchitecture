@@ -459,6 +459,7 @@ class HomeViewModel @Inject constructor(
         when(_uiStateCamera.value){
             is CameraUiState.Enabled -> _uiStateCamera.value = CameraUiState.Disabled
             is CameraUiState.Disabled -> _uiStateCamera.value = CameraUiState.Enabled
+            else -> {}
         }
     }
 
