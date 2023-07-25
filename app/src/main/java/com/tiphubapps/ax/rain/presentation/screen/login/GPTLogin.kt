@@ -32,18 +32,22 @@ import com.tiphubapps.ax.rain.presentation.screen.details.LoginViewModel
 
 @Composable
 fun GPTLogin(
-    state: State<LoginViewModel.LoginViewState>,
+    state: LoginViewModel.LoginViewState,
     onLoginClick: (String, String) -> Unit,
     onSignupClick: () -> Unit,
     onForgotClick: () -> Unit,
-    onEvent: (LoginViewModel.LoginViewEvent) -> Unit ) {
+    onEvent: (LoginViewModel.LoginViewEvent) -> Unit ,
+    onEventEmail: (String) -> Unit,
+    onEventPassword: (String) -> Unit,
+    onEventLogin: () -> Unit,
+){
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
     val interactionSource = remember { MutableInteractionSource() }
     var buttonScale by remember { mutableStateOf(1f) }
 
-    var showToast = state.value.error
+    var showToast = state.error
 
 
     Box(
@@ -87,8 +91,8 @@ fun GPTLogin(
                 color = Color.White
             )
             TextField(
-                value = email,
-                onValueChange = { email = it ;  onEvent(LoginViewModel.LoginViewEvent.EmailChanged(it))},
+                value = state.email,
+                onValueChange = { /*email = it ;*/  onEventEmail(it)},
                 label = { Text(text = "Email", color = Color.White) },
                 leadingIcon = { Icon(Icons.Default.Email, contentDescription = "Email") },
                 modifier = Modifier
@@ -109,7 +113,7 @@ fun GPTLogin(
 
             TextField(
                 value = password,
-                onValueChange = { password = it ; onEvent(LoginViewModel.LoginViewEvent.PasswordChanged(it)) },
+                onValueChange = { password = it ;/* onEvent(LoginViewModel.LoginViewEvent.PasswordChanged(it))*/ onEventPassword(it) },
                 label = { Text(text = "Password", color = Color.White) },
                 leadingIcon = { Icon(Icons.Default.Lock, contentDescription = "Password") },
                 modifier = Modifier
@@ -120,7 +124,7 @@ fun GPTLogin(
             )
 
             Button(
-                onClick = { /*onLoginClick(email, password)*/onEvent(LoginViewModel.LoginViewEvent.LoginClicked) },
+                onClick = { /*onLoginClick(email, password)*//*onEvent(LoginViewModel.LoginViewEvent.LoginClicked)*/onEventLogin() },
                 colors = ButtonDefaults.buttonColors(backgroundColor = Color.Magenta),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -204,7 +208,7 @@ fun GPTLogin(
     }
 
     //Loading Indicator Overlay
-    when(state.value.isLoading){
+    when(state.isLoading){
         true -> {Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -242,5 +246,12 @@ fun GPTLogin(
 @Preview
 @Composable
 fun PreviewLoginScreen() {
-    //com.tiphubapps.ax.rain.presentation.screen.login.GPTLogin(stateOf(LoginViewModel.NetworkUiState.Neutral), { _, _->},{},{},{})
+    GPTLogin(LoginViewModel.LoginViewState(
+        name="",
+        email = "ttest e",
+        password = "",
+        isLoading = false,
+        error = "",
+        errors = emptyList()),
+        { _, _->},{},{},{},{},{},{})
 }

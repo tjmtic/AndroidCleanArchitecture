@@ -108,45 +108,53 @@ fun LoginDetailsScreen(
 
             when(uiState.value){
                 //logindetailscontent
-                is LoginViewModel.LoginUiState.Login -> GPTLogin(state, {username, password -> onLoginClick(username, password)},
-                    {onDisplaySignup()},
-                    {onDisplayForgot()}
-                ) { event ->
-                    onEvent(event)
-                };/*LoginDetailsContent(navController = navController,
-                                                                            {onLoginClick()},
+                is LoginViewModel.LoginUiState.Login -> GPTLogin(state.value, {username, password -> onLoginClick(username, password)},
                     {onDisplaySignup()},
                     {onDisplayForgot()},
-                                                                            true)*/
+                    { event ->
+                        onEvent(event)
+                    },
+                    { email ->
+                        onEvent(LoginViewModel.LoginViewEvent.EmailChanged(email))
+                    },
+                    { password ->
+                        onEvent(LoginViewModel.LoginViewEvent.PasswordChanged(password))
+                    },
+                    {
+                        onEvent(LoginViewModel.LoginViewEvent.LoginClicked)
+                    })
+
                 //signupitem
                 is LoginViewModel.LoginUiState.Signup -> GPTSignUp({ username, password -> onSignupClick(username, password)},
                                                                     {onDisplayLogin()})
-                /*SignupItem({ username, password -> onSignupClick(username, password)},
-                    {onDisplayLogin()},
-                    {onDisplayForgot()},
-                    true)*/
+
                 //forgotitem
                 is LoginViewModel.LoginUiState.Forgot -> GPTForgot({ username -> onForgotClick(username) },
                                                                     {onDisplayLogin()})
-                /*ForgotItem({ username -> onForgotClick(username) },
-                    {onDisplayLogin()},
-                    {onDisplaySignup()},
-                    true)*/
+
                 //After Login Success
                 is LoginViewModel.LoginUiState.Home -> {
                     LaunchedEffect(uiState){
-
                         navigateHome()
                     }
                 }
                 //error
-                else -> GPTLogin(state, {username, password -> onLoginClick(username, password)},
+                else -> GPTLogin(state.value, {username, password -> onLoginClick(username, password)},
                     {onDisplaySignup()},
-                    {onDisplayForgot()}
-                ) { event ->
-                    onEvent(event)
-                }/*LoginDetailsContent(navController = navController, { onLoginClick() }, {onDisplaySignup()},
-                    {onDisplayForgot()}, true)*/
+                    {onDisplayForgot()},
+                    { event ->
+                        onEvent(event)
+                    },
+                    { email ->
+                        onEvent(LoginViewModel.LoginViewEvent.EmailChanged(email))
+                    },
+                    { password ->
+                        onEvent(LoginViewModel.LoginViewEvent.PasswordChanged(password))
+                    },
+                    {
+                        onEvent(LoginViewModel.LoginViewEvent.LoginClicked)
+                    }
+                )
             }
 
             //oAuth Login
