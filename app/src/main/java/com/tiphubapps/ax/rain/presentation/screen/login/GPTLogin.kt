@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import com.tiphubapps.ax.rain.R
 import com.tiphubapps.ax.rain.presentation.helper.DismissibleNotificationBox
 import com.tiphubapps.ax.rain.presentation.helper.LoadingOverlay
+import com.tiphubapps.ax.rain.presentation.helper.SwipeDismissableCard
 import com.tiphubapps.ax.rain.presentation.helper.ToastMessage
 import com.tiphubapps.ax.rain.presentation.screen.details.LoginViewModel
 
@@ -238,6 +239,10 @@ fun GPTLogin(
             ToastMessage(
                 message = showToast,
                 onEvent = { onEvent(LoginViewModel.LoginViewEvent.ConsumeError) })
+
+            SwipeDismissableCard {
+                {}
+            }
             Log.d("TIME123", "LOGGING TOAST:" + showToast)
         }
     }

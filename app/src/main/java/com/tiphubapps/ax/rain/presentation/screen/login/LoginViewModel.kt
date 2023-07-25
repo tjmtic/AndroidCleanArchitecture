@@ -264,6 +264,8 @@ class LoginViewModel @Inject constructor(
                 //Reset Current Error if one exists
                 if (_state.value.errors.isNotEmpty()) { _state.value = _state.value.copy(error = _state.value.errors[0]) }
             }
+
+            else -> {}
         }
     }
 }
