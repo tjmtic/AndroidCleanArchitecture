@@ -30,6 +30,8 @@ import com.tiphubapps.ax.rain.presentation.screen.details.LoginViewModel
 @Composable
 fun GPTSignUp(onSignupClick: (String, String) -> Unit,
               showLoginClick: () -> Unit) {
+
+    val pattern = remember { Regex("^\\d+\$") }
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -85,7 +87,7 @@ fun GPTSignUp(onSignupClick: (String, String) -> Unit,
             )
 
             Text(
-                text = "Email",
+                text = "Phone Number",
                 style = MaterialTheme.typography.subtitle2,
                 modifier = Modifier.fillMaxWidth(),
                 color = Color.White
@@ -93,7 +95,7 @@ fun GPTSignUp(onSignupClick: (String, String) -> Unit,
             TextField(
                 value = email,
                 onValueChange = { email = it ;  /*onEvent(LoginViewModel.LoginViewEvent.EmailChanged(it))*/ },
-                label = { Text(text = "Email", color = Color.White) },
+                label = { Text(text = "Phone Number", color = Color.White) },
                 leadingIcon = { Icon(Icons.Default.Email, contentDescription = "Email") },
                 modifier = Modifier
                     .fillMaxWidth()

@@ -6,6 +6,7 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
@@ -22,6 +23,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tiphubapps.ax.rain.R
@@ -44,6 +46,8 @@ fun GPTLogin(
     onEventPassword: (String) -> Unit,
     onEventLogin: () -> Unit,
 ){
+
+    val pattern = remember { Regex("^\\d+\$") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
@@ -88,16 +92,17 @@ fun GPTLogin(
             )
 
             Text(
-                text = "Email",
+                text = "Phone Number",
                 style = MaterialTheme.typography.subtitle2,
                 modifier = Modifier.fillMaxWidth(),
                 color = Color.White
             )
             TextField(
                 value = state.email,
-                onValueChange = { /*email = it ;*/  onEventEmail(it)},
-                label = { Text(text = "Email", color = Color.White) },
+                onValueChange = { /*email = it ;*/  if(it.matches(pattern)){onEventEmail(it)}},
+                label = { Text(text = "Phone Number", color = Color.White) },
                 leadingIcon = { Icon(Icons.Default.Email, contentDescription = "Email") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 16.dp)
