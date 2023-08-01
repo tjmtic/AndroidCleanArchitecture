@@ -30,6 +30,7 @@ import com.tiphubapps.ax.rain.R
 import com.tiphubapps.ax.rain.presentation.helper.DismissibleNotificationBox
 import com.tiphubapps.ax.rain.presentation.helper.ExternalBrowserLink
 import com.tiphubapps.ax.rain.presentation.helper.LoadingOverlay
+import com.tiphubapps.ax.rain.presentation.helper.LoginIcon
 import com.tiphubapps.ax.rain.presentation.helper.SimpleWebView
 import com.tiphubapps.ax.rain.presentation.helper.SwipeDismissableCard
 import com.tiphubapps.ax.rain.presentation.helper.ToastMessage
@@ -77,6 +78,9 @@ fun GPTLogin(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+
+            LoginIcon()
+
             Text(
                 text = "RAIN",
                 style = MaterialTheme.typography.h4,

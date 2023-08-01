@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
@@ -25,6 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tiphubapps.ax.rain.R
+import com.tiphubapps.ax.rain.presentation.helper.LoginIcon
 import com.tiphubapps.ax.rain.presentation.screen.details.LoginViewModel
 
 @Composable
@@ -60,6 +62,14 @@ fun GPTSignUp(onSignupClick: (String, String) -> Unit,
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            /*Image(
+                painter = painterResource(id = R.mipmap.logo1024),
+                contentDescription = "Login Icon",
+                modifier = Modifier.size(120.dp).clip(RoundedCornerShape(24.dp)),
+            )*/
+
+            LoginIcon()
+
             Text(
                 text = "Sign Up",
                 style = MaterialTheme.typography.h4,

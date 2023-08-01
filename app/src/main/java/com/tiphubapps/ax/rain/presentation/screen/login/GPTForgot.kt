@@ -23,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tiphubapps.ax.rain.R
+import com.tiphubapps.ax.rain.presentation.helper.LoginIcon
 import com.tiphubapps.ax.rain.presentation.screen.details.LoginViewModel
 
 @Composable
@@ -53,6 +54,8 @@ fun GPTForgot(onButtonClick: (String) -> Unit,
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            LoginIcon()
+
             Text(
                 text = "Reset Password",
                 style = MaterialTheme.typography.h4,
