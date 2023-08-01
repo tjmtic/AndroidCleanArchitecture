@@ -26,7 +26,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tiphubapps.ax.rain.R
 import com.tiphubapps.ax.rain.presentation.helper.DismissibleNotificationBox
+import com.tiphubapps.ax.rain.presentation.helper.ExternalBrowserLink
 import com.tiphubapps.ax.rain.presentation.helper.LoadingOverlay
+import com.tiphubapps.ax.rain.presentation.helper.SimpleWebView
 import com.tiphubapps.ax.rain.presentation.helper.SwipeDismissableCard
 import com.tiphubapps.ax.rain.presentation.helper.ToastMessage
 import com.tiphubapps.ax.rain.presentation.screen.details.LoginViewModel
@@ -205,6 +207,9 @@ fun GPTLogin(
                     color = Color.Magenta,
                 )
             }
+
+
+            ExternalBrowserLink(clickableText = "Privacy Policy", url = "https://tiphubapps.com/privacy/" )
         }
     }
 
@@ -240,8 +245,9 @@ fun GPTLogin(
                 message = showToast,
                 onEvent = { onEvent(LoginViewModel.LoginViewEvent.ConsumeError) })
 
-            SwipeDismissableCard {
-                {}
+            SwipeDismissableCard(showToast) {
+
+                {onEvent(LoginViewModel.LoginViewEvent.ConsumeError) }
             }
             Log.d("TIME123", "LOGGING TOAST:" + showToast)
         }

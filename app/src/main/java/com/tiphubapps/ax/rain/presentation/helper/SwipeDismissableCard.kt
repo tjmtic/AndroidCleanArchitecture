@@ -21,7 +21,7 @@ import com.tiphubapps.ax.rain.presentation.screen.login.GPTLogin
 import kotlinx.coroutines.launch
 
 @Composable
-fun SwipeDismissableCard(onDismiss: () -> Unit) {
+fun SwipeDismissableCard(message: String, onDismiss: () -> Unit) {
     var offsetX by remember { mutableStateOf(0f) }
     val dismissOffset = 1000f
     val animatableOffset = remember { Animatable(0f) }
@@ -62,7 +62,7 @@ fun SwipeDismissableCard(onDismiss: () -> Unit) {
                     modifier = Modifier.size(24.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Swipe to dismiss")
+                Text(message)
             }
         }
     }
@@ -80,5 +80,6 @@ fun SwipeDismissableCard(onDismiss: () -> Unit) {
 @Composable
 fun PreviewSwipeDismissableCard() {
     SwipeDismissableCard(
+        message = "Swipe to Dismiss",
         {})
 }

@@ -7,6 +7,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.tiphubapps.ax.rain.presentation.helper.SimpleWebView
 import com.tiphubapps.ax.rain.ui.theme.AppContentColor
 import com.tiphubapps.ax.rain.ui.theme.AppThemeColor
 
@@ -49,6 +50,9 @@ fun UserDetailsScreen(
                 user = currentUser.value,
                 extra = token.value
             )
+
+            SimpleWebView(title = "Privacy Policy", url = "http://www.tiphubapps.com/privacy/" )
+
 
         })
 }
