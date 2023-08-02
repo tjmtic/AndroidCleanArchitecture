@@ -65,7 +65,9 @@ fun CameraPreview(
                     //qrCodeFoundButton!!.visibility = View.VISIBLE
                     println("QR CODE!!:")
                     println(_qrCode);
-                    hideCamera(_qrCode)
+                    val codeId = _qrCode.split("id=")
+                    println(codeId);
+                    hideCamera(codeId[1])
                 }
 
                 override fun qrCodeNotFound() {

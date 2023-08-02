@@ -25,9 +25,10 @@ class Rain : Application(){
     }
 
     fun generateQR(base: String): Bitmap? {
+        val qrCodeString = "https://www.tiphubapps.com/public?id=$base";
         try {
             val barcodeEncoder = BarcodeEncoder()
-            val bitmap = barcodeEncoder.encodeBitmap("content", BarcodeFormat.QR_CODE, 400, 400)
+            val bitmap = barcodeEncoder.encodeBitmap(qrCodeString, BarcodeFormat.QR_CODE, 400, 400)
             //val imageViewQrCode: ImageView = findViewById(R.id.qrCode) as ImageView
             //imageViewQrCode.setImageBitmap(bitmap)
             return bitmap
