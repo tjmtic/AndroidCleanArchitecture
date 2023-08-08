@@ -2,11 +2,13 @@ package com.tiphubapps.ax.rain.presentation.screen.details
 
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.tiphubapps.ax.rain.presentation.helper.ExternalBrowserLink
 import com.tiphubapps.ax.rain.presentation.helper.SimpleWebView
 import com.tiphubapps.ax.rain.ui.theme.AppContentColor
 import com.tiphubapps.ax.rain.ui.theme.AppThemeColor
@@ -18,6 +20,7 @@ fun UserDetailsScreen(
     onNavigateToHome: () -> Unit,
     onNavigateToLogin: () -> Unit,
     viewModel: UserDetailsViewModel = hiltViewModel(),
+    parameters: String
 ) {
     //viewModel.getUserDetails(userID = userId.toInt())
     //val userDetails by viewModel.selectedUser.collectAsState()
@@ -51,7 +54,11 @@ fun UserDetailsScreen(
                 extra = token.value
             )
 
-            SimpleWebView(title = "Privacy Policy", url = "http://www.tiphubapps.com/privacy/" )
+
+            Text("Parameter from deep link: $parameters")
+
+            //SimpleWebView(title = "Privacy Policy", url = "http://www.tiphubapps.com/privacy/" )
+            ExternalBrowserLink(clickableText = "Privacy Policy", url = "https://tiphubapps.com/privacy/" )
 
 
         })

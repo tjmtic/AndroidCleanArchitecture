@@ -8,4 +8,8 @@ sealed class Screen(val route: String) {
     object UserDetails : Screen("user_details_screen/{userId}") {
         fun passUserId(userId: String) = "user_details_screen/$userId"
     }
+
+    object UserExtras : Screen("user_extras_screen/{parameters}") {
+        fun passUserId(userId: String) = "user_details_screen/$userId"
+    }
 }

@@ -2,6 +2,7 @@ package com.tiphubapps.ax.rain
 
 import android.Manifest
 import android.animation.ObjectAnimator
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -120,6 +121,18 @@ class MainActivity : ComponentActivity() {
        // start()
 
 
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        intent?.handleDeepLink()
+    }
+
+    private fun Intent.handleDeepLink() {
+        val deepLink = this.data
+        if (deepLink != null) {
+            navController.navigate(deepLink)
+        }
     }
 
     private fun setupEncryptedPreferences(){

@@ -3,6 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
     id "dagger.hilt.android.plugin"
+    id("org.jmailen.kotlinter")
 }
 
 android {
@@ -156,6 +157,8 @@ dependencies {
     implementation("androidx.security:security-app-authenticator:1.0.0-alpha02")
     // For App Authentication API testing
     androidTestImplementation("androidx.security:security-app-authenticator:1.0.0-alpha01")
+
+    //ktlintRuleset "com.twitter.compose.rules:ktlint:0.0.26"
 
 
 }
