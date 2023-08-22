@@ -37,6 +37,7 @@ import com.tiphubapps.ax.rain.presentation.components.ButtonComponent
 import com.tiphubapps.ax.rain.presentation.components.CreateImageProfile
 import com.tiphubapps.ax.rain.presentation.components.WebViewComponent
 import com.google.gson.JsonObject
+import com.tiphubapps.ax.rain.presentation.helper.ExternalBrowserLink
 
 
 @Composable
@@ -107,7 +108,7 @@ fun UserItem(user: JsonObject?,
                     Log.d("TIME123", "Showing webview2:"+extra)
                     WebViewComponent(url = "https://tiphubapps.com/webview/payout/?token=" + extra)
                 }
-                if(showWebView3.value){
+                else if(showWebView3.value){
                     Log.d("TIME123", "Showing webview3:"+extra)
                     WebViewComponent(url = "https://tiphubapps.com/webview/avatar/?token=" + extra)
                 }
@@ -123,7 +124,7 @@ fun UserItem(user: JsonObject?,
                     user?.get("images")?.asJsonArray.let {
                         it?.let {
                             for (image in it) {
-                                if (image.asJsonObject.get("type").asString.equals("profile")) {
+                                if (image.asJsonObject.get("type").asString == "profile") {
                                     CreateImageProfile(Modifier.clickable { showWebview3() }, url = image.asJsonObject.get("url").asString)
                                     /*Image(
                                         painter = rememberImagePainter(
@@ -149,7 +150,7 @@ fun UserItem(user: JsonObject?,
                     )
                     user?.get("payerBalance")?.asString?.let {
                         Text(
-                            text = it,
+                            text ="it",
                             style = MaterialTheme.typography.body1.merge(TextStyle(color = Color.White))
                         )
                     }
@@ -239,6 +240,11 @@ fun UserItem(user: JsonObject?,
                             color = Color.White
                         )
                     }
+
+                    //Text("Parameter from deep link: $parameters")
+
+                    //SimpleWebView(title = "Privacy Policy", url = "http://www.tiphubapps.com/privacy/" )
+                    ExternalBrowserLink(clickableText = "Privacy Policy", url = "https://tiphubapps.com/privacy/" )
                 }
             }
 

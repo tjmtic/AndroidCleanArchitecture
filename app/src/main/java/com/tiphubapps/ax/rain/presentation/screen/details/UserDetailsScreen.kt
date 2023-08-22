@@ -55,12 +55,12 @@ fun UserDetailsScreen(
             )
 
 
-            Text("Parameter from deep link: $parameters")
+           /* Text("Parameter from deep link: $parameters")
 
             //SimpleWebView(title = "Privacy Policy", url = "http://www.tiphubapps.com/privacy/" )
             ExternalBrowserLink(clickableText = "Privacy Policy", url = "https://tiphubapps.com/privacy/" )
 
-
+*/
         })
 }
 
