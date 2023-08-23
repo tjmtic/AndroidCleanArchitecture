@@ -10,6 +10,7 @@ import com.tiphubapps.ax.domain.useCase.UserUseCases
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import com.tiphubapps.ax.rain.util.SessionManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineStart
@@ -31,6 +32,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val userUseCases: UserUseCases,
+    private val sessionManager: SessionManager,
     application: Application
 ) : AndroidViewModel(application) {
     //val getAllUsers = userUseCases.getAllUsersUseCase()
@@ -73,7 +75,7 @@ class HomeViewModel @Inject constructor(
 
     private val _disabled: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
-    private val _currentToken = MutableStateFlow<String>(((application.applicationContext as Rain).getEncryptedPreferencesValue("userToken")) as String)
+    private val _currentToken = MutableStateFlow<String>((sessionManager.getEncryptedPreferencesValue("userToken")) as String)
     val token : StateFlow<String> = _currentToken
 
    // private val _socketToken = MutableStateFlow<String>(((application.applicationContext as AndroidCleanArchitecture).currentUserSocketId ) as String)

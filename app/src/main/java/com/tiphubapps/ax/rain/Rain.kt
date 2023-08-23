@@ -21,7 +21,7 @@ class Rain : Application(){
         currentUserToken = null
         currentUserSocketId = "none"
 
-        setEncryptedPreferences("userToken", "0x0");
+        //setEncryptedPreferences("userToken", "0x0");
     }
 
     fun generateQR(base: String): Bitmap? {
@@ -39,7 +39,7 @@ class Rain : Application(){
     }
 
 
-    fun setEncryptedPreferences(key: String, value: String){
+    /*fun setEncryptedPreferences(key: String, value: String){
         val mainKey = MasterKey.Builder(this)
             .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
             .build()
@@ -74,5 +74,5 @@ class Rain : Application(){
         )
 
         return sharedPreferences.getString(key, "");
-    }
+    }*/
 }

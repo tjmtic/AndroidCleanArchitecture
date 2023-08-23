@@ -13,7 +13,6 @@ import com.tiphubapps.ax.domain.repository.UserRepository
 import com.tiphubapps.ax.domain.useCase.GetCurrentUserUseCase
 import com.tiphubapps.ax.domain.useCase.UserUseCases
 import com.google.gson.JsonObject
-import com.tiphubapps.ax.domain.repository.AndroidFrameworkRepository
 import com.tiphubapps.ax.domain.repository.AppError
 import com.tiphubapps.ax.domain.repository.Result
 import com.tiphubapps.ax.rain.R
@@ -29,24 +28,24 @@ import java.util.Locale
 import kotlin.math.absoluteValue
 
 @HiltViewModel
-class LoginViewModel @Inject constructor(
+class LoginInnerViewModel @Inject constructor(
     private val userUseCases: UserUseCases,
     private val userRepository: UserRepository,
-    //private val innerViewModel: LoginInnerViewModel,
-   // private val androidFrameworkRepository: AndroidFrameworkRepository,
-    private val sessionManager: SessionManager,
-    private val application: Application,
-   // @ApplicationContext context: Context
-) : AndroidViewModel(application) {
+    //private val loginViewModel: LoginViewModel
+) : ViewModel() {
 
     init {
-       println("TIME123 LoginViewModel Start")
-        //val innerViewModel = LoginInnerViewModel(userUseCases, userRepository)
+        //TODO: On Login, Save Token to SessionManager and EncryptedPreferences, Application.CurrentUserToken
+        //TODO: System Functions, vibrate, show toast
+        println("TIME123 LoginInnerViewModel Start")
+
+        //mainTest()
+        //val loginViewModel = LoginViewModel(userUseCases, userRepository)
+        //loginViewModel.mainTest()
     }
 
-    //private val sessionManager = SessionManager(application.applicationContext)
+   // private val sessionManager = SessionManager(application.applicationContext)
    // private val context1 = context
-    //val application1 = application
 
 
     //Not necessary from addition of "_state"
@@ -58,10 +57,8 @@ class LoginViewModel @Inject constructor(
 
 
     /////TODO: Finalize token handling...1///
-    private val _currentToken = MutableStateFlow<String>((sessionManager.getEncryptedPreferencesValue("userToken")) as String)
-    val currentToken : StateFlow<String> = _currentToken
-
-    /////////val newTok = MutableStateFlow<String>(sessionManager.fetchAuthToken() as String)
+    //private val _currentToken = MutableStateFlow<String>(((context as Rain).getEncryptedPreferencesValue("userToken")) as String)
+    //val currentToken : StateFlow<String> = _currentToken
 
     //val token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjYzMWJhZWM3OTA0ZDQ3ZmExMzQ4YzgyZCIsInVzZXJuYW1lIjoiMTIxMzU1NTEyMTIiLCJleHBpcmUiOjE2ODI3NDQ5MDQ5Mzh9.WAnFXtzPFeWsff6iXv_zUF5CBZhdadbSzNcjgtRCLk0";
     ////////////////////////////////////////
@@ -94,16 +91,18 @@ class LoginViewModel @Inject constructor(
                        is Result.Success -> (response.data).get("token").let {
 
 
-                           ////TODO: Finalize token handling...2///// SAVE IN A USECASE ///////
-                           (application as Rain).currentUserToken = it.asString;
-                           //TODO: FInalize token handling 3/////// //////////
-                           sessionManager.saveAuthToken(it.asString)
-                           sessionManager.setEncryptedPreferences("userToken", it.asString)
-                           /////////////////////////////////////////////////
+                           ////TODO: Finalize token handling...2////////////
+                          // (getApplication<Application>().applicationContext as Rain).currentUserToken = it.asString;
                            //TODO: Convert to flow of userRepository (token/loggedInUser/getCurrentUser)
                            _uiState.value = LoginUiState.Home
 
+                          // sessionManager.saveAuthToken(it.asString)
+
+                          // (context1 as Rain).setEncryptedPreferences("userToken", it.asString)
+                           /////////////////////////////////////////////////
+
                            _networkUiState.value = NetworkUiState.Success
+
 
                        }
                        is Result.Error -> {
@@ -116,7 +115,7 @@ class LoginViewModel @Inject constructor(
                 _state.value = _state.value.copy(isLoading = false)
 
 
-                //TODO: Convert to use case / flow state
+                //TODO: Convert to use case
                 println("current user token = " + userRepository.getCurrentToken())
                 if (userRepository.getCurrentToken() != null) {
                     _uiState.value = LoginUiState.Home
@@ -138,7 +137,7 @@ class LoginViewModel @Inject constructor(
 
     ////////Android Framework (Espresso Instrumented?)///////////////
     fun handleError(error: AppError){
-        performVibration(context = application.applicationContext)
+      //  performVibration(context = context1)
         updateErrorMessage(error)
     }
 
@@ -148,11 +147,9 @@ class LoginViewModel @Inject constructor(
     }
 
     private fun showToast(message: String, duration: Int = Toast.LENGTH_SHORT) {
-        application.applicationContext.let {
-            Toast.makeText(it, message, duration).show()
-        }
-
-       // androidFrameworkRepository.showToast(message, duration)
+      //  context1.let {
+      //      Toast.makeText(it, message, duration).show()
+       // }
     }
     //////////////////////////////////////////////////////
 

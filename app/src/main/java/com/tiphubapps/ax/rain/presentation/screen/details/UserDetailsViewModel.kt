@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.tiphubapps.ax.rain.Rain
 import com.tiphubapps.ax.domain.useCase.UserUseCases
 import com.google.gson.JsonObject
+import com.tiphubapps.ax.rain.util.SessionManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,6 +17,7 @@ import javax.inject.Inject
 @HiltViewModel
 class UserDetailsViewModel @Inject constructor(
     private val userUseCases: UserUseCases,
+    private val sessionManager: SessionManager,
     application: Application
 ) : AndroidViewModel(application) {
     //private val _selectedUser: MutableStateFlow<User?> = MutableStateFlow(null)
@@ -26,7 +28,7 @@ class UserDetailsViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<LoginUiState>(LoginUiState.Default)
     val uiState: StateFlow<LoginUiState> = _uiState
 
-    private val _currentToken = MutableStateFlow<String>(((application.applicationContext as Rain).getEncryptedPreferencesValue("userToken")) as String)
+    private val _currentToken = MutableStateFlow<String>((sessionManager.getEncryptedPreferencesValue("userToken")) as String)
     val token : StateFlow<String> = _currentToken
 
 
