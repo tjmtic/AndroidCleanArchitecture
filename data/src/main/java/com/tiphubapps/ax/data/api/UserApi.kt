@@ -11,7 +11,7 @@ import retrofit2.http.*
 
 interface UserApi {
     @GET("api/get/user")
-    suspend fun getCurrentUser(@HeaderMap authedHeaders: AuthenticatedHeaders): Response<JsonObject>
+    suspend fun getCurrentUser(): Response<JsonObject>
 
     @POST("api/get/user/id")
     suspend fun getUserById(@Body id: JsonObject, @HeaderMap authedHeaders: AuthenticatedHeaders): Response<JsonObject>

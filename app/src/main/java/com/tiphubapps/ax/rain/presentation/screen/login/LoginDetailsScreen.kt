@@ -27,9 +27,9 @@ fun LoginDetailsScreen(
 
 
     val state = viewModel.state.collectAsStateWithLifecycle()
-    val uiState = viewModel.uiState.collectAsState()//WithLifecycle()
-    val networkUiState = viewModel.networkUiState.collectAsState()
-    val currentToken = viewModel.currentToken.collectAsState()
+    //val uiState = viewModel.uiState.collectAsState()//WithLifecycle()
+    //val networkUiState = viewModel.networkUiState.collectAsState()
+    val currentToken = viewModel.localValueFlow.collectAsStateWithLifecycle()//viewModel.currentToken.collectAsState()
 
     var hasError by remember { mutableStateOf(false) }
     val context = LocalContext.current
@@ -39,9 +39,9 @@ fun LoginDetailsScreen(
 
     //val activity = LocalContext.current as MainActivity
 
-    val backgroundColor by animateColorAsState(when(uiState.value){ is LoginViewModel.LoginUiState.Login -> {Color.Blue}
-                                                                    else -> Color.Magenta})
-    val backgroundColor2 by animateColorAsState(when(uiState.value){ else -> Color.Magenta})
+    //val backgroundColor by animateColorAsState(when(state.value.viewState){ is LoginViewModel.LoginUiState.Login -> {Color.Blue}
+    //                                                                else -> Color.Magenta})
+    //val backgroundColor2 by animateColorAsState(when(state.value.viewState){ else -> Color.Magenta})
 
     fun navigateHome(){
         onNavigateToHome()
@@ -99,15 +99,17 @@ fun LoginDetailsScreen(
         content = {
             //icon and title
 
+            //////WHat is this for???
+            //Fixed later on? Other Effects?
             when(currentToken.value){
-                "" -> Log.d("TIME123", "Empty TOKEN VALUE in LOGIN VIEWMODEL")
+                "" -> Log.d("TIME123", "${it}Empty TOKEN VALUE in LOGIN VIEWMODEL")
                 "0x0" -> Log.d("TIME123", "No TOKEN VALUE in LOGIN VIEWMODEL")
-                else -> LaunchedEffect(uiState){
-                    navigateHome()
+                else -> LaunchedEffect(state.value){
+                    if (state.value.viewState is LoginViewModel.LoginUiState.Home) navigateHome()
                 }
             }
 
-            when(uiState.value){
+            when(state.value.viewState){
                 //logindetailscontent
                 is LoginViewModel.LoginUiState.Login -> GPTLogin(state.value, {username, password -> onLoginClick(username, password)},
                     {onDisplaySignup()},
@@ -134,9 +136,11 @@ fun LoginDetailsScreen(
                                                                     {onDisplayLogin()})
 
                 //After Login Success
+                //Sure this works?
                 is LoginViewModel.LoginUiState.Home -> {
-                    LaunchedEffect(uiState){
-                        navigateHome()
+                    LaunchedEffect(state.value.viewState){
+
+                        if (state.value.viewState is LoginViewModel.LoginUiState.Home) navigateHome()
                     }
                 }
                 //error

@@ -8,6 +8,8 @@ import com.tiphubapps.ax.domain.repository.UserRepository
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import org.json.JSONObject
 
 class UserRepositoryImpl(
@@ -21,6 +23,11 @@ class UserRepositoryImpl(
 
     var currentUser : String?;
 
+    // MutableStateFlow to hold and update the local value
+    private val _localValue = MutableStateFlow("Initial Value")
+    // Expose the value as a StateFlow (immutable view)
+    val localValue: StateFlow<String> = _localValue
+
     init {
         currentUser = null;
         token = null;
@@ -29,10 +36,17 @@ class UserRepositoryImpl(
     val isLoggedIn: Boolean
         get() = currentUser != null
 
+
+
+    fun updateLocalValue(newValue: String) {
+        _localValue.value = newValue
+    }
+
     override suspend fun getCurrentUser(): JsonObject? =
         userRemoteDataSource.getCurrentUser()
 
     override suspend fun getCurrentUserWithToken(token: String): JsonObject? {
+        Log.d("TIME123", "GEtting User with token ${token}")
         userRemoteDataSource.setUserToken(token)
         return userRemoteDataSource.getCurrentUser()
     }
@@ -82,6 +96,8 @@ class UserRepositoryImpl(
             Log.d("TIME123", "ACtual;ly loging in. 666.." + token)
             Log.d("TIME123", "ACtual;ly loging in. 777.." + getCurrentToken())
             setLoggedInUser(it.asString)
+
+            updateLocalValue(it.asString)
         }
 
         return result
@@ -89,6 +105,10 @@ class UserRepositoryImpl(
 
     override fun getCurrentToken(): String?{
         return token;
+    }
+
+    override fun getLocalValueFlow(): StateFlow<String>{
+        return localValue
     }
 
     private fun setLoggedInUser(loggedInUserToken: String) {

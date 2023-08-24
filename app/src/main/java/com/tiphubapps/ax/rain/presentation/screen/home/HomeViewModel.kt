@@ -36,16 +36,16 @@ class HomeViewModel @Inject constructor(
     application: Application
 ) : AndroidViewModel(application) {
     //val getAllUsers = userUseCases.getAllUsersUseCase()
-    val _allUsers: MutableStateFlow<JsonObject?> = MutableStateFlow(JsonObject())
-    val allUsers: MutableStateFlow<JsonObject?> = _allUsers
-    val sendUsers: MutableStateFlow<JsonObject?> = _allUsers
-    val receiveUsers: MutableStateFlow<JsonObject?> = _allUsers
+    private val _allUsers: MutableStateFlow<JsonObject?> = MutableStateFlow(JsonObject())
+    val allUsers: StateFlow<JsonObject?> = _allUsers
+    val sendUsers: StateFlow<JsonObject?> = _allUsers
+    val receiveUsers: StateFlow<JsonObject?> = _allUsers
 
-    val _historyUsers: MutableStateFlow<JsonArray?> = MutableStateFlow(JsonArray())
-    val historyUsers: MutableStateFlow<JsonArray?> = _historyUsers
+    private val _historyUsers: MutableStateFlow<JsonArray?> = MutableStateFlow(JsonArray())
+    val historyUsers: StateFlow<JsonArray?> = _historyUsers
 
-    val _contributorUsers: MutableStateFlow<JsonObject?> = MutableStateFlow(JsonObject())
-    val contributorUsers: MutableStateFlow<JsonObject?> = _contributorUsers
+    private val _contributorUsers: MutableStateFlow<JsonObject?> = MutableStateFlow(JsonObject())
+    val contributorUsers: StateFlow<JsonObject?> = _contributorUsers
 
     //val userSocketId: String;
     private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Default)
@@ -62,16 +62,16 @@ class HomeViewModel @Inject constructor(
 
     //private val _currentUser: MutableLiveData<User> = MutableLiveData(null)
     private val _currentUser: MutableStateFlow<JsonObject?> = MutableStateFlow(JsonObject())
-    val currentUser: MutableStateFlow<JsonObject?> = _currentUser
+    val currentUser: StateFlow<JsonObject?> = _currentUser
 
     private val _selectedUser: MutableStateFlow<JsonObject?> = MutableStateFlow(JsonObject())
-    val selectedUser: MutableStateFlow<JsonObject?> = _selectedUser
-    val selectedUserToken : MutableStateFlow<String?> = MutableStateFlow("");
+    val selectedUser: StateFlow<JsonObject?> = _selectedUser
+    val selectedUserToken : StateFlow<String?> = MutableStateFlow("");
 
     private val _selectedUserSession: MutableStateFlow<String> = MutableStateFlow("")
-    val selectedUserSession: MutableStateFlow<String> = _selectedUserSession
+    val selectedUserSession: StateFlow<String> = _selectedUserSession
     private val _selectedUserSessionId: MutableStateFlow<String> = MutableStateFlow("")
-    val selectedUserSessionId: MutableStateFlow<String> = _selectedUserSessionId
+    val selectedUserSessionId: StateFlow<String> = _selectedUserSessionId
 
     private val _disabled: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
@@ -90,6 +90,7 @@ class HomeViewModel @Inject constructor(
 
     init {
         Log.d("TIME123","initializeing homewVIEWMODEL....0");
+        Log.d("TIME123","initializeing homewVIEWMODEL with tokens... ....${token.value}");
         viewModelScope.launch {
             Log.d("TIME123","initializeing homewVIEWMODEL....1");
 
@@ -97,7 +98,7 @@ class HomeViewModel @Inject constructor(
                 Log.d("TIME123","initializeing homewVIEWMODEL....2");
 
                 _currentUser.value = userUseCases.getCurrentUserWithTokenUseCase(token.value)
-                Log.d("TIME123","initializeing homewVIEWMODEL....3");
+                Log.d("TIME123","initializeing homewVIEWMODEL....3 ${_currentUser.value}");
 
 
                 _historyUsers.apply{
@@ -124,24 +125,23 @@ class HomeViewModel @Inject constructor(
                             val ja = JsonArray().also { array ->
                                 Log.d("TIME123","initializeing homewVIEWMODEL....6");
                                 try {
-                                users.get("history").asJsonArray.mapNotNull {
-                                        array.add(JsonObject()
-                                            .apply {
-                                                addProperty(
-                                                    "name",
-                                                    it.asJsonObject.get("name").asString
-                                                )
-                                                addProperty(
-                                                    "_id",
-                                                    it.asJsonObject.get("_id").asString
-                                                )
-                                                add(
-                                                    "images",
-                                                    it.asJsonObject.get("images").asJsonArray
-                                                )
-                                            })
-
-                                }
+                                    users.get("history").asJsonArray.mapNotNull {
+                                            array.add(JsonObject()
+                                                .apply {
+                                                    addProperty(
+                                                        "name",
+                                                        it.asJsonObject.get("name").asString
+                                                    )
+                                                    addProperty(
+                                                        "_id",
+                                                        it.asJsonObject.get("_id").asString
+                                                    )
+                                                    add(
+                                                        "images",
+                                                        it.asJsonObject.get("images").asJsonArray
+                                                    )
+                                                })
+                                    }
                                 } catch (e: Exception) {
                                     Log.d("TIME123", "Error:" + e.message)
                                     null
@@ -461,7 +461,7 @@ class HomeViewModel @Inject constructor(
         when(_uiStateCamera.value){
             is CameraUiState.Enabled -> _uiStateCamera.value = CameraUiState.Disabled
             is CameraUiState.Disabled -> _uiStateCamera.value = CameraUiState.Enabled
-            else -> {}
+            else -> _uiStateCamera.value = CameraUiState.Disabled
         }
     }
 

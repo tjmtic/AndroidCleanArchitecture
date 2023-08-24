@@ -175,6 +175,8 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
 
     testImplementation "org.mockito.kotlin:mockito-kotlin:5.1.0"
+    // Dependencies for Android instrumented unit tests
+    androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutine_version"
 
 
 }
