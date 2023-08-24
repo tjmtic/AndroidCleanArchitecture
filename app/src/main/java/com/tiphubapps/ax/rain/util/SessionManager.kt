@@ -73,6 +73,13 @@ class SessionManager @Inject constructor(@ApplicationContext private val context
         return sharedPreferences.getString(key, "");
     }
 
+    fun setUserToken(value: String){
+        setEncryptedPreferences("userToken", value)
+    }
+    fun getUserToken(): String?{
+        return getEncryptedPreferencesValue("userToken")
+    }
+
     fun clear(){
         setEncryptedPreferences("userToken","")
     }

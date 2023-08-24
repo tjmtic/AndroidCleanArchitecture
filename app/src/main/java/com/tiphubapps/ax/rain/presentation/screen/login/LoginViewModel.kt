@@ -39,15 +39,30 @@ class LoginViewModel @Inject constructor(
 
     init {
        println("TIME123 LoginViewModel Start")
-
-        //val currentUserToken = MutableStateFlow<String>(userUseCases.getCurrentUserToken
-
         //Initialize token from DB to check for loginUiState?
+        //TODO: SHOULD DO THIS IN MAINACTIVITY?
         sessionManager.getEncryptedPreferencesValue("userToken")?.let {
-            println("TIME123 Saved TOken: ${it}")
             userRepository.updateLocalValue(it)
         }
     }
+
+    ///////// ViewModel State setup ///////////
+    //(OPEN) slugs
+    private val _state = MutableStateFlow(LoginViewState())
+    val state : StateFlow<LoginViewState> = _state
+
+    //(PIPE) Expose the values as a Flows to the UI
+    val localValueFlow: StateFlow<String> = userRepository.getLocalValueFlow()
+
+    //(MIX) Transform Data as appropriate
+    // ...
+
+    ///////////////////////////////////////////
+
+    //////////////////TODO: Get these methods out///////////////////////////////////////////////////
+    // Remove need for APPLICATION references
+    // Then AndroidViewModel can be jsut ViewModel??????!!!!!!!!!
+    // Also hard to test these separately
 
     ////////Android Framework (Espresso Instrumented?)///////////////
     //Add haptic interactions on Composable states instead of calling them here
@@ -67,141 +82,15 @@ class LoginViewModel @Inject constructor(
     }
     //////////////////////////////////////////////////////
 
-    //TODO: implement injection of this
+    //TODO: implement injection of this?
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
         val errorMessage = throwable.message ?: "An error occurred"
         showToast(errorMessage)
     }
-
     ///////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-    //CONVERT TO FLOW
-    //ON COLLECT IF STATE IS LOGIN.SUCCESS -> navigateToHOme
-    // Expose the local value as a Flow to the UI
-    val localValueFlow: StateFlow<String> = userRepository.getLocalValueFlow()
-
-    /////TODO: Finalize token handling...1///
-    //Different Between Auth Token (API), Encrypted Token(WEBSOCKET), CurrentUserToken(USER_ID)???
-    //private val _currentToken = MutableStateFlow<String>((sessionManager.getEncryptedPreferencesValue("userToken")) as String)
-    //val currentToken : StateFlow<String> = _currentToken
-    //val token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjYzMWJhZWM3OTA0ZDQ3ZmExMzQ4YzgyZCIsInVzZXJuYW1lIjoiMTIxMzU1NTEyMTIiLCJleHBpcmUiOjE2ODI3NDQ5MDQ5Mzh9.WAnFXtzPFeWsff6iXv_zUF5CBZhdadbSzNcjgtRCLk0";
-    ////////////////////////////////////////
-
-
-    ///////////////////////////////////////////////////////////
-    //Event ViewModel-Model State -- Mocked Data Tests?
-    //Should be done in DOMAIN module?
-    //Separate lower/inner logic to test?
-    fun postLogin(username: String, password:String) {
-        viewModelScope.launch (
-            Dispatchers.IO, CoroutineStart.DEFAULT
-        ) {
-                //Show Loading
-                _state.value = _state.value.copy(isLoading = true)
-
-                //Remove Loading, Display Error or Success
-                when (val response: Result<JsonObject> = userUseCases.useCaseLogin(username, password)) {
-
-                       is Result.Success -> (response.data).get("data").let {
-
-                           //TODO: Finalize token handling 3/////// //////////
-                           sessionManager.saveAuthToken(it.asString)
-                           sessionManager.setEncryptedPreferences("userToken", it.asString)
-
-                           Log.d("TIME123", "LoginViewModel saved token here: ${it.asString}")
-                           /////////////////////////////////////////////////
-
-
-                           //TODO: Convert to flow of userRepository (token/loggedInUser/getCurrentUser)
-                           //i.e. if there is a logged in token go to home page automatically
-                           //Or not? Set HOME on init[] if sharedPrefs, and set HOME on Login Success AFTER saving to sharedPrefs
-                           _state.value = _state.value.copy(viewState = LoginUiState.Home)
-
-
-                       }
-                       is Result.Error -> { handleError(response.error) }
-                }
-
-
-                _state.value = _state.value.copy(isLoading = false)
-
-
-                //TODO: Convert to class-level use case / flow state
-               // println("current user token = " + userRepository.getCurrentToken())
-                //if (userRepository.getCurrentToken() != null) {
-                //    _state.value = _state.value.copy(viewState = LoginUiState.Home)
-                //}
-        }
-    }
-
-    fun postSignup(username:String, password:String){
-        println("SIGNING UP WITH ${username} and ${password}")
-    }
-
-    fun postForgot(username:String){
-        println("FORGOT ACCOUNT WITH ${username}")
-    }
-    /////////////////////////////////////////////////////////////////
-
-    ////////ViewState Changes (UI tests)//////////////////
-    fun showLogin(){
-        _state.value = _state.value.copy(viewState = LoginUiState.Login)
-    }
-    fun showSignup(){
-        _state.value = _state.value.copy(viewState = LoginUiState.Signup)
-    }
-    fun showForgot(){
-        _state.value = _state.value.copy(viewState = LoginUiState.Forgot)
-    }
-    ////////////////////////////////////////////////////////
-
-
-    //Should remove these? Extraneous UiState or relevant for other operations?
-    //Activity View State, which is different from viewModel ViewState
-    sealed class LoginUiState {
-        object Default: LoginUiState()
-        object Home: LoginUiState()
-        object Login: LoginUiState()
-        object Signup: LoginUiState()
-        object Forgot: LoginUiState()
-        data class Error(val exception: Throwable): LoginUiState()
-    }
-
-
-/////////////////////////////////////////////////////////////////////////
-
-
-
-
-    ////////FULL STATE-EVENT LIFECYCLE/////////
-
-
-    data class LoginViewState(
-        val name: String = "12135551212",
-        val email: String = "",
-        val password: String = "admin",
-        val isLoading: Boolean = false,
-        val error: String = "",
-        val errors: List<String> = emptyList(),
-        val viewState: LoginUiState = LoginUiState.Default
-    )
-
-    private val _state = MutableStateFlow(LoginViewState())
-    val state : StateFlow<LoginViewState> = _state
-
-    sealed class LoginViewEvent {
-        data class EmailChanged(val email: String) : LoginViewEvent()
-        data class PasswordChanged(val password: String) : LoginViewEvent()
-        data class NameChanged(val name: String) : LoginViewEvent()
-        object LoginClicked : LoginViewEvent()
-        object SignupClicked : LoginViewEvent()
-        object ForgotClicked : LoginViewEvent()
-       // data class CreateError(val name: String) : LoginViewEvent()
-        object ConsumeError : LoginViewEvent()
-    }
-
-    /////////////////////Event View-ViewModel State Changes/////////////////////////
+    /////////////////////View Events  --- View-ViewModel State Changes/////////////////////////
     //JUnit ViewModel tests
     fun onEvent(event: LoginViewEvent) {
         when (event) {
@@ -233,23 +122,106 @@ class LoginViewModel @Inject constructor(
             else -> {}
         }
     }
-
     internal fun updateErrorMessage(error: AppError){
-
         val errorMessage = when(error){
             is AppError.NetworkError, AppError.ServerError  -> {
                 "Service Issue."
             }
-
             is AppError.InputError  -> {
                 "Input Error."
             }
-
             is AppError.CustomError -> {
                 error.errorMessage
             }
         }
         _state.value = _state.value.copy(error = errorMessage, errors = _state.value.errors.plus(errorMessage))
+    }
+    ////////////////////////////
+
+    /////////////////////////////COROUTINES//////////////////////////////
+    //Model Events ---  ViewModel-Model State -- Mocked Data Tests?
+    fun postLogin(username: String, password:String) {
+        viewModelScope.launch (
+            //TODO: Injected dispatcher here
+            Dispatchers.IO, CoroutineStart.DEFAULT
+        ) {
+                //TODO: Can this be done when response = Result.Loading?
+                // -- currently there is no Result.Loading...
+                //Show Loading
+                _state.value = _state.value.copy(isLoading = true)
+
+                //Display Error or Success
+                //TODO: Should pass SessionManager with call???
+                // Implicitly save token, only need to display on error?
+                // NO -- do not put higher level module as dependency in lower level module
+                // -- IF sessionManager was a module in DOMAIN it would be acceptable? UTIL module (Feature-Module Architecture)
+                when (val response: Result<JsonObject> = userUseCases.useCaseLogin(username, password)) {
+
+                       is Result.Success -> (response.data).get("data").let {
+                           sessionManager.setUserToken(it.asString)
+                       }
+                       is Result.Error -> { handleError(response.error) }
+                }
+                //Hide loading
+                _state.value = _state.value.copy(isLoading = false)
+        }
+    }
+
+    fun postSignup(username:String, password:String){
+        //TODO: Implement this call
+        println("SIGNING UP WITH ${username} and ${password}")
+    }
+
+    fun postForgot(username:String){
+        //TODO: Implement this call
+        println("FORGOT ACCOUNT WITH ${username}")
+    }
+    /////////////////////////////////////////////////////////////////
+
+    ////////ViewState Changes (UI tests)//////////////////
+    fun showLogin(){
+        _state.value = _state.value.copy(viewState = LoginUiState.Login)
+    }
+    fun showSignup(){
+        _state.value = _state.value.copy(viewState = LoginUiState.Signup)
+    }
+    fun showForgot(){
+        _state.value = _state.value.copy(viewState = LoginUiState.Forgot)
+    }
+    ////////////////////////////////////////////////////////
+
+
+    //ViewModel State Classes
+    data class LoginViewState(
+        val name: String = "",
+        val email: String = "",
+        val password: String = "",
+        val isLoading: Boolean = false,
+        val error: String = "",
+        val errors: List<String> = emptyList(),
+        val viewState: LoginUiState = LoginUiState.Default
+    )
+
+    sealed class LoginUiState {
+        object Default: LoginUiState()
+        object Home: LoginUiState()
+        object Login: LoginUiState()
+        object Signup: LoginUiState()
+        object Forgot: LoginUiState()
+        data class Error(val exception: Throwable): LoginUiState()
+    }
+
+
+    //ViewModel Events
+    sealed class LoginViewEvent {
+        data class EmailChanged(val email: String) : LoginViewEvent()
+        data class PasswordChanged(val password: String) : LoginViewEvent()
+        data class NameChanged(val name: String) : LoginViewEvent()
+        object LoginClicked : LoginViewEvent()
+        object SignupClicked : LoginViewEvent()
+        object ForgotClicked : LoginViewEvent()
+       // data class CreateError(val name: String) : LoginViewEvent()
+        object ConsumeError : LoginViewEvent()
     }
 
 

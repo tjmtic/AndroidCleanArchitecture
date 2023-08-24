@@ -20,7 +20,9 @@ import com.tiphubapps.ax.rain.Rain
 import com.tiphubapps.ax.rain.presentation.screen.details.LoginViewModel
 import com.tiphubapps.ax.rain.util.SessionManager
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.junit.runner.RunWith
 
+//@RunWith(AndroidJUnit4::class)
 @ExperimentalCoroutinesApi
 class LoginInnerViewModelTest {
     private lateinit var mockUseCases : UserUseCases
@@ -215,10 +217,10 @@ class LoginInnerViewModelTest {
 
         val expected = testValue
         val actual = viewModel.state.value.password
-        assertEquals(testValue, actual)
+        assertEquals(expected, actual)
     }
-
-   /* @Test
+/*
+    @Test
     fun test11() = runBlockingTest{
 
     }*/

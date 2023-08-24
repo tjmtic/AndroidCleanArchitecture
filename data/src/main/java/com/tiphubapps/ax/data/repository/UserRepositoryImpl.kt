@@ -7,14 +7,18 @@ import com.tiphubapps.ax.domain.model.User
 import com.tiphubapps.ax.domain.repository.UserRepository
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.withContext
 import org.json.JSONObject
 
 class UserRepositoryImpl(
     private val userRemoteDataSource: UserRemoteDataSource,
     private val userLocalDataSource: UserLocalDataSource,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
    // val authToken: String
 ) :
     UserRepository {
@@ -47,8 +51,10 @@ class UserRepositoryImpl(
 
     override suspend fun getCurrentUserWithToken(token: String): JsonObject? {
         Log.d("TIME123", "GEtting User with token ${token}")
-        userRemoteDataSource.setUserToken(token)
-        return userRemoteDataSource.getCurrentUser()
+        return withContext(ioDispatcher) {
+            userRemoteDataSource.setUserToken(token)
+            return@withContext userRemoteDataSource.getCurrentUser()
+        }
     }
 
     override suspend fun getUserById(id: String, token: String): JsonObject? {
@@ -84,25 +90,30 @@ class UserRepositoryImpl(
         Log.d("TIME123", "ACtual;ly loging in. 444.." + email + password)
         //return userRemoteDataSource.postLogin(email, password)
 
+        return withContext(ioDispatcher) {
+            val result = userRemoteDataSource.postLogin(email, password)
+            Log.d("TIME123", "ACtual;ly loging in. 444xxx.." + result.toString())
 
-        val result = userRemoteDataSource.postLogin(email, password)
-        Log.d("TIME123", "ACtual;ly loging in. 444xxx.." + result.toString())
-
-        /*if (result is Result.Success) {
+            /*if (result is Result.Success) {
             setLoggedInUser(result.data)
         }*/
-        result?.get("token")?.let{
-            this.token = it.asString;
-            Log.d("TIME123", "ACtual;ly loging in. 666.." + token)
-            Log.d("TIME123", "ACtual;ly loging in. 777.." + getCurrentToken())
-            setLoggedInUser(it.asString)
+            result?.get("token")?.let {
+                //this.token = it.asString;
+                setCurrentToken(it.asString)
+                Log.d("TIME123", "ACtual;ly loging in. 666.." + token)
+                Log.d("TIME123", "ACtual;ly loging in. 777.." + getCurrentToken())
+                setLoggedInUser(it.asString)
 
-            updateLocalValue(it.asString)
+                updateLocalValue(it.asString)
+            }
+
+            return@withContext result
         }
-
-        return result
     }
 
+    fun setCurrentToken(value: String){
+        this.token = value
+    }
     override fun getCurrentToken(): String?{
         return token;
     }
