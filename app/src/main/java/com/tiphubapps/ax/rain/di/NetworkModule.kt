@@ -2,6 +2,7 @@ package com.tiphubapps.ax.rain.di
 
 import com.tiphubapps.ax.rain.BuildConfig
 import com.tiphubapps.ax.data.api.UserApi
+import com.tiphubapps.ax.rain.util.AuthInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -18,11 +19,11 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideHttpClient(): OkHttpClient {
+    fun provideHttpClient(authInterceptor: AuthInterceptor): OkHttpClient {
         return OkHttpClient.Builder()
             .readTimeout(20, TimeUnit.SECONDS)
             .connectTimeout(20, TimeUnit.SECONDS)
-            //.addInterceptor(AuthInterceptor())
+            .addInterceptor(authInterceptor)
             .build()
     }
 

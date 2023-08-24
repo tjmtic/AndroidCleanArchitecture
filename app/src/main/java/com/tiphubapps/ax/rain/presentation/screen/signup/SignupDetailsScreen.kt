@@ -19,7 +19,7 @@ fun SignupDetailsScreen(
     viewModel: LoginViewModel = hiltViewModel(),
 ) {
 
-    val uiState = viewModel.uiState.collectAsState()
+    val uiState = viewModel.state.collectAsState()
 
     //var username by remember { mutableStateOf("") }
     //var password by rememberSaveable { mutableStateOf("") }
@@ -64,8 +64,9 @@ fun SignupDetailsScreen(
         backgroundColor = Color.Blue,
         content = {
             //icon and title
+            println("${it}")
 
-            when(uiState.value){
+            when(uiState.value.viewState){
                 //logindetailscontent
                 is LoginViewModel.LoginUiState.Login -> LoginDetailsContent(/*navController = navController,*/
                                                                             {onLoginClick()},

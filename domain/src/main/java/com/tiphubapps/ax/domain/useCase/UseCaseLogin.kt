@@ -26,9 +26,16 @@ class UseCaseLogin(private val userRepository: UserRepository) {
             /////////THIS IS A TODO////////////////////
             if (response?.size()!! >= 0) {
                 val data = response!!.asJsonObject
+
+                val result = data.get("token")?.let {
+                    Result.Success(JsonObject().apply{add("data", it)})
+                } ?:
+                    Result.Error(AppError.ServerError)
+
+
+                return result
             ///////////////////////////////////////////
                 //Timber.d("fetchData: Data fetched successfully")
-                Result.Success(data)
             }
             //Catch and return input exception "invalid username/password"
             //else if (){}

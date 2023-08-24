@@ -63,7 +63,11 @@ class UserRemoteDataSourceImpl(private val userApi: UserApi,
 
             emit(response.body());
         }*/
-        val response = userApi.getCurrentUser(authedHeaders = headersProvider.getAuthenticatedHeaders(authToken))
+        //val response = userApi.getCurrentUser(authedHeaders = headersProvider.getAuthenticatedHeaders(authToken))
+        val response = userApi.getCurrentUser()
+        //Log.d("TIME123", "Got Response with headers ${headersProvider.getAuthenticatedHeaders(authToken)}")
+        Log.d("TIME123", "Got Response with authtoken ${authToken}")
+        Log.d("TIME123", "Got Response with authtoken ${response}")
         return response.body()
     }
 

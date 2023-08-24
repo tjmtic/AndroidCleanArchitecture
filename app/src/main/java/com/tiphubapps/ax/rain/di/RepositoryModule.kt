@@ -8,6 +8,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
 
 @Module
@@ -15,6 +16,7 @@ import dagger.hilt.components.SingletonComponent
 object RepositoryModule {
 
     @Provides
+    @Singleton
     fun provideUsersRepository(
         userRemoteDataSource: UserRemoteDataSource,
         userLocalDataSource: UserLocalDataSource
