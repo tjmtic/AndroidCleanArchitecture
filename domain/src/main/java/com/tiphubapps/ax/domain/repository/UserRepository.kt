@@ -24,6 +24,7 @@ interface UserRepository {
     suspend fun logout()
 
     fun getLocalValueFlow(): StateFlow<String>
+    fun updateLocalValue(value: String)
 }
 
 /**

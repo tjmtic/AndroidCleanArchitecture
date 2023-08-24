@@ -38,8 +38,8 @@ class UserRepositoryImpl(
 
 
 
-    fun updateLocalValue(newValue: String) {
-        _localValue.value = newValue
+    override fun updateLocalValue(value: String) {
+        _localValue.value = value
     }
 
     override suspend fun getCurrentUser(): JsonObject? =

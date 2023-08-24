@@ -104,8 +104,8 @@ fun LoginDetailsScreen(
             when(currentToken.value){
                 "" -> Log.d("TIME123", "${it}Empty TOKEN VALUE in LOGIN VIEWMODEL")
                 "0x0" -> Log.d("TIME123", "No TOKEN VALUE in LOGIN VIEWMODEL")
-                else -> LaunchedEffect(state.value){
-                    if (state.value.viewState is LoginViewModel.LoginUiState.Home) navigateHome()
+                else -> LaunchedEffect(currentToken.value){
+                    /*if (state.value.viewState is LoginViewModel.LoginUiState.Home)*/ navigateHome()
                 }
             }
 
@@ -140,7 +140,7 @@ fun LoginDetailsScreen(
                 is LoginViewModel.LoginUiState.Home -> {
                     LaunchedEffect(state.value.viewState){
 
-                        if (state.value.viewState is LoginViewModel.LoginUiState.Home) navigateHome()
+                        /*if (state.value.viewState is LoginViewModel.LoginUiState.Home)*/ navigateHome()
                     }
                 }
                 //error

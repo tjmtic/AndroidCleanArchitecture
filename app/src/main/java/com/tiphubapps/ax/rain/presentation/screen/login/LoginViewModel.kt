@@ -43,8 +43,10 @@ class LoginViewModel @Inject constructor(
         //val currentUserToken = MutableStateFlow<String>(userUseCases.getCurrentUserToken
 
         //Initialize token from DB to check for loginUiState?
-        val savedToken = sessionManager.getEncryptedPreferencesValue("userToken")
-        println("Saved TOken: ${savedToken}")
+        sessionManager.getEncryptedPreferencesValue("userToken")?.let {
+            println("TIME123 Saved TOken: ${it}")
+            userRepository.updateLocalValue(it)
+        }
     }
 
     ////////Android Framework (Espresso Instrumented?)///////////////
@@ -103,8 +105,6 @@ class LoginViewModel @Inject constructor(
 
                        is Result.Success -> (response.data).get("data").let {
 
-                           ////TODO: Finalize token handling...2///// SAVE IN A USECASE ///////
-                           //(application as Rain).currentUserToken = it.asString;
                            //TODO: Finalize token handling 3/////// //////////
                            sessionManager.saveAuthToken(it.asString)
                            sessionManager.setEncryptedPreferences("userToken", it.asString)
