@@ -22,9 +22,11 @@ import com.tiphubapps.ax.rain.presentation.components.ButtonComponent
 
 
 @Composable
-fun LoginItem(onLoginClick: () -> Unit,
-              enabled: Boolean,
-                /*viewModel: LoginViewModel = hiltViewModel()*/) {
+fun LoginItem(
+    onLoginClick: () -> Unit,
+    enabled: Boolean,
+    /*viewModel: LoginViewModel = hiltViewModel()*/
+) {
 
     var username by remember { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
@@ -34,8 +36,8 @@ fun LoginItem(onLoginClick: () -> Unit,
             .padding(top = 8.dp)
             .height(IntrinsicSize.Max)
             .fillMaxWidth(),
-       // elevation = 0.dp,
-       // backgroundColor = Color.White/*.copy(alpha = 0.8f)*/
+        // elevation = 0.dp,
+        // backgroundColor = Color.White/*.copy(alpha = 0.8f)*/
 
     ) {
         /*Image(painter = painterResource(id = R.mipmap.rain_raindrop_barcode),
@@ -55,7 +57,8 @@ fun LoginItem(onLoginClick: () -> Unit,
         ) {
             Column(
                 Modifier
-                    .height(IntrinsicSize.Max).fillMaxWidth()
+                    .height(IntrinsicSize.Max)
+                    .fillMaxWidth()
                     .padding(
                         end = 2.dp,
                     ),
@@ -65,7 +68,7 @@ fun LoginItem(onLoginClick: () -> Unit,
 
                 OutlinedTextField(
                     value = username,
-                    onValueChange = { username = it ; /*viewModel.updateUsername(username)*/},
+                    onValueChange = { username = it; /*viewModel.updateUsername(username)*/ },
                     label = { Text("Username", style = TextStyle(color = Black)) },
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = Blue,
@@ -76,25 +79,25 @@ fun LoginItem(onLoginClick: () -> Unit,
                     )
                 )
 
-               /* TextField(
-                    value = username,
-                    onValueChange = { username = it ; viewModel.updateUsername(username)},
-                    label = { Text("Username", style = TextStyle(color = Black)) },
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                        focusedBorderColor = Blue,
-                        unfocusedBorderColor = Black,
-                        cursorColor = Blue,
-                        focusedLabelColor = Blue,
-                        backgroundColor = White
-                    )
-                )*/
+                /* TextField(
+                     value = username,
+                     onValueChange = { username = it ; viewModel.updateUsername(username)},
+                     label = { Text("Username", style = TextStyle(color = Black)) },
+                     colors = TextFieldDefaults.outlinedTextFieldColors(
+                         focusedBorderColor = Blue,
+                         unfocusedBorderColor = Black,
+                         cursorColor = Blue,
+                         focusedLabelColor = Blue,
+                         backgroundColor = White
+                     )
+                 )*/
 
 
                 Spacer(modifier = Modifier.height(12.dp))
 
                 OutlinedTextField(
-                        value = password,
-                        onValueChange = { password = it ; /*viewModel.updatePassword(password)*/ },
+                    value = password,
+                    onValueChange = { password = it; /*viewModel.updatePassword(password)*/ },
                     label = { Text("Password", style = TextStyle(color = Black)) },
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = Black,
@@ -103,15 +106,15 @@ fun LoginItem(onLoginClick: () -> Unit,
                         focusedLabelColor = Black,
                         backgroundColor = White
                     ),
-                        visualTransformation = PasswordVisualTransformation(),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
-                    )
+                    visualTransformation = PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+                )
 
 
 
                 Spacer(modifier = Modifier.height(50.dp))
 
-                ButtonComponent(text = "Log In", {onLoginClick()}, enabled)
+                ButtonComponent(text = "Log In", { onLoginClick() }, enabled)
             }
         }
     }

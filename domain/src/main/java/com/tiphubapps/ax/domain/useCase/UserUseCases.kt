@@ -14,6 +14,3 @@ data class UserUseCases(
     val useCaseLogin: UseCaseLogin
 )
 
-interface Invokable{
-    fun invoke()
-}

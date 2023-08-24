@@ -1,5 +1,6 @@
 package com.tiphubapps.ax.domain.useCase
 
+import android.util.Log
 import com.tiphubapps.ax.domain.repository.AppError
 import com.tiphubapps.ax.domain.repository.Result
 
@@ -14,7 +15,7 @@ class UseCaseLogin(private val userRepository: UserRepository) {
     //lateinit var password: String;
     //operator suspend fun invoke() = userRepository.postLogin(username, password)
 
-    suspend operator fun invoke(username:String, password:String): Result<List<JsonObject>> {
+    suspend operator fun invoke(username:String, password:String): Result<JsonObject> {
         //Timber.d("fetchData: Fetching data from API")
 
         return try {
@@ -24,10 +25,10 @@ class UseCaseLogin(private val userRepository: UserRepository) {
 
             /////////THIS IS A TODO////////////////////
             if (response?.size()!! >= 0) {
-                val data = listOf<JsonObject>(response!!.asJsonObject)
+                val data = response!!.asJsonObject
             ///////////////////////////////////////////
                 //Timber.d("fetchData: Data fetched successfully")
-                Result.Success(data ?: emptyList())
+                Result.Success(data)
             }
             //Catch and return input exception "invalid username/password"
             //else if (){}

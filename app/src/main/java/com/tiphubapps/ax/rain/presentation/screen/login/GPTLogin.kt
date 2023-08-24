@@ -236,7 +236,7 @@ fun GPTLogin(
     }
 
     //Custom Message Box
-    if (showToast.length > 0) {
+    if (showToast.isNotEmpty()) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
