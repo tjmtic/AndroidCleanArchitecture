@@ -5,14 +5,14 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.tiphubapps.ax.domain.model.User
+import com.tiphubapps.ax.data.entity.UserEntity
 import com.tiphubapps.ax.domain.model.UserRemoteKeys
 import net.sqlcipher.database.SQLiteDatabase
 import net.sqlcipher.database.SupportFactory
 
 @Database(
-    entities = [User::class, UserRemoteKeys::class],
-    version = 2,
+    entities = [UserEntity::class, UserRemoteKeys::class],
+    version = 3,
     exportSchema = false
 )
 @TypeConverters(Converters::class)

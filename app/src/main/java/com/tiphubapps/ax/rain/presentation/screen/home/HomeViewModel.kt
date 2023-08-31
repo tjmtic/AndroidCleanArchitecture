@@ -431,8 +431,7 @@ class HomeViewModel @Inject constructor(
         _uiStateEvent.value = EventUiState.DEFAULT;
     }
 
-
-
+    ////////UI VIEWS/////////////////////////
     fun showSend(){
         _uiState.value = HomeUiState.Send
 
@@ -440,23 +439,22 @@ class HomeViewModel @Inject constructor(
         Log.d("TIME123", currentUser.value.toString() )
         Log.d("TIME123", selectedUser.value.toString() )
     }
-
     fun showReceive(){
         _uiState.value = HomeUiState.Receive
     }
-
     fun showDefault(){
         _uiState.value = HomeUiState.Default
     }
+    /////////////////////////////////////////
 
+
+    ///////////////CAMERA VIEWS//////////////
     fun showCamera(){
         _uiStateCamera.value = CameraUiState.Enabled
     }
-
     fun hideCamera(){
         _uiStateCamera.value = CameraUiState.Disabled
     }
-
     fun toggleCamera(){
         when(_uiStateCamera.value){
             is CameraUiState.Enabled -> _uiStateCamera.value = CameraUiState.Disabled
@@ -464,7 +462,7 @@ class HomeViewModel @Inject constructor(
             else -> _uiStateCamera.value = CameraUiState.Disabled
         }
     }
-
+    ////////////////////////////////////////////
     fun setSelectedById(id: String){
 
         //selectedUserToken = id;
@@ -503,33 +501,25 @@ class HomeViewModel @Inject constructor(
 
         }
 
-        /*_allUsers.value?.get("contributors")?.let {
-            println("USER ELEMENT ${it}")
-
-            for (item in it as JsonArray) {
-                println(" ${id} USER ARRAY ${item}")
-
-                if((item as JsonObject).get("id").asString.equals(id)){
-                    _selectedUser.value = item
-                    println("SET SELECTED USER OBJECT ${item}")
-
-                    //update websocket connection??
-                }
-                else{
-                    println((item as JsonObject).get("id").asString)
-                    println(id)
-                }
-            }
-        }*/
     }
 
     fun setUnselectedUser(){
-        _selectedUser.value = JsonObject();
+        _selectedUser.value = JsonObject()
     }
 
     fun performLogout(){
         (getApplication<Application>().applicationContext as Rain).logout()
         _uiStateLogin.value = LoginUiState.Invalid("Invalid User Token")
+    }
+
+    sealed class ViewModelState {
+        //token
+        //events (tips)
+        //viewState
+        //cameraState
+        //loginState
+        //networkState???
+
     }
 
     sealed class EventUiState {

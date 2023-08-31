@@ -1,12 +1,10 @@
 package com.tiphubapps.ax.domain.repository
 
-import androidx.paging.PagingData
-import com.tiphubapps.ax.domain.model.User
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import com.tiphubapps.ax.domain.model.User
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
-import org.json.JSONObject
 
 
 interface UserRepository {
@@ -19,7 +17,7 @@ interface UserRepository {
     suspend fun createSessionByUsers(data: JsonObject, token: String): JsonObject?
     suspend fun getAllUsers(): JsonArray?
     suspend fun getAllUsersWithToken(token: String): JsonArray?
-    fun getUsersFromDB(userId: Int): Flow<User>
+    fun getUsersFromDB(userId: Int): Flow<User?>
     suspend fun postLogin(email: String, password: String): JsonObject?
     suspend fun logout()
 

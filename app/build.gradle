@@ -4,6 +4,9 @@ plugins {
     id 'kotlin-kapt'
     id 'dagger.hilt.android.plugin'
     id 'org.jmailen.kotlinter'
+
+    //firebase
+    id 'com.google.gms.google-services'
 }
 
 android {
@@ -164,6 +167,8 @@ dependencies {
     //Firebase
     implementation platform('com.google.firebase:firebase-bom:32.2.2')
     implementation("com.google.firebase:firebase-messaging-ktx")
+    implementation("com.google.firebase:firebase-analytics-ktx")
+    implementation("com.google.firebase:firebase-config-ktx")
 
     // Import the Compose BOM
     implementation (platform("androidx.compose:compose-bom:2023.06.01"))

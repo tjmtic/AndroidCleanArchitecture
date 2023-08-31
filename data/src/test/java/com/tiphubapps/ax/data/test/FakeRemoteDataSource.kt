@@ -1,16 +1,17 @@
-package com.tiphubapps.ax.data.repository.dataSourceImpl
+package com.tiphubapps.ax.data.test
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
-import com.tiphubapps.ax.data.db.UserDao
 import com.tiphubapps.ax.data.repository.dataSource.UserLocalDataSource
 import com.tiphubapps.ax.data.entity.UserEntity
-import com.tiphubapps.ax.data.repository.dataSource.UserDataSource
 import kotlinx.coroutines.flow.Flow
+import com.tiphubapps.ax.data.repository.dataSource.Result
+import com.tiphubapps.ax.data.repository.dataSource.Result.Success
+import com.tiphubapps.ax.data.repository.dataSource.Result.Error
+import com.tiphubapps.ax.data.repository.dataSource.UserRemoteDataSource
 
 
-class UserLocalDataSourceImpl(private val userDao: UserDao) : UserDataSource {
-    override fun getUsersFromDB(userId: Int): Flow<UserEntity?> = userDao.getUser(userId)
+class FakeRemoteDataSource(var users: MutableList<UserEntity>? = mutableListOf())  :  UserRemoteDataSource {
     override suspend fun getCurrentUser(): JsonObject? {
         TODO("Not yet implemented")
     }
@@ -45,4 +46,6 @@ class UserLocalDataSourceImpl(private val userDao: UserDao) : UserDataSource {
     override fun setUserToken(token: String) {
         TODO("Not yet implemented")
     }
+
+
 }

@@ -51,6 +51,9 @@ dependencies {
     //Coroutines
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0'
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0"
+    //Flow Testing
+    testImplementation 'app.cash.turbine:turbine:1.0.0'
 
     //ROOM DB
     implementation "androidx.room:room-runtime:$room_version"

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "309916318384",
+    "project_id": "ax-code-cabin",
+    "storage_bucket": "ax-code-cabin.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:309916318384:android:e25d85784025724fe0d975",
+        "android_client_info": {
+          "package_name": "com.tiphubapps.ax.Rain"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "309916318384-e2t0me0fn7d0561h9c0bag82sbrjlh5n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAAc2EH9kTE4hTnz3lufXY51b3NsNg8QmQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "309916318384-e2t0me0fn7d0561h9c0bag82sbrjlh5n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

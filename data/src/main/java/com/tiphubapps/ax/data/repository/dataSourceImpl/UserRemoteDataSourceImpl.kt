@@ -11,16 +11,17 @@ import com.tiphubapps.ax.data.api.UserApi
 import com.tiphubapps.ax.data.db.UserDB
 import com.tiphubapps.ax.data.paging.UserRemoteMediator
 import com.tiphubapps.ax.data.repository.dataSource.UserRemoteDataSource
-import com.tiphubapps.ax.domain.model.User
+import com.tiphubapps.ax.data.entity.UserEntity
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import com.tiphubapps.ax.data.repository.dataSource.UserDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
 
 class UserRemoteDataSourceImpl(private val userApi: UserApi,
                                private val userDB: UserDB, ) :
-    UserRemoteDataSource {
+    UserDataSource {
     private val userDao = userDB.userDao()
 
     val headersProvider = ApiMainHeadersProvider()
@@ -55,6 +56,10 @@ class UserRemoteDataSourceImpl(private val userApi: UserApi,
 
 
         return response.body()
+    }
+
+    override fun getUsersFromDB(userId: Int): Flow<UserEntity?> {
+        TODO("Not yet implemented")
     }
 
     override suspend fun getCurrentUser(): JsonObject?{

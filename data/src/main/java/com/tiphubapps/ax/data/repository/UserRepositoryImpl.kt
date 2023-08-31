@@ -3,15 +3,19 @@ package com.tiphubapps.ax.data.repository
 import android.util.Log
 import com.tiphubapps.ax.data.repository.dataSource.UserLocalDataSource
 import com.tiphubapps.ax.data.repository.dataSource.UserRemoteDataSource
-import com.tiphubapps.ax.domain.model.User
+import com.tiphubapps.ax.data.entity.UserEntity
 import com.tiphubapps.ax.domain.repository.UserRepository
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import com.tiphubapps.ax.data.db.Converters
+import com.tiphubapps.ax.data.repository.dataSource.succeeded
+import com.tiphubapps.ax.domain.model.User
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
 
@@ -83,8 +87,17 @@ class UserRepositoryImpl(
         return allUsersResp;
     }
 
-    override fun getUsersFromDB(userId: Int): Flow<User> =
-        userLocalDataSource.getUsersFromDB(userId)
+    override fun getUsersFromDB(userId: Int): Flow<User?> {
+        val baseUser = userLocalDataSource.getUsersFromDB(userId)
+
+        //TODO:
+        // NEED DTO OBJECT FROM DATA > DOMAIN
+        // ADD A CONVERTER!
+        //Cool.
+        return baseUser.mapLatest {
+            it?.let { it1 -> Converters.userFromUserEntity(it1) }
+        }
+    }
 
     override suspend fun postLogin(email:String, password:String): JsonObject? {
         Log.d("TIME123", "ACtual;ly loging in. 444.." + email + password)

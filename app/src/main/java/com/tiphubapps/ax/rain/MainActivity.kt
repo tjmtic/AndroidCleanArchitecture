@@ -9,6 +9,7 @@ import android.os.Parcelable
 import android.util.Log
 import android.view.View
 import android.view.animation.AnticipateInterpolator
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.core.animation.doOnEnd
@@ -17,6 +18,13 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.remoteconfig.ConfigUpdate
+import com.google.firebase.remoteconfig.ConfigUpdateListener
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigException
+import com.google.firebase.remoteconfig.ktx.remoteConfig
+import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import com.tiphubapps.ax.rain.presentation.navigation.NavGraph
 import com.tiphubapps.ax.rain.ui.theme.AndroidCleanArchitectureTheme
 //import com.github.nkzawa.engineio.client.Socket
@@ -38,7 +46,7 @@ private val PERMISSIONS_REQUIRED = arrayOf(Manifest.permission.CAMERA)
 class MainActivity : ComponentActivity() {
 
 
-
+    private val TAG = "MAinActivity TIME123 "
     private lateinit var navController: NavHostController
     var contentHasLoaded = false;
 
@@ -67,9 +75,55 @@ class MainActivity : ComponentActivity() {
             // Call SplashScreenView.remove at the end of your custom animation.
             slideUp.doOnEnd { splashScreenView.remove() }
 
+            //??? Do stuff??? ???
+
             // Run your animation.
             slideUp.start()
         }
+
+        firebaseInit()
+
+        /*val remoteConfig: FirebaseRemoteConfig = Firebase.remoteConfig
+        val configSettings = remoteConfigSettings {
+            minimumFetchIntervalInSeconds = 3600
+        }
+        remoteConfig.setConfigSettingsAsync(configSettings)
+
+        remoteConfig.fetchAndActivate()
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    val updated = task.result
+                    Log.d(TAG, "Config params updated: $updated")
+                    Toast.makeText(
+                        this,
+                        "Fetch and activate succeeded",
+                        Toast.LENGTH_SHORT,
+                    ).show()
+                } else {
+                    Toast.makeText(
+                        this,
+                        "Fetch failed",
+                        Toast.LENGTH_SHORT,
+                    ).show()
+                }
+                //displayWelcomeMessage()
+            }
+
+        remoteConfig.addOnConfigUpdateListener(object : ConfigUpdateListener {
+            override fun onUpdate(configUpdate : ConfigUpdate) {
+                Log.d(TAG, "Updated keys: " + configUpdate.updatedKeys);
+
+                if (configUpdate.updatedKeys.contains("welcome_message")) {
+                    remoteConfig.activate().addOnCompleteListener {
+                        //displayWelcomeMessage()
+                    }
+                }
+            }
+
+            override fun onError(error : FirebaseRemoteConfigException) {
+                Log.w(TAG, "Config update error with code: " + error.code, error)
+            }
+        })*/
 
 /*
         splashScreen.setOnExitAnimationListener { splashScreenView ->
@@ -141,6 +195,50 @@ class MainActivity : ComponentActivity() {
         }
 
 
+    }
+
+    private fun firebaseInit(){
+        val remoteConfig: FirebaseRemoteConfig = Firebase.remoteConfig
+        val configSettings = remoteConfigSettings {
+            minimumFetchIntervalInSeconds = 3600
+        }
+        remoteConfig.setConfigSettingsAsync(configSettings)
+
+        remoteConfig.fetchAndActivate()
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    val updated = task.result
+                    Log.d(TAG, "Config params updated: $updated")
+                    Toast.makeText(
+                        this,
+                        "Fetch and activate succeeded",
+                        Toast.LENGTH_SHORT,
+                    ).show()
+                } else {
+                    Toast.makeText(
+                        this,
+                        "Fetch failed",
+                        Toast.LENGTH_SHORT,
+                    ).show()
+                }
+                //displayWelcomeMessage()
+            }
+
+        remoteConfig.addOnConfigUpdateListener(object : ConfigUpdateListener {
+            override fun onUpdate(configUpdate : ConfigUpdate) {
+                Log.d(TAG, "Updated keys: " + configUpdate.updatedKeys);
+
+                if (configUpdate.updatedKeys.contains("welcome_message")) {
+                    remoteConfig.activate().addOnCompleteListener {
+                        //displayWelcomeMessage()
+                    }
+                }
+            }
+
+            override fun onError(error : FirebaseRemoteConfigException) {
+                Log.w(TAG, "Config update error with code: " + error.code, error)
+            }
+        })
     }
 
     private fun handleSendText(intent: Intent) {
