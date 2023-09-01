@@ -62,17 +62,12 @@ class UserRemoteDataSourceImpl(private val userApi: UserApi,
     }
 
     override suspend fun getUserById(id: String): Result<UserEntity>{
-        /* return flow {
-             val response = userApi.getCurrentUser();
 
-             emit(response.body());
-         }*/
         val body = JsonObject().also{
             it.addProperty("id", id)
         }
         val response = userApi.getUserById(id = body, authedHeaders = headersProvider.getAuthenticatedHeaders(authToken))
-        Log.d("TIME123", "RAW RESPONSE 1: " + response.toString())
-        //return response.body()
+
 
         response.body()?.let {
             val entity =
@@ -91,22 +86,13 @@ class UserRemoteDataSourceImpl(private val userApi: UserApi,
     }
 
     override suspend fun getAllUsersById(historyIds: JsonArray, contributorIds: JsonArray): Result<List<UserEntity>>{
-        /* return flow {
-             val response = userApi.getCurrentUser();
 
-             emit(response.body());
-         }*/
         val body = JsonObject().also{
             it.addProperty("history", historyIds.toString())
             it.addProperty("contributors", contributorIds.toString())
         }
 
-        Log.d("TIME123", "Checkming BODY:"+body)
-
         val response = userApi.getUsersByIds(history = body, authedHeaders = headersProvider.getAuthenticatedHeaders(authToken))
-
-        Log.d("TIME123", "Checkming BODY response:"+ response)
-        //return response.body()
 
         //TODO: This ABSOLUTELY BREAKS the UI
         response.body()?.let { array ->
@@ -123,38 +109,13 @@ class UserRemoteDataSourceImpl(private val userApi: UserApi,
     }
 
     override suspend fun postLogin(email:String, password:String): JsonObject? {
-        Log.d("TIME123", "ACtual;ly loging in aaa posting 555..." + email + password)
-
-
         val response = userApi.postLogin(LoginRequest(email, password))
-        Log.d("TIME123", "ACtual;ly loging in 555..." + response)
-        Log.d("TIME123", "ACtual;ly loging in 555aa..." + response.body())
-
         val resp = response.body();
         return resp;
-
-
-        /*resp?.get("token")?.let{
-            return Result.Success(resp)
-        }
-
-        return Result.Error(Exception("Bad Login"))*/
     }
 
     override suspend fun postLogout() {
-
         val response = userApi.postLogout();
-        Log.d("TIME123", "ACtual;ly loging out 555..." + response)
-        Log.d("TIME123", "ACtual;ly loging out 555aa..." + response.body())
-
         val resp = response.body();
-       // return resp;
-
-
-        /*resp?.get("token")?.let{
-            return Result.Success(resp)
-        }
-
-        return Result.Error(Exception("Bad Login"))*/
     }
 }

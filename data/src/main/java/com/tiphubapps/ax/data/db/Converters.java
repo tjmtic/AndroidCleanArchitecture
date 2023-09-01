@@ -87,4 +87,25 @@ public class Converters {
 
     }
 
+    public static UserEntity userEntityFromUser(User it){
+
+        /*return new UserEntity(0,jsonObject.get("_id").getAsInt(),jsonObject.get("userId").getAsString(),
+                jsonObject.get("payerBalance").getAsInt(),jsonObject.get("balance").getAsInt(),jsonObject.get("available").getAsInt(),
+                jsonObject.get("contacts").getAsString(),jsonObject.get("favorites").getAsString(),jsonObject.get("history").getAsString(),
+                jsonObject.get("contributors").getAsString(),jsonObject.get("sponsors").getAsString(),
+                jsonObject.get("receiverBalance").getAsInt(),jsonObject.get("email").getAsString(),jsonObject.get("name").getAsString(),
+                jsonObject.get("paypal").getAsString(),jsonObject.get("socketId").getAsString(),jsonObject.get("firebaseDeviceToken").getAsString(),
+                jsonObject.get("payerEmail").getAsString(),jsonObject.get("images").getAsString(),jsonObject.get("coverImage").getAsString(),
+                jsonObject.get("profileImage").getAsString());*/
+
+        return new UserEntity(it.getPk(), it.getId(), it.getUserId(), it.getPayerBalance(),
+                it.getBalance(), it.getAvailable(), it.getContacts(), it.getFavorites(),
+                it.getHistory(), it.getContributors(), it.getSponsors(), it.getReceiverBalance(),
+                it.getEmail(), it.getName(), it.getPaypal(), it.getSocketId(),
+                it.getFirebaseDeviceToken(), it.getPayerEmail(), it.getImages(), it.getCoverImage(),
+                it.getProfileImage());
+
+
+    }
+
 }
