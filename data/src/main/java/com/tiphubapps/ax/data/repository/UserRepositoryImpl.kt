@@ -9,6 +9,7 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.tiphubapps.ax.data.db.Converters
 import com.tiphubapps.ax.data.repository.dataSource.Result
+import com.tiphubapps.ax.data.repository.dataSource.UserDataSource
 import com.tiphubapps.ax.data.repository.dataSource.succeeded
 import com.tiphubapps.ax.domain.model.User
 import com.tiphubapps.ax.domain.repository.UseCaseResult
@@ -24,8 +25,8 @@ import kotlinx.coroutines.withContext
 import org.json.JSONObject
 
 class UserRepositoryImpl(
-    private val userRemoteDataSource: UserRemoteDataSource,
-    private val userLocalDataSource: UserLocalDataSource,
+    private val userRemoteDataSource: UserDataSource,
+    private val userLocalDataSource: UserDataSource,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
    // val authToken: String
 ) :

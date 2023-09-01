@@ -4,9 +4,11 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.gson.Gson
 import com.tiphubapps.ax.rain.Rain
 import com.tiphubapps.ax.domain.useCase.UserUseCases
 import com.google.gson.JsonObject
+import com.tiphubapps.ax.domain.repository.UseCaseResult
 import com.tiphubapps.ax.rain.util.SessionManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -36,7 +38,13 @@ class UserDetailsViewModel @Inject constructor(
         Log.d("TIME123","initializeing profileVIEWMODEL....");
         viewModelScope.launch {
             token.let {
-                _selectedUser.value = userUseCases.getCurrentUserWithTokenUseCase(it.value)
+               // _selectedUser.value = userUseCases.getCurrentUserWithTokenUseCase(it.value)
+                val respo = userUseCases.getCurrentUserWithTokenUseCase(it.value)
+
+                when(respo){
+                    is UseCaseResult.UseCaseSuccess -> _selectedUser.value = JsonObject().apply{ addProperty("user", Gson().toJson(respo.data)) }
+                    else -> {}
+                }
 
                 // navController.navigate(route = Screen.Home.route)
                 Log.d("TIME123", "New current user:" + _selectedUser.value)

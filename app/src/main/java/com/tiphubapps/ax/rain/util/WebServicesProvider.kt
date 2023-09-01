@@ -18,17 +18,17 @@ class WebServicesProvider {
         .build()
 
     @ExperimentalCoroutinesApi
-    private var _webSocketListener: KdsWebSocketListener? = null
+    private var _webSocketListener: WebSocketListener1? = null
 
     @ExperimentalCoroutinesApi
     fun startSocket(): Channel<SocketUpdate> =
-        with(KdsWebSocketListener()) {
+        with(WebSocketListener1()) {
             startSocket(this)
             this@with.socketEventChannel
         }
 
     @ExperimentalCoroutinesApi
-    fun startSocket(webSocketListener: WebSocketListener) {
+    fun startSocket(webSocketListener: WebSocketListener1) {
         _webSocketListener = webSocketListener
         _webSocket = socketOkHttpClient.newWebSocket(
             Request.Builder().url("ws://echo.websocket.org").build(),

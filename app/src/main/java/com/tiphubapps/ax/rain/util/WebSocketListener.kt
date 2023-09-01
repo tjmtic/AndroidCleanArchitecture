@@ -1,15 +1,17 @@
 package com.tiphubapps.ax.rain.util
 
+import com.tiphubapps.ax.rain.util.WebServicesProvider.Companion.NORMAL_CLOSURE_STATUS
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import okhttp3.Response
 import okhttp3.WebSocket
+import okhttp3.WebSocketListener
 import okio.ByteString
 
 @ExperimentalCoroutinesApi
-class WebSocketListener : WebSocketListener() {
+class WebSocketListener1 : WebSocketListener() {
 
     val socketEventChannel: Channel<SocketUpdate> = Channel(10)
 

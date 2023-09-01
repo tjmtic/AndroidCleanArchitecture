@@ -4,12 +4,14 @@ import android.app.Application
 import android.graphics.Bitmap
 import android.util.Log
 import androidx.lifecycle.*
+import com.google.gson.Gson
 import com.tiphubapps.ax.rain.Rain
 import com.tiphubapps.ax.domain.model.User
 import com.tiphubapps.ax.domain.useCase.UserUseCases
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import com.tiphubapps.ax.domain.repository.UseCaseResult
 import com.tiphubapps.ax.rain.util.SessionManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -97,7 +99,12 @@ class HomeViewModel @Inject constructor(
             token.let {
                 Log.d("TIME123","initializeing homewVIEWMODEL....2");
 
-                _currentUser.value = userUseCases.getCurrentUserWithTokenUseCase(token.value)
+                //_currentUser.value = userUseCases.getCurrentUserWithTokenUseCase(token.value)
+                val cu = userUseCases.getCurrentUserWithTokenUseCase(token.value)
+                when(cu){
+                    is UseCaseResult.UseCaseSuccess -> _currentUser.value = JsonObject().apply{ addProperty("user", Gson().toJson(cu.data)) }
+                    else -> {}
+                }
                 Log.d("TIME123","initializeing homewVIEWMODEL....3 ${_currentUser.value}");
 
 
@@ -125,22 +132,30 @@ class HomeViewModel @Inject constructor(
                             val ja = JsonArray().also { array ->
                                 Log.d("TIME123","initializeing homewVIEWMODEL....6");
                                 try {
-                                    users.get("history").asJsonArray.mapNotNull {
-                                            array.add(JsonObject()
-                                                .apply {
-                                                    addProperty(
-                                                        "name",
-                                                        it.asJsonObject.get("name").asString
-                                                    )
-                                                    addProperty(
-                                                        "_id",
-                                                        it.asJsonObject.get("_id").asString
-                                                    )
-                                                    add(
-                                                        "images",
-                                                        it.asJsonObject.get("images").asJsonArray
-                                                    )
-                                                })
+                                    when(users){
+
+                                        is UseCaseResult.UseCaseSuccess -> {
+                                            //users.data.get("history").asJsonArray.mapNotNull {
+                                            users.data.mapNotNull {
+                                                array.add(JsonObject()
+                                                    .apply {
+                                                        addProperty(
+                                                            "name",
+                                                            it.name
+                                                        )
+                                                        addProperty(
+                                                            "_id",
+                                                            it.id
+                                                        )
+                                                        addProperty(
+                                                            "images",
+                                                            it.images
+                                                        )
+                                                    })
+                                            }
+                                        }
+
+                                        else -> {}
                                     }
                                 } catch (e: Exception) {
                                     Log.d("TIME123", "Error:" + e.message)
@@ -493,7 +508,11 @@ class HomeViewModel @Inject constructor(
                 Log.d("TIME123","SELECTION BY ID....2A "+data.toString()+respo2.toString());
 
 
-                _selectedUser.value = respo
+                when(respo){
+                    is UseCaseResult.UseCaseSuccess -> _selectedUser.value = JsonObject().apply{ addProperty("user", Gson().toJson(respo.data)) }
+                    else -> {}
+                }
+                //_selectedUser.value = respo
 
             }
 

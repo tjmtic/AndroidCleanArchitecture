@@ -14,7 +14,7 @@ import com.tiphubapps.ax.domain.useCase.GetCurrentUserUseCase
 import com.tiphubapps.ax.domain.useCase.UserUseCases
 import com.google.gson.JsonObject
 import com.tiphubapps.ax.domain.repository.AppError
-import com.tiphubapps.ax.domain.repository.Result
+import com.tiphubapps.ax.domain.repository.UseCaseResult
 import com.tiphubapps.ax.rain.R
 import com.tiphubapps.ax.rain.presentation.helper.performVibration
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -86,30 +86,7 @@ class LoginInnerViewModel @Inject constructor(
                 _networkUiState.value = NetworkUiState.Loading
                 _state.value = _state.value.copy(isLoading = true)
 
-                //Remove Loading, Display Error or Success
-                when (val response: Result<JsonObject> = userUseCases.useCaseLogin(username, password)) {
-                       is Result.Success -> (response.data).get("token").let {
 
-
-                           ////TODO: Finalize token handling...2////////////
-                          // (getApplication<Application>().applicationContext as Rain).currentUserToken = it.asString;
-                           //TODO: Convert to flow of userRepository (token/loggedInUser/getCurrentUser)
-                           _uiState.value = LoginUiState.Home
-
-                          // sessionManager.saveAuthToken(it.asString)
-
-                          // (context1 as Rain).setEncryptedPreferences("userToken", it.asString)
-                           /////////////////////////////////////////////////
-
-                           _networkUiState.value = NetworkUiState.Success
-
-
-                       }
-                       is Result.Error -> {
-                                            _networkUiState.value = NetworkUiState.Failure(response.error.toString())
-                                            handleError(response.error)
-                       }
-                }
 
 
                 _state.value = _state.value.copy(isLoading = false)
@@ -138,7 +115,7 @@ class LoginInnerViewModel @Inject constructor(
     ////////Android Framework (Espresso Instrumented?)///////////////
     fun handleError(error: AppError){
       //  performVibration(context = context1)
-        updateErrorMessage(error)
+       // updateErrorMessage(error)
     }
 
     fun showError(msg: String){
@@ -250,22 +227,8 @@ class LoginInnerViewModel @Inject constructor(
         }
     }
 
-    private fun updateErrorMessage(error: AppError){
+    private fun updateErrorMessage(){
 
-        val errorMessage = when(error){
-            is AppError.NetworkError, AppError.ServerError  -> {
-                "Service Issue."
-            }
-
-            is AppError.InputError  -> {
-                "Input Error."
-            }
-
-            is AppError.CustomError -> {
-                error.errorMessage
-            }
-        }
-        _state.value = _state.value.copy(error = errorMessage, errors = _state.value.errors.plus(errorMessage))
     }
 
 ////////////////////////////////
