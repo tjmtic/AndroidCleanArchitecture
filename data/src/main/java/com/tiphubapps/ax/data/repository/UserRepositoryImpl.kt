@@ -54,24 +54,69 @@ class UserRepositoryImpl(
         _localValue.value = value
     }
 
-    override suspend fun getCurrentUser(): JsonObject? =
-        userRemoteDataSource.getCurrentUser()
+    override suspend fun getCurrentUser(): UseCaseResult<User> {
+        val re = userRemoteDataSource.getCurrentUser()
 
-    override suspend fun getCurrentUserWithToken(token: String): JsonObject? {
-        Log.d("TIME123", "GEtting User with token ${token}")
-        return withContext(ioDispatcher) {
-            userRemoteDataSource.setUserToken(token)
-            return@withContext userRemoteDataSource.getCurrentUser()
+        return when (re) {
+            is Result.Loading -> UseCaseResult.Loading
+            is Result.Error -> UseCaseResult.UseCaseError(re.exception)
+            is Result.Success -> {
+                UseCaseResult.UseCaseSuccess(
+                    Converters.userFromUserEntity(re.data)
+                )
+            }
         }
     }
 
-    override suspend fun getUserById(id: String, token: String): JsonObject? {
-        userRemoteDataSource.setUserToken(token)
-        return userRemoteDataSource.getUserById(id)
+    override suspend fun getCurrentUserWithToken(token: String): UseCaseResult<User> {
+        //Log.d("TIME123", "GEtting User with token ${token}")
+        return withContext(ioDispatcher) {
+            userRemoteDataSource.setUserToken(token)
+            //return@withContext userRemoteDataSource.getCurrentUser()
+            val re = userRemoteDataSource.getCurrentUser()
+            return@withContext when (re) {
+                is Result.Loading -> UseCaseResult.Loading
+                is Result.Error -> UseCaseResult.UseCaseError(re.exception)
+                is Result.Success -> {
+                    UseCaseResult.UseCaseSuccess(
+                        Converters.userFromUserEntity(re.data)
+                    )
+                }
+            }
+        }
     }
-    override suspend fun getUsersById(historyIds: JsonArray, contributorIds: JsonArray, token: String): JsonObject? {
+
+    override suspend fun getUserById(id: String, token: String): UseCaseResult<User> {
         userRemoteDataSource.setUserToken(token)
-        return userRemoteDataSource.getAllUsersById(historyIds, contributorIds)
+        //return userRemoteDataSource.getUserById(id)
+
+        val re = userRemoteDataSource.getUserById(id)
+
+        return when (re) {
+            is Result.Loading -> UseCaseResult.Loading
+            is Result.Error -> UseCaseResult.UseCaseError(re.exception)
+            is Result.Success -> {
+                UseCaseResult.UseCaseSuccess(
+                    Converters.userFromUserEntity(re.data)
+                )
+            }
+        }
+    }
+    override suspend fun getUsersById(historyIds: JsonArray, contributorIds: JsonArray, token: String): UseCaseResult<List<User>> {
+        userRemoteDataSource.setUserToken(token)
+        //return userRemoteDataSource.getAllUsersById(historyIds, contributorIds)
+
+        val re =  userRemoteDataSource.getAllUsersById(historyIds, contributorIds)
+
+        return when (re) {
+            is Result.Loading -> UseCaseResult.Loading
+            is Result.Error -> UseCaseResult.UseCaseError(re.exception)
+            is Result.Success -> {
+                UseCaseResult.UseCaseSuccess(re.data.map { itemEntity ->
+                    Converters.userFromUserEntity(itemEntity)
+                })
+            }
+        }
     }
 
     override suspend fun createSessionByUsers(data: JsonObject, token: String): JsonObject? {
@@ -97,7 +142,7 @@ class UserRepositoryImpl(
 
     override suspend fun getAllUsersWithToken(token: String): UseCaseResult<List<User>> {
         userRemoteDataSource.setUserToken(token)
-        Log.d("TIME123","GETTING ALL USERS 2");
+        //Log.d("TIME123","GETTING ALL USERS 2");
        // val allUsersResp = userRemoteDataSource.getAllUsers()
         //Log.d("TIME123","GETTING ALL USERS RESPONSE 2" + allUsersResp.toString());
 

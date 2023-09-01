@@ -12,18 +12,18 @@ import kotlinx.coroutines.flow.Flow
 
 class UserLocalDataSourceImpl(private val userDao: UserDao) : UserDataSource {
     override fun getUsersFromDB(userId: Int): Flow<UserEntity?> = userDao.getUser(userId)
-    override suspend fun getCurrentUser(): JsonObject? {
+    override suspend fun getCurrentUser(): Result<UserEntity> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getUserById(d: String): JsonObject? {
+    override suspend fun getUserById(d: String): Result<UserEntity> {
         TODO("Not yet implemented")
     }
 
     override suspend fun getAllUsersById(
         historyIds: JsonArray,
         contributorIds: JsonArray
-    ): JsonObject? {
+    ): Result<List<UserEntity>> {
         TODO("Not yet implemented")
     }
 

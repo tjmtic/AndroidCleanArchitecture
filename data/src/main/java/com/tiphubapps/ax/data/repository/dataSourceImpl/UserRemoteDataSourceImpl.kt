@@ -50,21 +50,18 @@ class UserRemoteDataSourceImpl(private val userApi: UserApi,
         TODO("Not yet implemented")
     }
 
-    override suspend fun getCurrentUser(): JsonObject?{
-       /* return flow {
-            val response = userApi.getCurrentUser();
-
-            emit(response.body());
-        }*/
-        //val response = userApi.getCurrentUser(authedHeaders = headersProvider.getAuthenticatedHeaders(authToken))
+    override suspend fun getCurrentUser(): Result<UserEntity>{
         val response = userApi.getCurrentUser()
-        //Log.d("TIME123", "Got Response with headers ${headersProvider.getAuthenticatedHeaders(authToken)}")
-        Log.d("TIME123", "Got Response with authtoken ${authToken}")
-        Log.d("TIME123", "Got Response with authtoken ${response}")
-        return response.body()
+
+        response.body()?.let {
+            val entity = Converters.userEntityFromJsonObject(it)
+            return Result.Success(entity)
+        }
+
+        return Result.Error(Exception("Empty Error"))
     }
 
-    override suspend fun getUserById(id: String): JsonObject?{
+    override suspend fun getUserById(id: String): Result<UserEntity>{
         /* return flow {
              val response = userApi.getCurrentUser();
 
@@ -75,25 +72,25 @@ class UserRemoteDataSourceImpl(private val userApi: UserApi,
         }
         val response = userApi.getUserById(id = body, authedHeaders = headersProvider.getAuthenticatedHeaders(authToken))
         Log.d("TIME123", "RAW RESPONSE 1: " + response.toString())
-        return response.body()
+        //return response.body()
+
+        response.body()?.let {
+            val entity =
+                Converters.userEntityFromJsonObject(it)
+
+            return Result.Success(entity)
+        }
+
+        return Result.Error(Exception("Empty Error"))
     }
 
     override suspend fun createSessionByUsers(d: JsonObject): JsonObject? {
-       // TODO("Not yet implemented")
-        /* return flow {
-             val response = userApi.getCurrentUser();
-
-             emit(response.body());
-         }*/
-        val body = JsonObject().also{
-          //  it.addProperty("id", d)
-        }
         val response = userApi.createSessionByUser(data = d, authedHeaders = headersProvider.getAuthenticatedHeaders(authToken))
-        Log.d("TIME123", "RAW RESPONSE 1: " + response.toString())
+
         return response.body()
     }
 
-    override suspend fun getAllUsersById(historyIds: JsonArray, contributorIds: JsonArray): JsonObject?{
+    override suspend fun getAllUsersById(historyIds: JsonArray, contributorIds: JsonArray): Result<List<UserEntity>>{
         /* return flow {
              val response = userApi.getCurrentUser();
 
@@ -109,7 +106,20 @@ class UserRemoteDataSourceImpl(private val userApi: UserApi,
         val response = userApi.getUsersByIds(history = body, authedHeaders = headersProvider.getAuthenticatedHeaders(authToken))
 
         Log.d("TIME123", "Checkming BODY response:"+ response)
-        return response.body()
+        //return response.body()
+
+        //TODO: This ABSOLUTELY BREAKS the UI
+        response.body()?.let { array ->
+            val entityList = array.get("history").asJsonArray.mapNotNull { element ->
+                Converters.userEntityFromJsonObject(element.asJsonObject)
+            }
+            val entityList2 = array.get("contributors").asJsonArray.mapNotNull { element ->
+                Converters.userEntityFromJsonObject(element.asJsonObject)
+            }
+            return Result.Success(entityList.plus(entityList2))
+        }
+
+        return Result.Error(Exception("Empty Error"))
     }
 
     override suspend fun postLogin(email:String, password:String): JsonObject? {

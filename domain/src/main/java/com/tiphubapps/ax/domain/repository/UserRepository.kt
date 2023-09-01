@@ -9,10 +9,10 @@ import kotlinx.coroutines.flow.StateFlow
 
 interface UserRepository {
     fun getCurrentToken(): String?
-    suspend fun getCurrentUser(): JsonObject?
-    suspend fun getCurrentUserWithToken(token: String): JsonObject?
-    suspend fun getUserById(id:String, token: String): JsonObject?
-    suspend fun getUsersById(historyIds:JsonArray, contributorIds:JsonArray, token: String): JsonObject?
+    suspend fun getCurrentUser(): UseCaseResult<User>
+    suspend fun getCurrentUserWithToken(token: String): UseCaseResult<User>
+    suspend fun getUserById(id:String, token: String): UseCaseResult<User>
+    suspend fun getUsersById(historyIds:JsonArray, contributorIds:JsonArray, token: String): UseCaseResult<List<User>>
 
     suspend fun createSessionByUsers(data: JsonObject, token: String): JsonObject?
     suspend fun getAllUsers(): UseCaseResult<List<User>>

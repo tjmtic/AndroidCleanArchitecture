@@ -9,9 +9,9 @@ import kotlinx.coroutines.flow.Flow
 import org.json.JSONObject
 
 interface UserRemoteDataSource {
-     suspend fun getCurrentUser(): JsonObject?
-     suspend fun getUserById(d: String): JsonObject?
-     suspend fun getAllUsersById(historyIds: JsonArray, contributorIds: JsonArray): JsonObject?
+     suspend fun getCurrentUser(): Result<UserEntity>
+     suspend fun getUserById(d: String): Result<UserEntity>
+     suspend fun getAllUsersById(historyIds: JsonArray, contributorIds: JsonArray): Result<List<UserEntity>>
      suspend fun getAllUsers(): Result<List<UserEntity>>
      suspend fun createSessionByUsers(d: JsonObject): JsonObject?
      suspend fun postLogin(email:String, password:String): JsonObject?

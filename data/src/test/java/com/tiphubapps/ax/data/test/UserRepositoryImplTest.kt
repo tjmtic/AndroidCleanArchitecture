@@ -1,6 +1,8 @@
 package com.tiphubapps.ax.data.test
 
 import android.util.Log
+import com.google.gson.JsonArray
+import com.google.gson.JsonObject
 import com.tiphubapps.ax.data.repository.UserRepositoryImpl
 import com.tiphubapps.ax.data.entity.UserEntity
 import com.tiphubapps.ax.data.repository.dataSource.Result
@@ -147,19 +149,56 @@ internal class UserRepositoryImplTest {
     }
 
     @Test
-    fun getCurrentUserWithToken() {
+    fun testGetCurrentUser() = runBlockingTest {
+        //Hypothesis
+        val expected = UseCaseResult.UseCaseSuccess(user1)
+        //Experiment
+        val actual = usersRepository.getCurrentUser()
+        //Evaluate
+        Assert.assertEquals(expected, actual)
     }
 
     @Test
-    fun getUserById() {
+    fun getCurrentUserWithToken() = runBlockingTest {
+        //Hypothesis
+        val expected = UseCaseResult.UseCaseSuccess(user1)
+        //Experiment
+        val actual = usersRepository.getCurrentUserWithToken("")
+        //Evaluate
+        Assert.assertEquals(expected, actual)
     }
 
     @Test
-    fun getUsersById() {
+    fun getUserById() = runBlockingTest {
+        //Hypothesis
+        val expected = UseCaseResult.UseCaseSuccess(user1)
+        //Experiment
+        val actual = usersRepository.getUserById("1","")
+        //Evaluate
+        Assert.assertEquals(expected, actual)
     }
 
     @Test
-    fun createSessionByUsers() {
+    fun getUsersById() = runBlockingTest {
+        //Hypothesis
+        val expected = UseCaseResult.UseCaseSuccess(realUsers)
+        //Experiment
+        val actual = usersRepository.getUsersById(JsonArray(0), JsonArray(0),"")
+        //Evaluate
+        Assert.assertEquals(expected, actual)
+    }
+
+    @Test
+    fun createSessionByUsers() = runBlockingTest {
+        //Hypothesis
+        val expected = JsonObject().also{
+            it.addProperty("_id","1")
+            it.addProperty("previous", -1)
+        }
+        //Experiment
+        val actual = usersRepository.createSessionByUsers(JsonObject(), "")
+        //Evaluate
+        Assert.assertEquals(expected, actual)
     }
 
     @Test
@@ -178,6 +217,18 @@ internal class UserRepositoryImplTest {
 
     @Test
     fun getAllUsersWithToken() {
+        runBlockingTest{
+            //Hypothesis
+            val expected = UseCaseResult.UseCaseSuccess(realUsers)
+            //Experiment
+            /*val actual = when (val exp = usersRepository.getAllUsers()){
+                is Result.Success<*> -> exp.data
+                else -> {}
+            }*/
+            val actual = usersRepository.getAllUsersWithToken("")
+            //Evaluate
+            Assert.assertEquals(expected, actual)
+        }
     }
 
     @Test
