@@ -8,14 +8,18 @@ import com.tiphubapps.ax.domain.repository.UserRepository
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.tiphubapps.ax.data.db.Converters
+import com.tiphubapps.ax.data.repository.dataSource.Result
 import com.tiphubapps.ax.data.repository.dataSource.succeeded
 import com.tiphubapps.ax.domain.model.User
+import com.tiphubapps.ax.domain.repository.UseCaseResult
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
 
@@ -75,16 +79,38 @@ class UserRepositoryImpl(
         return userRemoteDataSource.createSessionByUsers(data)
     }
 
-    override suspend fun getAllUsers() =
-        userRemoteDataSource.getAllUsers()
+    override suspend fun getAllUsers() : UseCaseResult<List<User>> {
+        //TODO: CONVETER for Result to UseCaseResult
+        //TODO: CONVERTER for MULTIPLE SUBSTITUTION
 
-    override suspend fun getAllUsersWithToken(token: String): JsonArray? {
+        val re = userRemoteDataSource.getAllUsers()
+        return when (re) {
+            is Result.Loading -> UseCaseResult.Loading
+            is Result.Error -> UseCaseResult.UseCaseError(re.exception)
+            is Result.Success -> {
+                UseCaseResult.UseCaseSuccess(re.data.map { itemEntity ->
+                    Converters.userFromUserEntity(itemEntity)
+                })
+            }
+        }
+    }
+
+    override suspend fun getAllUsersWithToken(token: String): UseCaseResult<List<User>> {
         userRemoteDataSource.setUserToken(token)
         Log.d("TIME123","GETTING ALL USERS 2");
-        val allUsersResp = userRemoteDataSource.getAllUsers()
-        Log.d("TIME123","GETTING ALL USERS RESPONSE 2" + allUsersResp.toString());
+       // val allUsersResp = userRemoteDataSource.getAllUsers()
+        //Log.d("TIME123","GETTING ALL USERS RESPONSE 2" + allUsersResp.toString());
 
-        return allUsersResp;
+        val re = userRemoteDataSource.getAllUsers()
+        return when (re) {
+            is Result.Loading -> UseCaseResult.Loading
+            is Result.Error -> UseCaseResult.UseCaseError(re.exception)
+            is Result.Success -> {
+                UseCaseResult.UseCaseSuccess(re.data.map { itemEntity ->
+                    Converters.userFromUserEntity(itemEntity)
+                })
+            }
+        }
     }
 
     override fun getUsersFromDB(userId: Int): Flow<User?> {
@@ -100,27 +126,33 @@ class UserRepositoryImpl(
     }
 
     override suspend fun postLogin(email:String, password:String): JsonObject? {
-        Log.d("TIME123", "ACtual;ly loging in. 444.." + email + password)
+        //Log.d("TIME123", "ACtual;ly loging in. 444.." + email + password)
         //return userRemoteDataSource.postLogin(email, password)
 
         return withContext(ioDispatcher) {
-            val result = userRemoteDataSource.postLogin(email, password)
-            Log.d("TIME123", "ACtual;ly loging in. 444xxx.." + result.toString())
+            coroutineScope {
+                //launch {
+                    val result = userRemoteDataSource.postLogin(email, password)
+                    //Log.d("TIME123", "ACtual;ly loging in. 444xxx.." + result.toString())
 
-            /*if (result is Result.Success) {
+                    /*if (result is Result.Success) {
             setLoggedInUser(result.data)
         }*/
-            result?.get("token")?.let {
-                //this.token = it.asString;
-                setCurrentToken(it.asString)
-                Log.d("TIME123", "ACtual;ly loging in. 666.." + token)
-                Log.d("TIME123", "ACtual;ly loging in. 777.." + getCurrentToken())
-                setLoggedInUser(it.asString)
+                    result?.get("token")?.let {
+                        //this.token = it.asString;
+                        setCurrentToken(it.asString)
+                        //Log.d("TIME123", "ACtual;ly loging in. 666.." + token)
+                        //Log.d("TIME123", "ACtual;ly loging in. 777.." + getCurrentToken())
+                        setLoggedInUser(it.asString)
 
-                updateLocalValue(it.asString)
-            }
+                        updateLocalValue(it.asString)
+                    }
 
-            return@withContext result
+                    //TODO: Investigate this method
+                //return@withContext result
+                return@coroutineScope result
+              //  }
+        }
         }
     }
 
@@ -145,7 +177,7 @@ class UserRepositoryImpl(
 
     }
 
-    override suspend fun logout(){
+    override suspend fun logout() : Boolean{
 
         //val result = userRemoteDataSource.postLogout();
 
@@ -160,9 +192,9 @@ class UserRepositoryImpl(
             //setLoggedInUser(result.data)
         }*/
 
-        token = null;
-        currentUser = null;
+        token = null
+        currentUser = null
 
-
+        return true
     }
 }

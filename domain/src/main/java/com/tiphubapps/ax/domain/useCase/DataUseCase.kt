@@ -1,16 +1,17 @@
 package com.tiphubapps.ax.domain.useCase
 
 import com.tiphubapps.ax.domain.repository.AppError
-import com.tiphubapps.ax.domain.repository.Result
+import com.tiphubapps.ax.domain.repository.UseCaseResult
 
 import com.tiphubapps.ax.domain.repository.UserRepository
 import com.google.gson.JsonObject
+import com.tiphubapps.ax.domain.model.User
 import java.io.IOException
 
 // Use case module
 class DataUseCase(private val userRepository: UserRepository) {
 
-    suspend fun fetchData(): Result<List<JsonObject>> {
+    suspend fun fetchData(): UseCaseResult<List<User>> {
         //Timber.d("fetchData: Fetching data from API")
 
         return try {
@@ -19,21 +20,24 @@ class DataUseCase(private val userRepository: UserRepository) {
             ///////////////////////////////
 
             /////////THIS IS A TODO////////////////////
-            if (!response?.isEmpty!!) {
-                val data = listOf<JsonObject>(response!!.asJsonObject)
+            if (response is UseCaseResult.UseCaseSuccess) {
+                //val data = listOf<JsonObject>(response.data)
             ///////////////////////////////////////////
                 //Timber.d("fetchData: Data fetched successfully")
-                Result.Success(data ?: emptyList())
+                UseCaseResult.UseCaseSuccess(response.data ?: emptyList())
             } else {
                 //Timber.e("fetchData: Server error. Code: ${response.code()}, Message: ${response.message()}")
-                Result.Error(AppError.ServerError)
+                //UseCaseResult.UseCaseError(AppError.ServerError)
+                UseCaseResult.UseCaseError(Exception("Error"))
             }
         } catch (e: IOException) {
             //Timber.e(e, "fetchData: Network error")
-            Result.Error(AppError.NetworkError)
+            //UseCaseResult.UseCaseError(AppError.NetworkError)
+            UseCaseResult.UseCaseError(Exception("Error"))
         } catch (e: Exception) {
             //Timber.e(e, "fetchData: Custom error")
-            Result.Error(AppError.CustomError(e.message ?: "Unknown error"))
+            //UseCaseResult.UseCaseError(AppError.CustomError(e.message ?: "Unknown error"))
+            UseCaseResult.UseCaseError(Exception("Error"))
         }
     }
 }

@@ -5,6 +5,7 @@ import com.google.gson.JsonObject
 import com.tiphubapps.ax.data.db.UserDao
 import com.tiphubapps.ax.data.repository.dataSource.UserLocalDataSource
 import com.tiphubapps.ax.data.entity.UserEntity
+import com.tiphubapps.ax.data.repository.dataSource.Result
 import com.tiphubapps.ax.data.repository.dataSource.UserDataSource
 import kotlinx.coroutines.flow.Flow
 
@@ -26,7 +27,7 @@ class UserLocalDataSourceImpl(private val userDao: UserDao) : UserDataSource {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getAllUsers(): JsonArray? {
+    override suspend fun getAllUsers(): Result<List<UserEntity>> {
         TODO("Not yet implemented")
     }
 

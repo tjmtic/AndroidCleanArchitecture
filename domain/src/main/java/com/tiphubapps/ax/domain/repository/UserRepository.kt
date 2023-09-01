@@ -15,11 +15,11 @@ interface UserRepository {
     suspend fun getUsersById(historyIds:JsonArray, contributorIds:JsonArray, token: String): JsonObject?
 
     suspend fun createSessionByUsers(data: JsonObject, token: String): JsonObject?
-    suspend fun getAllUsers(): JsonArray?
-    suspend fun getAllUsersWithToken(token: String): JsonArray?
+    suspend fun getAllUsers(): UseCaseResult<List<User>>
+    suspend fun getAllUsersWithToken(token: String): UseCaseResult<List<User>>
     fun getUsersFromDB(userId: Int): Flow<User?>
     suspend fun postLogin(email: String, password: String): JsonObject?
-    suspend fun logout()
+    suspend fun logout(): Boolean
 
     fun getLocalValueFlow(): StateFlow<String>
     fun updateLocalValue(value: String)
@@ -28,11 +28,11 @@ interface UserRepository {
 /**
  * A generic class that holds a value with its loading status.
  * @param <T>
- */
-sealed class Result<out T> {
-    data class Success<T>(val data: T) : Result<T>()
-    data class Error<T>(val error: AppError) : Result<T>()
-}
+ *//*
+sealed class UseCaseResult<out T> {
+    data class Success<T>(val data: T) : UseCaseResult<T>()
+    data class Error<T>(val error: AppError) : UseCaseResult<T>()
+}*/
 
 // Error types
 sealed class AppError {

@@ -27,8 +27,11 @@ class FakeRemoteDataSource(var users: MutableList<UserEntity>? = mutableListOf()
         TODO("Not yet implemented")
     }
 
-    override suspend fun getAllUsers(): JsonArray? {
-        TODO("Not yet implemented")
+    override suspend fun getAllUsers(): Result<List<UserEntity>>  {
+        users?.let { return Success(ArrayList(it)) }
+        return Error(
+            Exception("Tasks not found")
+        )
     }
 
     override suspend fun createSessionByUsers(d: JsonObject): JsonObject? {
@@ -36,7 +39,10 @@ class FakeRemoteDataSource(var users: MutableList<UserEntity>? = mutableListOf()
     }
 
     override suspend fun postLogin(email: String, password: String): JsonObject? {
-        TODO("Not yet implemented")
+        return JsonObject().also {
+            it.addProperty("username","test name")
+            it.addProperty("token","test token")
+        }
     }
 
     override suspend fun postLogout() {

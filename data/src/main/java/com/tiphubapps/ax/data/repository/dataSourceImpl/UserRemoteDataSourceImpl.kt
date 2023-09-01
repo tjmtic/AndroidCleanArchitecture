@@ -14,6 +14,8 @@ import com.tiphubapps.ax.data.repository.dataSource.UserRemoteDataSource
 import com.tiphubapps.ax.data.entity.UserEntity
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import com.tiphubapps.ax.data.db.Converters
+import com.tiphubapps.ax.data.repository.dataSource.Result
 import com.tiphubapps.ax.data.repository.dataSource.UserDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -31,31 +33,17 @@ class UserRemoteDataSourceImpl(private val userApi: UserApi,
         authToken = token;
     }
 
-    override suspend fun getAllUsers() : JsonArray? {
-        /*Log.d("TIME123", "LOGGING FOR GET ALL USERS");
-        val pagingSourceFactory = { userDao.getAllUsers() }
-        return Pager(
-            config = PagingConfig(pageSize = 20),
-            remoteMediator = UserRemoteMediator(
-                userApi,
-                userDB
-            ),
-            pagingSourceFactory = pagingSourceFactory,
-        ).flow*/
-        Log.d("TIME123","GETTING ALL USERS 3");
-
+    override suspend fun getAllUsers() : Result<List<UserEntity>> {
         val response = userApi.getAllUsers(authedHeaders = headersProvider.getAuthenticatedHeaders(authToken))
 
-        Log.d("TIME123","GETTING ALL USERS 4");
-
-        response?.let{
-            Log.d("TIME123", it.body().toString())
-            Log.d("TIME123","GETTING ALL USERS 5");
-
+        response.body()?.let { array ->
+            val entityList = array.mapNotNull { element ->
+                Converters.userEntityFromJsonObject(element.asJsonObject)
+            }
+            return Result.Success(entityList)
         }
 
-
-        return response.body()
+        return Result.Error(Exception("Empty Error"))
     }
 
     override fun getUsersFromDB(userId: Int): Flow<UserEntity?> {

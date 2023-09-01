@@ -15,7 +15,7 @@ import com.tiphubapps.ax.domain.useCase.UserUseCases
 import com.google.gson.JsonObject
 import com.tiphubapps.ax.domain.repository.AndroidFrameworkRepository
 import com.tiphubapps.ax.domain.repository.AppError
-import com.tiphubapps.ax.domain.repository.Result
+import com.tiphubapps.ax.domain.repository.UseCaseResult
 import com.tiphubapps.ax.rain.R
 import com.tiphubapps.ax.rain.presentation.helper.performVibration
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -67,7 +67,7 @@ class LoginViewModel @Inject constructor(
     ////////Android Framework (Espresso Instrumented?)///////////////
     //Add haptic interactions on Composable states instead of calling them here
     //Will remove Android Framework calls from ViewModel
-    fun handleError(error: AppError){
+    fun handleError(error: String){
         //Move this to composable, on viewing/animating new error (and short one on swipe out?)
         //Then this method can be removed entirely
         performVibration(context = application.applicationContext)
@@ -122,17 +122,19 @@ class LoginViewModel @Inject constructor(
             else -> {}
         }
     }
-    internal fun updateErrorMessage(error: AppError){
+    internal fun updateErrorMessage(error: String){
         val errorMessage = when(error){
-            is AppError.NetworkError, AppError.ServerError  -> {
+            "Service Issue."  -> {
                 "Service Issue."
             }
-            is AppError.InputError  -> {
+            "Input Error."  -> {
                 "Input Error."
             }
-            is AppError.CustomError -> {
-                error.errorMessage
+            "Network Error" -> {
+                "Network Error"
             }
+
+            else -> { "Unknown Error" }
         }
         _state.value = _state.value.copy(error = errorMessage, errors = _state.value.errors.plus(errorMessage))
     }
@@ -155,12 +157,16 @@ class LoginViewModel @Inject constructor(
                 // Implicitly save token, only need to display on error?
                 // NO -- do not put higher level module as dependency in lower level module
                 // -- IF sessionManager was a module in DOMAIN it would be acceptable? UTIL module (Feature-Module Architecture)
-                when (val response: Result<JsonObject> = userUseCases.useCaseLogin(username, password)) {
+                when (val response: UseCaseResult<JsonObject> = userUseCases.useCaseLogin(username, password)) {
 
-                       is Result.Success -> (response.data).get("data").let {
+                       is UseCaseResult.UseCaseSuccess -> (response.data).get("data").let {
                            sessionManager.setUserToken(it.asString)
                        }
-                       is Result.Error -> { handleError(response.error) }
+                       is UseCaseResult.UseCaseError -> {
+                           response.exception.message?.let { handleError(it) }
+                       }
+
+                        else -> { println("Loading --- Login") }
                 }
                 //Hide loading
                 _state.value = _state.value.copy(isLoading = false)
