@@ -119,6 +119,8 @@ class FakeUserRepository() : UserRepository {
     override suspend fun logout(): Boolean {
         token = null
         currentUser = null
+        
+        return true
     }
 
     override fun getLocalValueFlow(): StateFlow<String> {
