@@ -2,20 +2,15 @@ package test1
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.tiphubapps.ax.domain.repository.AppError
-import com.tiphubapps.ax.domain.repository.Result
+import com.tiphubapps.ax.domain.repository.DefaultUsersRepository
 import com.tiphubapps.ax.domain.repository.UserRepository
 import com.tiphubapps.ax.domain.useCase.UserUseCases
-import com.tiphubapps.ax.rain.presentation.screen.details.LoginInnerViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
-//import com.tiphubapps.ax.rain.presentation.screen.login.LoginViewModel
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
-import com.tiphubapps.ax.rain.R
 import com.tiphubapps.ax.rain.Rain
 import com.tiphubapps.ax.rain.presentation.screen.details.LoginViewModel
 import com.tiphubapps.ax.rain.util.SessionManager
@@ -27,6 +22,7 @@ import org.junit.runner.RunWith
 class LoginInnerViewModelTest {
     private lateinit var mockUseCases : UserUseCases
     private lateinit var mockUserRepository : UserRepository
+    private lateinit var fakeDefaultUserRepository : DefaultUsersRepository
 
 
     private lateinit var viewModel : LoginViewModel
@@ -139,7 +135,7 @@ class LoginInnerViewModelTest {
         val actual0 = ""
         assertEquals(expected0, actual0)
 
-        viewModel.updateErrorMessage(AppError.NetworkError)
+        viewModel.updateErrorMessage("Service Issue.")
 
         val expected = viewModel.state.value.error
         val actual = "Service Issue."
@@ -152,7 +148,7 @@ class LoginInnerViewModelTest {
         val actual0 = ""
         assertEquals(expected0, actual0)
 
-        viewModel.updateErrorMessage(AppError.InputError("Input Error"))
+        viewModel.updateErrorMessage("Input Error.")
 
         val expected = viewModel.state.value.error
         val actual = "Input Error."
@@ -166,10 +162,10 @@ class LoginInnerViewModelTest {
         assertEquals(expected0, actual0)
 
         val msg = "Error."
-        viewModel.updateErrorMessage(AppError.CustomError(msg))
+        viewModel.updateErrorMessage(msg)
 
         val expected = viewModel.state.value.error
-        val actual = msg
+        val actual = "Unknown Error"
         assertEquals(expected, actual)
     }
 
