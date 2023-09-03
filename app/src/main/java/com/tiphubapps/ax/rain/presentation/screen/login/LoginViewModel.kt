@@ -13,6 +13,7 @@ import com.tiphubapps.ax.domain.repository.UserRepository
 import com.tiphubapps.ax.domain.useCase.GetCurrentUserUseCase
 import com.tiphubapps.ax.domain.useCase.UserUseCases
 import com.google.gson.JsonObject
+import com.tiphubapps.ax.data.util.CoroutineContextProvider
 import com.tiphubapps.ax.domain.repository.AndroidFrameworkRepository
 import com.tiphubapps.ax.domain.repository.AppError
 import com.tiphubapps.ax.domain.repository.UseCaseResult
@@ -35,6 +36,7 @@ class LoginViewModel @Inject constructor(
     private val userRepository: UserRepository,
     private val sessionManager: SessionManager,
     private val application: Application,
+    private val coroutineContextProvider: CoroutineContextProvider
 ) : AndroidViewModel(application) {
 
     init {
@@ -47,11 +49,11 @@ class LoginViewModel @Inject constructor(
     }
 
     ///////// ViewModel State setup ///////////
-    //(OPEN) slugs
+    //(OPEN) slug value
     private val _state = MutableStateFlow(LoginViewState())
     val state : StateFlow<LoginViewState> = _state
 
-    //(PIPE) Expose the values as a Flows to the UI
+    //(PIPE) Expose/Stream values as Flows
     val localValueFlow: StateFlow<String> = userRepository.getLocalValueFlow()
 
     //(MIX) Transform Data as appropriate
@@ -65,27 +67,12 @@ class LoginViewModel @Inject constructor(
     // Also hard to test these separately
 
     ////////Android Framework (Espresso Instrumented?)///////////////
-    //Add haptic interactions on Composable states instead of calling them here
-    //Will remove Android Framework calls from ViewModel
-    fun handleError(error: String){
-        //Move this to composable, on viewing/animating new error (and short one on swipe out?)
-        //Then this method can be removed entirely
-        performVibration(context = application.applicationContext)
-        updateErrorMessage(error)
-    }
-    //Pretty sure this should be in the Application at the very least
-    //Would rather it be part of Compose error handling, or other message handling from Compose side
-    private fun showToast(message: String, duration: Int = Toast.LENGTH_SHORT) {
-        application.applicationContext.let {
-            Toast.makeText(it, message, duration).show()
-        }
-    }
-    //////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////
 
-    //TODO: implement injection of this?
+    //TODO: implement injection (and use!) of this?
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
         val errorMessage = throwable.message ?: "An error occurred"
-        showToast(errorMessage)
+        //showToast(errorMessage)
     }
     ///////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -130,7 +117,7 @@ class LoginViewModel @Inject constructor(
             "Input Error."  -> {
                 "Input Error."
             }
-            "Network Error" -> {
+            "Network Error." -> {
                 "Network Error"
             }
 
@@ -144,29 +131,31 @@ class LoginViewModel @Inject constructor(
     //Model Events ---  ViewModel-Model State -- Mocked Data Tests?
     fun postLogin(username: String, password:String) {
         viewModelScope.launch (
-            //TODO: Injected dispatcher here
-            Dispatchers.IO, CoroutineStart.DEFAULT
+            coroutineContextProvider.io, CoroutineStart.DEFAULT
         ) {
                 //TODO: Can this be done when response = Result.Loading?
                 // -- currently there is no Result.Loading...
+                // There IS NOW! This SHOULD be happening Somehow....
                 //Show Loading
                 _state.value = _state.value.copy(isLoading = true)
 
-                //Display Error or Success
-                //TODO: Should pass SessionManager with call???
-                // Implicitly save token, only need to display on error?
-                // NO -- do not put higher level module as dependency in lower level module
-                // -- IF sessionManager was a module in DOMAIN it would be acceptable? UTIL module (Feature-Module Architecture)
+                /////////////////////TOLEARN///////////////////////////
+                //TODO: Should pass SessionManager with call?
+                // It would implicitly save token, and only need to display on error?
+                // NO -- do not put higher level module as dependency in lower level module.
+                // -- IF sessionManager was a module in DOMAIN (or just lower, outside of app)
+                // it would be acceptable? UTIL-type module (Feature-Module Architecture).
+                // STILL NO -- sharedPreferences is part of Android Framework (is it?). IT DOES NOT GO TO ANY LOWER LEVELS.
+                ///////////////////////////////////////////////////////
+
                 when (val response: UseCaseResult<JsonObject> = userUseCases.useCaseLogin(username, password)) {
-
-                       is UseCaseResult.UseCaseSuccess -> (response.data).get("data").let {
-                           sessionManager.setUserToken(it.asString)
-                       }
+                        //Display Error or Success
+                       is UseCaseResult.UseCaseSuccess -> { (response.data).get("data").let {
+                           sessionManager.setUserToken(it.asString) } }
                        is UseCaseResult.UseCaseError -> {
-                           response.exception.message?.let { handleError(it) }
+                           response.exception.message?.let { updateErrorMessage(it) }
                        }
-
-                        else -> { println("Loading --- Login") }
+                        else -> { println("Loading --- Login")}
                 }
                 //Hide loading
                 _state.value = _state.value.copy(isLoading = false)
@@ -226,7 +215,7 @@ class LoginViewModel @Inject constructor(
         object LoginClicked : LoginViewEvent()
         object SignupClicked : LoginViewEvent()
         object ForgotClicked : LoginViewEvent()
-       // data class CreateError(val name: String) : LoginViewEvent()
+        data class CreateError(val name: String) : LoginViewEvent()
         object ConsumeError : LoginViewEvent()
     }
 

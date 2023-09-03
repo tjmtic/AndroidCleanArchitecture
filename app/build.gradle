@@ -183,6 +183,9 @@ dependencies {
     // Dependencies for Android instrumented unit tests
     androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutine_version"
 
+    //Coroutines test
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0"
+
 
 }
 

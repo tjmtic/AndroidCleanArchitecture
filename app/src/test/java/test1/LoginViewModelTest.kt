@@ -2,8 +2,22 @@ package test1
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.google.gson.JsonObject
+import com.tiphubapps.ax.data.util.CoroutineContextProvider
+import com.tiphubapps.ax.data.util.TestCoroutineContextProvider
 import com.tiphubapps.ax.domain.repository.DefaultUsersRepository
+import com.tiphubapps.ax.domain.repository.UseCaseResult
 import com.tiphubapps.ax.domain.repository.UserRepository
+import com.tiphubapps.ax.domain.useCase.CreateSessionByUsersUseCase
+import com.tiphubapps.ax.domain.useCase.GetAllUsersUseCase
+import com.tiphubapps.ax.domain.useCase.GetAllUsersWithTokenUseCase
+import com.tiphubapps.ax.domain.useCase.GetCurrentUserUseCase
+import com.tiphubapps.ax.domain.useCase.GetCurrentUserWithTokenUseCase
+import com.tiphubapps.ax.domain.useCase.GetUserByIdUseCase
+import com.tiphubapps.ax.domain.useCase.GetUsersByIdUseCase
+import com.tiphubapps.ax.domain.useCase.GetUsersFromDBUseCase
+import com.tiphubapps.ax.domain.useCase.PostLoginUseCase
+import com.tiphubapps.ax.domain.useCase.UseCaseLogin
 import com.tiphubapps.ax.domain.useCase.UserUseCases
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -15,48 +29,58 @@ import com.tiphubapps.ax.rain.Rain
 import com.tiphubapps.ax.rain.presentation.screen.details.LoginViewModel
 import com.tiphubapps.ax.rain.util.SessionManager
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runBlockingTest
+import org.junit.Assert
 import org.junit.runner.RunWith
+import javax.inject.Inject
 
 //@RunWith(AndroidJUnit4::class)
 @ExperimentalCoroutinesApi
-class LoginInnerViewModelTest {
-    private lateinit var mockUseCases : UserUseCases
-    private lateinit var mockUserRepository : UserRepository
-    private lateinit var fakeDefaultUserRepository : DefaultUsersRepository
-
-
+class LoginViewModelTest {
+    private var fakeDefaultUsersRepository : DefaultUsersRepository = FakeDefaultUsersRepository()
+    private var fakeUserRepository : UserRepository = FakeUserRepository()
+    private var fakeUseCases : UserUseCases = useCaseBuilder(fakeUserRepository)
+    private var coroutineContextProvider : CoroutineContextProvider = TestCoroutineContextProvider()
     private lateinit var viewModel : LoginViewModel
 
     @Before
     fun setupDependencies() {
 
-        //val application =  Mockito.mock(Application::class.java)
-
-        val sharedPrefMock = mock<SharedPreferences>{}
-        val context = Mockito.mock(Context::class.java)
-        val con2 = mock<Context>{
+        val con = mock<Context>{
            // on { getString(R.string.app_name) } doReturn("Rain by TipHub")
            // on { getSharedPreferences("Rain by TipHub", Context.MODE_PRIVATE) } doReturn(sharedPrefMock)
         }
-        val app2 = mock<Rain>{
-           on { applicationContext } doReturn(con2)
-        }
-       // Mockito.`when`(app2.applicationContext).thenReturn(con2)
 
-        mockUseCases = mock<UserUseCases>{
-           // on { it.useCaseLogin("","") } doReturn(Result.Success(JsonObject()))
-        }
-        mockUserRepository = mock<UserRepository>{
-           // on {  }
+        val app = mock<Rain>{
+           on { applicationContext } doReturn(con)
         }
 
         val mockSessionManager = mock<SessionManager>{
             on { getEncryptedPreferencesValue("userToken") } doReturn("testToken123")
         }
-        val mockViewModel = mock<LoginViewModel>{
 
+
+        viewModel = LoginViewModel(fakeUseCases,
+                                    fakeUserRepository,
+                                    mockSessionManager,
+                                    app,
+                                    coroutineContextProvider)
+    }
+
+
+
+    @Test
+    fun testLogin() = runBlockingTest {
+        val res = fakeUseCases.useCaseLogin("","")
+        //viewModel.postLogin("","")
+
+        val log = JsonObject().apply{
+            this.addProperty("data", "1")
         }
-        viewModel = LoginViewModel(mockUseCases, mockUserRepository, mockSessionManager, app2)
+
+        val actual = UseCaseResult.UseCaseSuccess(log)
+
+        Assert.assertEquals(res, actual)
     }
 
 
@@ -161,6 +185,20 @@ class LoginInnerViewModelTest {
         val actual0 = ""
         assertEquals(expected0, actual0)
 
+        val msg = "Network Error."
+        viewModel.updateErrorMessage(msg)
+
+        val expected = viewModel.state.value.error
+        val actual = "Network Error"
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun test7a(){
+        val expected0 = viewModel.state.value.error
+        val actual0 = ""
+        assertEquals(expected0, actual0)
+
         val msg = "Error."
         viewModel.updateErrorMessage(msg)
 
@@ -168,6 +206,7 @@ class LoginInnerViewModelTest {
         val actual = "Unknown Error"
         assertEquals(expected, actual)
     }
+
 
 
 ////////////////////////////////////////Events
@@ -215,9 +254,90 @@ class LoginInnerViewModelTest {
         val actual = viewModel.state.value.password
         assertEquals(expected, actual)
     }
+
+    @Test
+    fun testEventLoginClick() {
+        val expected0 = ""
+        val actual0 = viewModel.state.value.password
+        assertEquals(expected0, actual0)
+
+        val testValue = "Default Value"
+        val event = LoginViewModel.LoginViewEvent.EmailChanged(testValue)
+        viewModel.onEvent(event)
+        val testValue1 = "Default Value1"
+        val event1 = LoginViewModel.LoginViewEvent.PasswordChanged(testValue1)
+        viewModel.onEvent(event1)
+
+        val event2 = LoginViewModel.LoginViewEvent.LoginClicked
+        viewModel.onEvent(event2)
+
+        val expected = testValue1
+        val actual = viewModel.state.value.password
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun testEventSignupClick() {
+        val expected0 = ""
+        val actual0 = viewModel.state.value.password
+        assertEquals(expected0, actual0)
+
+        val testValue = "Default Value"
+        val event = LoginViewModel.LoginViewEvent.EmailChanged(testValue)
+        viewModel.onEvent(event)
+        val testValue1 = "Default Value1"
+        val event1 = LoginViewModel.LoginViewEvent.PasswordChanged(testValue1)
+        viewModel.onEvent(event1)
+
+        val event2 = LoginViewModel.LoginViewEvent.SignupClicked
+        viewModel.onEvent(event2)
+
+        val expected = testValue1
+        val actual = viewModel.state.value.password
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun testEventForgotClick() {
+        val expected0 = ""
+        val actual0 = viewModel.state.value.email
+        assertEquals(expected0, actual0)
+
+        val testValue = "Default Value"
+        val event = LoginViewModel.LoginViewEvent.EmailChanged(testValue)
+        viewModel.onEvent(event)
+
+        val event2 = LoginViewModel.LoginViewEvent.ForgotClicked
+        viewModel.onEvent(event2)
+
+        val expected = testValue
+        val actual = viewModel.state.value.email
+        assertEquals(expected, actual)
+    }
 /*
     @Test
     fun test11() = runBlockingTest{
 
     }*/
+
+
+
+
+    companion object {
+        fun useCaseBuilder (userRepository: UserRepository): UserUseCases{
+            return UserUseCases(
+                getCurrentUserUseCase = GetCurrentUserUseCase(userRepository = userRepository),
+                getUserByIdUseCase = GetUserByIdUseCase(userRepository = userRepository),
+                getUsersByIdUseCase = GetUsersByIdUseCase(userRepository = userRepository),
+                createSessionByUserUseCase = CreateSessionByUsersUseCase(userRepository = userRepository),
+                getCurrentUserWithTokenUseCase = GetCurrentUserWithTokenUseCase(userRepository = userRepository),
+                getAllUsersUseCase = GetAllUsersUseCase(userRepository = userRepository),
+                getAllUsersWithTokenUseCase = GetAllUsersWithTokenUseCase(userRepository = userRepository),
+                getUsersFromDBUseCase = GetUsersFromDBUseCase(userRepository = userRepository),
+                postLoginUseCase = PostLoginUseCase(userRepository = userRepository),
+
+                useCaseLogin = UseCaseLogin(userRepository = userRepository)
+            )
+        }
+    }
 }

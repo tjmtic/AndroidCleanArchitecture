@@ -1,4 +1,4 @@
-package fakes
+package test1
 
 import androidx.paging.RemoteMediator
 import com.google.gson.JsonArray
@@ -119,7 +119,7 @@ class FakeUserRepository() : UserRepository {
     override suspend fun logout(): Boolean {
         token = null
         currentUser = null
-
+        
         return true
     }
 

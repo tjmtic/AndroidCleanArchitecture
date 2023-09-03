@@ -32,6 +32,7 @@ object UseCaseModule {
         getAllUsersWithTokenUseCase = GetAllUsersWithTokenUseCase(userRepository = userRepository),
         getUsersFromDBUseCase = GetUsersFromDBUseCase(userRepository = userRepository),
         postLoginUseCase = PostLoginUseCase(userRepository = userRepository),
+
         useCaseLogin = UseCaseLogin(userRepository = userRepository)
     )
 }
