@@ -35,9 +35,9 @@ class LoginViewModel @Inject constructor(
     private val userUseCases: UserUseCases,
     private val userRepository: UserRepository,
     private val sessionManager: SessionManager,
-    private val application: Application,
+    //private val application: Application,
     private val coroutineContextProvider: CoroutineContextProvider
-) : AndroidViewModel(application) {
+) : ViewModel() {
 
     init {
        println("TIME123 LoginViewModel Start")
@@ -46,6 +46,12 @@ class LoginViewModel @Inject constructor(
         sessionManager.getEncryptedPreferencesValue("userToken")?.let {
             userRepository.updateLocalValue(it)
         }
+    }
+
+    //TODO: implement injection (and use!) of this?
+    private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        val errorMessage = throwable.message ?: "An error occurred"
+        //showToast(errorMessage)
     }
 
     ///////// ViewModel State setup ///////////
@@ -60,22 +66,6 @@ class LoginViewModel @Inject constructor(
     // ...
 
     ///////////////////////////////////////////
-
-    //////////////////TODO: Get these methods out///////////////////////////////////////////////////
-    // Remove need for APPLICATION references
-    // Then AndroidViewModel can be jsut ViewModel??????!!!!!!!!!
-    // Also hard to test these separately
-
-    ////////Android Framework (Espresso Instrumented?)///////////////
-        //////////////////////////////////////////////////////
-
-    //TODO: implement injection (and use!) of this?
-    private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
-        val errorMessage = throwable.message ?: "An error occurred"
-        //showToast(errorMessage)
-    }
-    ///////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////
 
     /////////////////////View Events  --- View-ViewModel State Changes/////////////////////////
     //JUnit ViewModel tests
@@ -99,6 +89,16 @@ class LoginViewModel @Inject constructor(
             is LoginViewEvent.ForgotClicked -> {
                 postForgot(_state.value.email)
             }
+            is LoginViewEvent.CreateError -> {
+               // _state.value = _state.value.copy(errors = _state.value.errors.plus { it  == _state.value.error }, error = "")
+                //TODO: This implementation is backwards.
+                // The method should call the event. (Or vice versa)
+                // But remove other references this method outside of this event call.
+                // Send EVENT in those places instead?
+                // -- updateErrorMessage is a STATE changing method
+                // STATE changes MUST be invoked by an EVENT. --
+                updateErrorMessage(event.message)
+            }
             is LoginViewEvent.ConsumeError -> {
                 _state.value = _state.value.copy(errors = _state.value.errors.filterNot { it  == _state.value.error }, error = "")
 
@@ -106,7 +106,7 @@ class LoginViewModel @Inject constructor(
                 if (_state.value.errors.isNotEmpty()) { _state.value = _state.value.copy(error = _state.value.errors[0]) }
             }
 
-            else -> {}
+            else -> { println("Unknown Event Called") }
         }
     }
     internal fun updateErrorMessage(error: String){
@@ -120,7 +120,6 @@ class LoginViewModel @Inject constructor(
             "Network Error." -> {
                 "Network Error"
             }
-
             else -> { "Unknown Error" }
         }
         _state.value = _state.value.copy(error = errorMessage, errors = _state.value.errors.plus(errorMessage))
@@ -148,14 +147,26 @@ class LoginViewModel @Inject constructor(
                 // STILL NO -- sharedPreferences is part of Android Framework (is it?). IT DOES NOT GO TO ANY LOWER LEVELS.
                 ///////////////////////////////////////////////////////
 
-                when (val response: UseCaseResult<JsonObject> = userUseCases.useCaseLogin(username, password)) {
+                when (val loginResult: UseCaseResult<JsonObject> = userUseCases.useCaseLogin(username, password)) {
                         //Display Error or Success
-                       is UseCaseResult.UseCaseSuccess -> { (response.data).get("data").let {
+                        //TODO: How to decouple this field from result?
+                        // "data" v. "token" field name
+                        // NEITHER -- UseCaseResult<String>
+                        // -- in future, UseCaseResult<LoginResponse>? from <LoginRequest>
+                        // POSSIBLY -- On DATA layer, with <LoginRequest>. Here we are only interested in the result value,
+                        // and stay decoupled from the actual request implementation.
+                       is UseCaseResult.UseCaseSuccess -> { (loginResult.data).get("data").let {
                            sessionManager.setUserToken(it.asString) } }
                        is UseCaseResult.UseCaseError -> {
-                           response.exception.message?.let { updateErrorMessage(it) }
+                           loginResult.exception.message?.let { updateErrorMessage(it) }
                        }
-                        else -> { println("Loading --- Login")}
+                        else -> {
+                            //TODO: This should never actually happen right?
+                            // Loading is a placeholder for other async/await operations, but not used here?
+                            // Edge case here being if it does come back as LOADING it will not change.
+                            // Need to check and re-start?
+                            println("Loading --- Login")
+                        }
                 }
                 //Hide loading
                 _state.value = _state.value.copy(isLoading = false)
@@ -165,11 +176,15 @@ class LoginViewModel @Inject constructor(
     fun postSignup(username:String, password:String){
         //TODO: Implement this call
         println("SIGNING UP WITH ${username} and ${password}")
+
+        //same structure as login call. on success, move to verify screen
+        //will probably need to add this check and response path to login as well.
     }
 
     fun postForgot(username:String){
         //TODO: Implement this call
         println("FORGOT ACCOUNT WITH ${username}")
+        //on success, show message, move back to login screen
     }
     /////////////////////////////////////////////////////////////////
 
@@ -215,8 +230,13 @@ class LoginViewModel @Inject constructor(
         object LoginClicked : LoginViewEvent()
         object SignupClicked : LoginViewEvent()
         object ForgotClicked : LoginViewEvent()
-        data class CreateError(val name: String) : LoginViewEvent()
+        /////////////////////////////////////////////////////////////////////////
+        //TODO: This is an opportunity for a presenter-ui architecture.
+        // errorViewModel (or messageViewModel) and UI components (i.e. different types of messages)
+        // Injected and wrapped-ui
+        data class CreateError(val message: String) : LoginViewEvent()
         object ConsumeError : LoginViewEvent()
+        /////////////////////////////////////////////////////////////////////////
     }
 
 
