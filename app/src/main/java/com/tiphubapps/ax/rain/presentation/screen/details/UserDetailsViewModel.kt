@@ -15,10 +15,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import javax.inject.Named
 
 @HiltViewModel
 class UserDetailsViewModel @Inject constructor(
-    private val userUseCases: UserUseCases,
+    @Named("suite") private val userUseCases: UserUseCases,
     private val sessionManager: SessionManager,
     application: Application
 ) : AndroidViewModel(application) {
@@ -39,7 +40,7 @@ class UserDetailsViewModel @Inject constructor(
         viewModelScope.launch {
             token.let {
                // _selectedUser.value = userUseCases.getCurrentUserWithTokenUseCase(it.value)
-                val respo = userUseCases.getCurrentUserWithTokenUseCase(it.value)
+                val respo = userUseCases.getCurrentUserWithTokenUseCase!!(it.value)
 
                 when(respo){
                     is UseCaseResult.UseCaseSuccess -> _selectedUser.value = JsonObject().apply{ addProperty("user", Gson().toJson(respo.data)) }
@@ -65,7 +66,7 @@ class UserDetailsViewModel @Inject constructor(
 
     fun getUserDetails(userID: Int) {
         viewModelScope.launch {
-            userUseCases.getUsersFromDBUseCase.invoke(userID = userID).collect {
+            userUseCases.getUsersFromDBUseCase!!(userID = userID).collect {
                 //_selectedUser.value = it
             }
         }

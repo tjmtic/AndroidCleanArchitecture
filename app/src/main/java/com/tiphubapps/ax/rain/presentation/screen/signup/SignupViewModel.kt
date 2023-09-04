@@ -15,10 +15,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.tiphubapps.ax.rain.util.SessionManager
+import javax.inject.Named
 
 @HiltViewModel
 class SignupViewModel @Inject constructor(
-    private val userUseCases: UserUseCases,
+    @Named("suite") private val userUseCases: UserUseCases,
     private val userRepository: UserRepository,
     //val navController: NavHostController
     application: Application
@@ -56,7 +57,7 @@ class SignupViewModel @Inject constructor(
 
     fun getUserDetails(userID: Int) {
         viewModelScope.launch {
-            userUseCases.getUsersFromDBUseCase.invoke(userID).collect {
+            userUseCases.getUsersFromDBUseCase!!.invoke(userID).collect {
                // _selectedUser.value = it
             }
         }
@@ -70,12 +71,12 @@ class SignupViewModel @Inject constructor(
             _networkUiState.value = NetworkUiState.Loading
             //Send Request
             ////TODO: Should make a UseCaseFactory , implement invoke() method calls for injection / hoisting
-            userUseCases.postLoginUseCase.username = "2135551212"//username.value
-            userUseCases.postLoginUseCase.password = "admin"//password.value
+            userUseCases.postLoginUseCase!!.username = "2135551212"//username.value
+            userUseCases.postLoginUseCase!!.password = "admin"//password.value
 
             //Should set value as current user token in user repository in use case
             //This object should hold the network response (success/err/err)
-            val response: JsonObject? = userUseCases.postLoginUseCase.invoke()
+            val response: JsonObject? = userUseCases.postLoginUseCase!!.invoke()
 
             //val response: Result<String> = userUseCases.postLoginUseCase.invoke()
            /* response?.get("token")?.let{
@@ -134,7 +135,7 @@ class SignupViewModel @Inject constructor(
         viewModelScope.launch(
             Dispatchers.IO, CoroutineStart.DEFAULT
         ) {
-            withNetworkModal(userUseCases.getCurrentUserUseCase,
+            withNetworkModal(userUseCases.getCurrentUserUseCase!!,
                             {user: JsonObject -> showCurrentUser(user)},
                             {errorMsg: String -> showError(errorMsg)})
         }

@@ -25,11 +25,12 @@ import com.tiphubapps.ax.rain.util.SessionManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.*
 import java.util.Locale
+import javax.inject.Named
 import kotlin.math.absoluteValue
 
 @HiltViewModel
 class LoginInnerViewModel @Inject constructor(
-    private val userUseCases: UserUseCases,
+    @Named("suite") private val userUseCases: UserUseCases,
     private val userRepository: UserRepository,
     //private val loginViewModel: LoginViewModel
 ) : ViewModel() {

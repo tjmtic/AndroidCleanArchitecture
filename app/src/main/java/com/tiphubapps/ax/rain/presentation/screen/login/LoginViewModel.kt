@@ -28,25 +28,15 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import java.util.Locale
+import javax.inject.Named
 import kotlin.math.absoluteValue
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val userUseCases: UserUseCases,
-    private val userRepository: UserRepository,
+    @Named("login") private val userUseCases: UserUseCases,
     private val sessionManager: SessionManager,
-    //private val application: Application,
     private val coroutineContextProvider: CoroutineContextProvider
 ) : ViewModel() {
-
-    init {
-       println("TIME123 LoginViewModel Start")
-        //Initialize token from DB to check for loginUiState?
-        //TODO: SHOULD DO THIS IN MAINACTIVITY?
-        sessionManager.getEncryptedPreferencesValue("userToken")?.let {
-            userRepository.updateLocalValue(it)
-        }
-    }
 
     //TODO: implement injection (and use!) of this?
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
@@ -60,12 +50,39 @@ class LoginViewModel @Inject constructor(
     val state : StateFlow<LoginViewState> = _state
 
     //(PIPE) Expose/Stream values as Flows
-    val localValueFlow: StateFlow<String> = userRepository.getLocalValueFlow()
+    //TODO: UseCase -- remove REPOSITORY references
+    private val _localValueFlow = MutableStateFlow("")
+    val localValueFlow: StateFlow<String> = _localValueFlow//userUseCases.useCaseUserGetValue().
 
     //(MIX) Transform Data as appropriate
     // ...
 
     ///////////////////////////////////////////
+
+    init {
+        println("TIME123 LoginViewModel Start")
+        //Initialize token from DB to check for loginUiState?
+        //TODO: SHOULD DO THIS IN MAINACTIVITY?
+        sessionManager.getUserToken()?.let {
+            ///////////////////DEFAULT INIT SCRIPTS///////////////////////////////////////
+            userUseCases.useCaseUserSetValue!!(it)
+
+            viewModelScope.launch {
+                when(userUseCases.useCaseUserGetValue!!()){
+                    is UseCaseResult.UseCaseSuccess -> { _localValueFlow.value = it }
+                    else -> {
+                        println("Error Loading localValue Data")
+                        //Create error EVENT?
+                    }
+                }
+            }
+            /////////////////////////////////////////////////////////////////////////////////
+        }
+    }
+
+    override fun onCleared() {
+        viewModelScope.cancel()
+    }
 
     /////////////////////View Events  --- View-ViewModel State Changes/////////////////////////
     //JUnit ViewModel tests
@@ -147,7 +164,10 @@ class LoginViewModel @Inject constructor(
                 // STILL NO -- sharedPreferences is part of Android Framework (is it?). IT DOES NOT GO TO ANY LOWER LEVELS.
                 ///////////////////////////////////////////////////////
 
-                when (val loginResult: UseCaseResult<JsonObject> = userUseCases.useCaseLogin(username, password)) {
+                //TODO: More well defined useCase class structure will remove the "!!"
+                // Better than including every call, and namespace quarantees it exists
+                // But should be a specific way to declare specific useCase groups
+                when (val loginResult: UseCaseResult<JsonObject> = userUseCases.useCaseLogin!!(username, password)) {
                         //Display Error or Success
                         //TODO: How to decouple this field from result?
                         // "data" v. "token" field name

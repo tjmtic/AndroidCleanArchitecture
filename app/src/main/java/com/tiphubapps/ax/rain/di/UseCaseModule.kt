@@ -12,16 +12,20 @@ import com.tiphubapps.ax.domain.useCase.GetUsersByIdUseCase
 import com.tiphubapps.ax.domain.useCase.GetUsersFromDBUseCase
 import com.tiphubapps.ax.domain.useCase.PostLoginUseCase
 import com.tiphubapps.ax.domain.useCase.UserUseCases
+import com.tiphubapps.ax.domain.useCase.users.UseCaseUserGetValue
+import com.tiphubapps.ax.domain.useCase.users.UseCaseUserSetValue
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Named
 
 @Module
 @InstallIn(SingletonComponent::class)
 object UseCaseModule {
 
     @Provides
+    @Named("suite")
     fun provideUserUseCases(userRepository: UserRepository) = UserUseCases(
         getCurrentUserUseCase = GetCurrentUserUseCase(userRepository = userRepository),
         getUserByIdUseCase = GetUserByIdUseCase(userRepository = userRepository),
@@ -34,5 +38,13 @@ object UseCaseModule {
         postLoginUseCase = PostLoginUseCase(userRepository = userRepository),
 
         useCaseLogin = UseCaseLogin(userRepository = userRepository)
+    )
+
+    @Provides
+    @Named("login")
+    fun provideLoginUseCases(userRepository: UserRepository) = UserUseCases(
+        useCaseLogin = UseCaseLogin(userRepository = userRepository),
+        useCaseUserGetValue = UseCaseUserGetValue(userRepository = userRepository) ,
+        useCaseUserSetValue = UseCaseUserSetValue(userRepository = userRepository)
     )
 }

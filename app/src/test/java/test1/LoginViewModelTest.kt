@@ -19,6 +19,8 @@ import com.tiphubapps.ax.domain.useCase.GetUsersFromDBUseCase
 import com.tiphubapps.ax.domain.useCase.PostLoginUseCase
 import com.tiphubapps.ax.domain.useCase.UseCaseLogin
 import com.tiphubapps.ax.domain.useCase.UserUseCases
+import com.tiphubapps.ax.domain.useCase.users.UseCaseUserGetValue
+import com.tiphubapps.ax.domain.useCase.users.UseCaseUserSetValue
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
@@ -29,6 +31,7 @@ import com.tiphubapps.ax.rain.Rain
 import com.tiphubapps.ax.rain.presentation.screen.details.LoginViewModel
 import com.tiphubapps.ax.rain.util.SessionManager
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Assert
 import org.junit.runner.RunWith
@@ -63,7 +66,6 @@ class LoginViewModelTest {
         viewModel = LoginViewModel(fakeUseCases,
                                     fakeUserRepository,
                                     mockSessionManager,
-                                    app,
                                     coroutineContextProvider)
     }
 
@@ -71,7 +73,7 @@ class LoginViewModelTest {
 
     @Test
     fun testLogin() = runBlockingTest {
-        val res = fakeUseCases.useCaseLogin("","")
+        val res = fakeUseCases.useCaseLogin!!("","")
         //viewModel.postLogin("","")
 
         val log = JsonObject().apply{
@@ -81,6 +83,31 @@ class LoginViewModelTest {
         val actual = UseCaseResult.UseCaseSuccess(log)
 
         Assert.assertEquals(res, actual)
+    }
+
+    @Test
+    fun testGetValue() = runBlockingTest {
+        val res = fakeUseCases.useCaseUserGetValue!!()
+
+        val log = flowOf("Initial Value")
+
+        val actual = UseCaseResult.UseCaseSuccess(log)
+
+        Assert.assertEquals(res, actual)
+    }
+
+    @Test
+    fun testSetValue() = runBlockingTest {
+        val res = fakeUseCases.useCaseUserGetValue!!()
+        val log = flowOf("Initial Value")
+        val actual = UseCaseResult.UseCaseSuccess(log)
+
+        fakeUseCases.useCaseUserSetValue!!("Next Value")
+        val res2 = fakeUseCases.useCaseUserGetValue!!()
+        val log2 = flowOf("Next Value")
+        val actual2 = UseCaseResult.UseCaseSuccess(log2)
+
+        Assert.assertEquals(res2, actual2)
     }
 
 
@@ -326,17 +353,9 @@ class LoginViewModelTest {
     companion object {
         fun useCaseBuilder (userRepository: UserRepository): UserUseCases{
             return UserUseCases(
-                getCurrentUserUseCase = GetCurrentUserUseCase(userRepository = userRepository),
-                getUserByIdUseCase = GetUserByIdUseCase(userRepository = userRepository),
-                getUsersByIdUseCase = GetUsersByIdUseCase(userRepository = userRepository),
-                createSessionByUserUseCase = CreateSessionByUsersUseCase(userRepository = userRepository),
-                getCurrentUserWithTokenUseCase = GetCurrentUserWithTokenUseCase(userRepository = userRepository),
-                getAllUsersUseCase = GetAllUsersUseCase(userRepository = userRepository),
-                getAllUsersWithTokenUseCase = GetAllUsersWithTokenUseCase(userRepository = userRepository),
-                getUsersFromDBUseCase = GetUsersFromDBUseCase(userRepository = userRepository),
-                postLoginUseCase = PostLoginUseCase(userRepository = userRepository),
-
-                useCaseLogin = UseCaseLogin(userRepository = userRepository)
+                useCaseLogin = UseCaseLogin(userRepository = userRepository),
+                useCaseUserGetValue = UseCaseUserGetValue(userRepository = userRepository),
+                useCaseUserSetValue = UseCaseUserSetValue(userRepository = userRepository)
             )
         }
     }

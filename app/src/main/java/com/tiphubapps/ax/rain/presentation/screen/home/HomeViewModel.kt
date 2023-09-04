@@ -28,12 +28,13 @@ import org.json.JSONObject
 import java.util.*
 import java.util.concurrent.Executors
 import javax.inject.Inject
+import javax.inject.Named
 
 //import kotlinx.serialization.json.*
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val userUseCases: UserUseCases,
+    @Named("suite") private val userUseCases: UserUseCases,
     private val sessionManager: SessionManager,
     application: Application
 ) : AndroidViewModel(application) {
@@ -100,7 +101,7 @@ class HomeViewModel @Inject constructor(
                 Log.d("TIME123","initializeing homewVIEWMODEL....2");
 
                 //_currentUser.value = userUseCases.getCurrentUserWithTokenUseCase(token.value)
-                val cu = userUseCases.getCurrentUserWithTokenUseCase(token.value)
+                val cu = userUseCases.getCurrentUserWithTokenUseCase!!(token.value)
                 when(cu){
                     is UseCaseResult.UseCaseSuccess -> _currentUser.value = JsonObject().apply{ addProperty("user", Gson().toJson(cu.data)) }
                     else -> {}
@@ -125,7 +126,7 @@ class HomeViewModel @Inject constructor(
                     //var ju = JsonObject();
                     //var ja = JsonArray();
                     historyUsers.value?.let { it1 ->
-                        userUseCases.getUsersByIdUseCase(it1,it1, token.value)?.let { users ->
+                        userUseCases.getUsersByIdUseCase!!(it1,it1, token.value)?.let { users ->
                             Log.d("TIME123","initializeing homewVIEWMODEL....5");
 
                             //this.value =
@@ -486,14 +487,14 @@ class HomeViewModel @Inject constructor(
             Log.d("TIME123","SELECTION BY ID....1 "+id);
 
             token.let {
-                val respo = userUseCases.getUserByIdUseCase(id , token.value)
+                val respo = userUseCases.getUserByIdUseCase!!(id , token.value)
 
                 val data = JsonObject().also{
                     it.addProperty("sender", currentUser.value?.get("id")?.asString )
                     it.addProperty("receiver", id )
                 }
 
-                val respo2 = userUseCases.createSessionByUserUseCase(data , token.value)
+                val respo2 = userUseCases.createSessionByUserUseCase!!(data , token.value)
 
                 respo2?.get("previous")?.let{
                 _selectedUserSession.value = it.asString
