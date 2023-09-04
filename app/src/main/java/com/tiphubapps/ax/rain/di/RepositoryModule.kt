@@ -1,9 +1,12 @@
 package com.tiphubapps.ax.rain.di
 
+import com.tiphubapps.ax.data.repository.AuthRepositoryImpl
 import com.tiphubapps.ax.data.repository.UserRepositoryImpl
 import com.tiphubapps.ax.data.repository.dataSource.UserDataSource
 import com.tiphubapps.ax.data.repository.dataSource.UserLocalDataSource
 import com.tiphubapps.ax.data.repository.dataSource.UserRemoteDataSource
+import com.tiphubapps.ax.data.repository.dataSource.auth.AuthDataSource
+import com.tiphubapps.ax.domain.repository.AuthRepository
 import com.tiphubapps.ax.domain.repository.UserRepository
 import dagger.Module
 import dagger.Provides
@@ -24,4 +27,11 @@ object RepositoryModule {
         @Named("local") userLocalDataSource: UserDataSource
     ): UserRepository =
         UserRepositoryImpl(userRemoteDataSource = userRemoteDataSource, userLocalDataSource = userLocalDataSource)
+
+    @Provides
+    @Singleton
+    fun provideAuthRepository(
+        authDataSource: AuthDataSource,
+    ): AuthRepository =
+        AuthRepositoryImpl(authDataSource = authDataSource)
 }

@@ -17,13 +17,14 @@ import com.tiphubapps.ax.data.util.CoroutineContextProvider
 import com.tiphubapps.ax.domain.repository.AndroidFrameworkRepository
 import com.tiphubapps.ax.domain.repository.AppError
 import com.tiphubapps.ax.domain.repository.UseCaseResult
+import com.tiphubapps.ax.domain.useCase.LoginUseCases
 import com.tiphubapps.ax.rain.R
 import com.tiphubapps.ax.rain.presentation.helper.performVibration
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
-import com.tiphubapps.ax.rain.util.SessionManager
+import com.tiphubapps.ax.data.util.SessionManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
@@ -33,7 +34,7 @@ import kotlin.math.absoluteValue
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    @Named("login") private val userUseCases: UserUseCases,
+    private val userUseCases: LoginUseCases,
     private val sessionManager: SessionManager,
     private val coroutineContextProvider: CoroutineContextProvider
 ) : ViewModel() {
@@ -49,10 +50,8 @@ class LoginViewModel @Inject constructor(
     private val _state = MutableStateFlow(LoginViewState())
     val state : StateFlow<LoginViewState> = _state
 
-    //(PIPE) Expose/Stream values as Flows
-    //TODO: UseCase -- remove REPOSITORY references
     private val _localValueFlow = MutableStateFlow("")
-    val localValueFlow: StateFlow<String> = _localValueFlow//userUseCases.useCaseUserGetValue().
+    val localValueFlow: StateFlow<String> = _localValueFlow
 
     //(MIX) Transform Data as appropriate
     // ...
@@ -64,15 +63,17 @@ class LoginViewModel @Inject constructor(
         //Initialize token from DB to check for loginUiState?
         //TODO: SHOULD DO THIS IN MAINACTIVITY?
         sessionManager.getUserToken()?.let {
-            ///////////////////DEFAULT INIT SCRIPTS///////////////////////////////////////
-            userUseCases.useCaseUserSetValue!!(it)
+            ///////////////////DEFAULT INIT VALUES///////////////////////////////////////
 
+            userUseCases.useCaseUserSetValue(it)
+
+            //(PIPE) Expose/Stream values as Flows
             viewModelScope.launch {
-                when(userUseCases.useCaseUserGetValue!!()){
+                when(userUseCases.useCaseUserGetValue()){
                     is UseCaseResult.UseCaseSuccess -> { _localValueFlow.value = it }
+                    is UseCaseResult.UseCaseError -> { onEvent(LoginViewEvent.CreateError(it)) }
                     else -> {
-                        println("Error Loading localValue Data")
-                        //Create error EVENT?
+                        onEvent(LoginViewEvent.CreateError("Unknown Error "))
                     }
                 }
             }
@@ -81,11 +82,11 @@ class LoginViewModel @Inject constructor(
     }
 
     override fun onCleared() {
+        //TODO: How to test?
         viewModelScope.cancel()
     }
 
     /////////////////////View Events  --- View-ViewModel State Changes/////////////////////////
-    //JUnit ViewModel tests
     fun onEvent(event: LoginViewEvent) {
         when (event) {
             is LoginViewEvent.EmailChanged -> {
@@ -107,13 +108,6 @@ class LoginViewModel @Inject constructor(
                 postForgot(_state.value.email)
             }
             is LoginViewEvent.CreateError -> {
-               // _state.value = _state.value.copy(errors = _state.value.errors.plus { it  == _state.value.error }, error = "")
-                //TODO: This implementation is backwards.
-                // The method should call the event. (Or vice versa)
-                // But remove other references this method outside of this event call.
-                // Send EVENT in those places instead?
-                // -- updateErrorMessage is a STATE changing method
-                // STATE changes MUST be invoked by an EVENT. --
                 updateErrorMessage(event.message)
             }
             is LoginViewEvent.ConsumeError -> {
@@ -162,29 +156,26 @@ class LoginViewModel @Inject constructor(
                 // -- IF sessionManager was a module in DOMAIN (or just lower, outside of app)
                 // it would be acceptable? UTIL-type module (Feature-Module Architecture).
                 // STILL NO -- sharedPreferences is part of Android Framework (is it?). IT DOES NOT GO TO ANY LOWER LEVELS.
+                //
+                // Could be defined a separate dependency in DATA / Persistence layer. Probably, it should not
+                // be referenced by the viewModel except through a useCase.
                 ///////////////////////////////////////////////////////
 
-                //TODO: More well defined useCase class structure will remove the "!!"
-                // Better than including every call, and namespace quarantees it exists
-                // But should be a specific way to declare specific useCase groups
-                when (val loginResult: UseCaseResult<JsonObject> = userUseCases.useCaseLogin!!(username, password)) {
+                when (val loginResult: UseCaseResult<String> = userUseCases.useCaseLogin(username, password)) {
                         //Display Error or Success
-                        //TODO: How to decouple this field from result?
-                        // "data" v. "token" field name
-                        // NEITHER -- UseCaseResult<String>
-                        // -- in future, UseCaseResult<LoginResponse>? from <LoginRequest>
-                        // POSSIBLY -- On DATA layer, with <LoginRequest>. Here we are only interested in the result value,
-                        // and stay decoupled from the actual request implementation.
-                       is UseCaseResult.UseCaseSuccess -> { (loginResult.data).get("data").let {
-                           sessionManager.setUserToken(it.asString) } }
-                       is UseCaseResult.UseCaseError -> {
-                           loginResult.exception.message?.let { updateErrorMessage(it) }
+                       is UseCaseResult.UseCaseSuccess -> {
+                           sessionManager.setUserToken(loginResult.data)
                        }
-                        else -> {
+                       is UseCaseResult.UseCaseError -> {
+                           loginResult.exception.message?.let {
+                               onEvent(LoginViewEvent.CreateError(it))
+                           } ?: run { onEvent(LoginViewEvent.CreateError("Unknown Error ")) }
+                       }
+                       else -> {
                             //TODO: This should never actually happen right?
                             // Loading is a placeholder for other async/await operations, but not used here?
                             // Edge case here being if it does come back as LOADING it will not change.
-                            // Need to check and re-start?
+                            // Need to check, stop, and re-start?
                             println("Loading --- Login")
                         }
                 }

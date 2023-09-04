@@ -11,7 +11,7 @@ import java.io.IOException
 // Use case module
 class UseCaseLogin(private val userRepository: UserRepository) {
 
-    suspend operator fun invoke(username:String, password:String): UseCaseResult<JsonObject> {
+    suspend operator fun invoke(username:String, password:String): UseCaseResult<String> {
         //Timber.d("fetchData: Fetching data from API")
 
         return try {
@@ -21,10 +21,10 @@ class UseCaseLogin(private val userRepository: UserRepository) {
 
             /////////THIS IS A TODO////////////////////
             if (response?.size()!! >= 0) {
-                val data = response!!.asJsonObject
+                val data = response.asJsonObject
 
                 val result = data.get("token")?.let {
-                    UseCaseResult.UseCaseSuccess(JsonObject().apply{add("data", it)})
+                    UseCaseResult.UseCaseSuccess(it.asString)
                 } ?:
                 UseCaseResult.UseCaseError(Exception("Server Error"))
 

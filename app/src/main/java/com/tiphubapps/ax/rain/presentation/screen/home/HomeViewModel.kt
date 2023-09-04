@@ -12,7 +12,7 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.tiphubapps.ax.domain.repository.UseCaseResult
-import com.tiphubapps.ax.rain.util.SessionManager
+import com.tiphubapps.ax.data.util.SessionManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineStart
@@ -78,7 +78,7 @@ class HomeViewModel @Inject constructor(
 
     private val _disabled: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
-    private val _currentToken = MutableStateFlow<String>((sessionManager.getEncryptedPreferencesValue("userToken")) as String)
+    private val _currentToken = MutableStateFlow<String>((sessionManager.getUserToken()) as String)
     val token : StateFlow<String> = _currentToken
 
    // private val _socketToken = MutableStateFlow<String>(((application.applicationContext as AndroidCleanArchitecture).currentUserSocketId ) as String)

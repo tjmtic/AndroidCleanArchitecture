@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import com.tiphubapps.ax.rain.util.SessionManager
+import com.tiphubapps.ax.data.util.SessionManager
 import javax.inject.Named
 
 @HiltViewModel
@@ -25,7 +25,7 @@ class SignupViewModel @Inject constructor(
     application: Application
 ) : AndroidViewModel(application) {
 
-    private val sessionManager = SessionManager(application.applicationContext)
+    //private val sessionManager = SessionManager(application.applicationContext)
 
     private val _uiState = MutableStateFlow<LoginUiState>(LoginUiState.Login)
     val uiState: StateFlow<LoginUiState> = _uiState
@@ -101,7 +101,7 @@ class SignupViewModel @Inject constructor(
                 //TODO: Convert to flow of userRepository (token/loggedInUser/getCurrentUser)
                 _uiState.value = LoginUiState.Home
 
-                sessionManager.saveAuthToken(it.asString)
+                //sessionManager.saveAuthToken(it.asString)
 
             } ?: run {
                // _networkUiState.value = NetworkUiState.Failure(it.value)

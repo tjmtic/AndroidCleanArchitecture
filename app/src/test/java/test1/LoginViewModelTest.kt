@@ -16,6 +16,7 @@ import com.tiphubapps.ax.domain.useCase.GetCurrentUserWithTokenUseCase
 import com.tiphubapps.ax.domain.useCase.GetUserByIdUseCase
 import com.tiphubapps.ax.domain.useCase.GetUsersByIdUseCase
 import com.tiphubapps.ax.domain.useCase.GetUsersFromDBUseCase
+import com.tiphubapps.ax.domain.useCase.LoginUseCases
 import com.tiphubapps.ax.domain.useCase.PostLoginUseCase
 import com.tiphubapps.ax.domain.useCase.UseCaseLogin
 import com.tiphubapps.ax.domain.useCase.UserUseCases
@@ -29,7 +30,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import com.tiphubapps.ax.rain.Rain
 import com.tiphubapps.ax.rain.presentation.screen.details.LoginViewModel
-import com.tiphubapps.ax.rain.util.SessionManager
+import com.tiphubapps.ax.data.util.SessionManager
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runBlockingTest
@@ -42,29 +43,19 @@ import javax.inject.Inject
 class LoginViewModelTest {
     private var fakeDefaultUsersRepository : DefaultUsersRepository = FakeDefaultUsersRepository()
     private var fakeUserRepository : UserRepository = FakeUserRepository()
-    private var fakeUseCases : UserUseCases = useCaseBuilder(fakeUserRepository)
+    private var fakeUseCases : LoginUseCases = useCaseBuilder(fakeUserRepository)
     private var coroutineContextProvider : CoroutineContextProvider = TestCoroutineContextProvider()
     private lateinit var viewModel : LoginViewModel
 
     @Before
     fun setupDependencies() {
 
-        val con = mock<Context>{
-           // on { getString(R.string.app_name) } doReturn("Rain by TipHub")
-           // on { getSharedPreferences("Rain by TipHub", Context.MODE_PRIVATE) } doReturn(sharedPrefMock)
-        }
-
-        val app = mock<Rain>{
-           on { applicationContext } doReturn(con)
-        }
-
+        //This makes me think it shouldn't be in the ViewModel
         val mockSessionManager = mock<SessionManager>{
-            on { getEncryptedPreferencesValue("userToken") } doReturn("testToken123")
+          //  on { getEncryptedPreferencesValue("userToken") } doReturn("testToken123")
         }
-
 
         viewModel = LoginViewModel(fakeUseCases,
-                                    fakeUserRepository,
                                     mockSessionManager,
                                     coroutineContextProvider)
     }
@@ -73,21 +64,17 @@ class LoginViewModelTest {
 
     @Test
     fun testLogin() = runBlockingTest {
-        val res = fakeUseCases.useCaseLogin!!("","")
+        val res = fakeUseCases.useCaseLogin("","")
         //viewModel.postLogin("","")
 
-        val log = JsonObject().apply{
-            this.addProperty("data", "1")
-        }
-
-        val actual = UseCaseResult.UseCaseSuccess(log)
+        val actual = UseCaseResult.UseCaseSuccess("1")
 
         Assert.assertEquals(res, actual)
     }
 
     @Test
     fun testGetValue() = runBlockingTest {
-        val res = fakeUseCases.useCaseUserGetValue!!()
+        val res = fakeUseCases.useCaseUserGetValue()
 
         val log = flowOf("Initial Value")
 
@@ -98,12 +85,12 @@ class LoginViewModelTest {
 
     @Test
     fun testSetValue() = runBlockingTest {
-        val res = fakeUseCases.useCaseUserGetValue!!()
+        val res = fakeUseCases.useCaseUserGetValue()
         val log = flowOf("Initial Value")
         val actual = UseCaseResult.UseCaseSuccess(log)
 
         fakeUseCases.useCaseUserSetValue!!("Next Value")
-        val res2 = fakeUseCases.useCaseUserGetValue!!()
+        val res2 = fakeUseCases.useCaseUserGetValue()
         val log2 = flowOf("Next Value")
         val actual2 = UseCaseResult.UseCaseSuccess(log2)
 
@@ -351,8 +338,8 @@ class LoginViewModelTest {
 
 
     companion object {
-        fun useCaseBuilder (userRepository: UserRepository): UserUseCases{
-            return UserUseCases(
+        fun useCaseBuilder (userRepository: UserRepository): LoginUseCases{
+            return LoginUseCases(
                 useCaseLogin = UseCaseLogin(userRepository = userRepository),
                 useCaseUserGetValue = UseCaseUserGetValue(userRepository = userRepository),
                 useCaseUserSetValue = UseCaseUserSetValue(userRepository = userRepository)

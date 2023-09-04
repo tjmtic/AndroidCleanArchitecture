@@ -15,6 +15,7 @@ import com.tiphubapps.ax.data.entity.UserEntity
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.tiphubapps.ax.data.db.Converters
+import com.tiphubapps.ax.data.db.UserDao
 import com.tiphubapps.ax.data.repository.dataSource.Result
 import com.tiphubapps.ax.data.repository.dataSource.UserDataSource
 import kotlinx.coroutines.flow.Flow
@@ -22,9 +23,9 @@ import kotlinx.coroutines.flow.flow
 
 
 class UserRemoteDataSourceImpl(private val userApi: UserApi,
-                               private val userDB: UserDB, ) :
+                               private val userDao: UserDao, ) :
     UserDataSource {
-    private val userDao = userDB.userDao()
+    //private val userDao = userDB.userDao()
 
     val headersProvider = ApiMainHeadersProvider()
     var authToken: String = ""

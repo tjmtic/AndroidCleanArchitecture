@@ -42,7 +42,14 @@ object UseCaseModule {
 
     @Provides
     @Named("login")
-    fun provideLoginUseCases(userRepository: UserRepository) = UserUseCases(
+    fun provideUseCasesForLogin(userRepository: UserRepository) = UserUseCases(
+        useCaseLogin = UseCaseLogin(userRepository = userRepository),
+        useCaseUserGetValue = UseCaseUserGetValue(userRepository = userRepository) ,
+        useCaseUserSetValue = UseCaseUserSetValue(userRepository = userRepository)
+    )
+
+    @Provides
+    fun provideLoginUseCases(userRepository: UserRepository) = LoginUseCases(
         useCaseLogin = UseCaseLogin(userRepository = userRepository),
         useCaseUserGetValue = UseCaseUserGetValue(userRepository = userRepository) ,
         useCaseUserSetValue = UseCaseUserSetValue(userRepository = userRepository)

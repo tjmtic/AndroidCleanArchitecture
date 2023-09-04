@@ -2,6 +2,7 @@ package com.tiphubapps.ax.rain.di
 
 import com.tiphubapps.ax.data.api.UserApi
 import com.tiphubapps.ax.data.db.UserDB
+import com.tiphubapps.ax.data.db.UserDao
 import com.tiphubapps.ax.data.repository.dataSource.UserDataSource
 import com.tiphubapps.ax.data.repository.dataSource.UserRemoteDataSource
 import com.tiphubapps.ax.data.repository.dataSourceImpl.UserRemoteDataSourceImpl
@@ -17,6 +18,6 @@ import javax.inject.Named
 object RemoteDataModule {
     @Provides
     @Named("remote")
-    fun provideUsersRemoteDataSource(userApi: UserApi, userDB: UserDB) : UserDataSource =
-        UserRemoteDataSourceImpl(userApi, userDB = userDB)
+    fun provideUsersRemoteDataSource(userApi: UserApi, userDao: UserDao) : UserDataSource =
+        UserRemoteDataSourceImpl(userApi, userDao = userDao)
 }
