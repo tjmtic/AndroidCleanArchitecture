@@ -31,9 +31,15 @@ import org.mockito.kotlin.mock
 import com.tiphubapps.ax.rain.Rain
 import com.tiphubapps.ax.rain.presentation.screen.details.LoginViewModel
 import com.tiphubapps.ax.data.util.SessionManager
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.setMain
+import org.junit.After
 import org.junit.Assert
 import org.junit.runner.RunWith
 import javax.inject.Inject
@@ -49,15 +55,14 @@ class LoginViewModelTest {
 
     @Before
     fun setupDependencies() {
-
-        //This makes me think it shouldn't be in the ViewModel
-        val mockSessionManager = mock<SessionManager>{
-          //  on { getEncryptedPreferencesValue("userToken") } doReturn("testToken123")
-        }
-
+        Dispatchers.setMain(UnconfinedTestDispatcher())
         viewModel = LoginViewModel(fakeUseCases,
-                                    mockSessionManager,
                                     coroutineContextProvider)
+    }
+
+    @After
+    fun cleanup() {
+        Dispatchers.resetMain()
     }
 
 

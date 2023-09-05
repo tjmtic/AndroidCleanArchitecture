@@ -41,7 +41,7 @@ public class Converters {
 
     @TypeConverter
     public static ItemEntity itemEntityFromItem(Item it){
-        return new ItemEntity(it.getTitle(), it.getDescription(), it.isCompleted(), it.getId());
+        return new ItemEntity(it.getTitle(), it.getDescription(), it.isCompleted(), false, it.getId());
     }
 
     /*@TypeConverter
@@ -68,7 +68,7 @@ public class Converters {
 
     public static UserEntity userEntityFromJsonObject(JsonObject jsonObject){
 
-        return new UserEntity(0,jsonObject.get("_id").getAsInt(),jsonObject.get("userId").getAsString(),
+        return new UserEntity(0,jsonObject.get("_id").getAsString(),jsonObject.get("userId").getAsString(),
                 jsonObject.get("payerBalance").getAsInt(),jsonObject.get("balance").getAsInt(),jsonObject.get("available").getAsInt(),
                 jsonObject.get("contacts").getAsString(),jsonObject.get("favorites").getAsString(),jsonObject.get("history").getAsString(),
                 jsonObject.get("contributors").getAsString(),jsonObject.get("sponsors").getAsString(),

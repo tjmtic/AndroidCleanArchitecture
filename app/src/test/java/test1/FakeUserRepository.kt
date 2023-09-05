@@ -104,7 +104,7 @@ class FakeUserRepository() : UserRepository {
     override fun getUsersFromDB(userId: Int): Flow<User?> {
         return observableUsers.map {
             when(it){
-                is UseCaseResult.UseCaseSuccess -> { it.data.firstOrNull{ it.id === userId }}
+                is UseCaseResult.UseCaseSuccess -> { it.data.firstOrNull{ it.id === userId.toString() }}
                 else -> null
             }
         }

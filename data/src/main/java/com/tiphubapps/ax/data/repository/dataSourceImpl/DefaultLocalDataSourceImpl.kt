@@ -66,6 +66,18 @@ class ItemsLocalDataSource internal constructor(
         ItemsDao.insertItem(ItemEntity)
     }
 
+    override suspend fun saveItems(itemEntities: List<ItemEntity>) = withContext(ioDispatcher) {
+        ItemsDao.insertItems(itemEntities)
+    }
+
+    override suspend fun updateItem(ItemEntity: ItemEntity) = withContext(ioDispatcher) {
+        ItemsDao.updateItem(ItemEntity)
+    }
+
+    override suspend fun updateItems(itemEntities: List<ItemEntity>) = withContext(ioDispatcher) {
+        ItemsDao.updateItems(itemEntities)
+    }
+
     override suspend fun completeItem(ItemEntity: ItemEntity) = withContext(ioDispatcher) {
         ItemsDao.updateCompleted(ItemEntity.id, true)
     }
@@ -81,16 +93,27 @@ class ItemsLocalDataSource internal constructor(
     override suspend fun activateItem(ItemId: String) {
         ItemsDao.updateCompleted(ItemId, false)
     }
-
+    override suspend fun deleteItem(ItemEntity: String) = withContext(ioDispatcher) {
+        ItemsDao.updateDeleted(ItemEntity, true)
+    }
+    override suspend fun deleteItems(ItemEntity: List<String>) = withContext(ioDispatcher) {
+        ItemsDao.updateDeleted( ItemEntity.map{ it }, true)
+    }
+    override suspend fun deleteItem(ItemEntity: ItemEntity) = withContext(ioDispatcher) {
+        ItemsDao.updateDeleted(ItemEntity.id, true)
+    }
+    override suspend fun deleteAllItems(){
+        clearAllItems()
+    }
     override suspend fun clearCompletedItems() = withContext<Unit>(ioDispatcher) {
         ItemsDao.deleteCompletedItems()
     }
 
-    override suspend fun deleteAllItems() = withContext(ioDispatcher) {
+    override suspend fun clearAllItems() = withContext(ioDispatcher) {
         ItemsDao.deleteItems()
     }
 
-    override suspend fun deleteItem(ItemId: String) = withContext<Unit>(ioDispatcher) {
+    override suspend fun clearItem(ItemId: String) = withContext<Unit>(ioDispatcher) {
         ItemsDao.deleteItemById(ItemId)
     }
 }

@@ -54,7 +54,7 @@ fun ReceiveItem(user: JsonObject?,
 
     val currentUserInfo = User(
         0,
-        0,
+        "0",
         null,
         user?.get("payerBalance")?.asInt,
         user?.get("receiverBalance")?.asInt,

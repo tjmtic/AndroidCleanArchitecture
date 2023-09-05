@@ -10,7 +10,7 @@ data class UserEntity(
     @PrimaryKey(autoGenerate = true)
     var pk: Long = 0,
     @SerializedName("_id")
-    val id: Int,
+    val id: String,
     @SerializedName("id")
     val userId: String?,
     @SerializedName("payerBalance")

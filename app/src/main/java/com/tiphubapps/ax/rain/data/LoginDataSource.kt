@@ -28,7 +28,7 @@ class LoginDataSource @Inject constructor(
 
             //val fakeUser = LoggedInUser(java.util.UUID.randomUUID().toString(), "Jane Doe")
             val fakeUser = User(0,
-                1,
+                "1",
                 "5e22b8a4bf397f08932de490",
                 3372,
                 0,

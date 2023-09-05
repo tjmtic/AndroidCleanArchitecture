@@ -58,6 +58,14 @@ interface ItemsDao {
     suspend fun insertItem(itemEntity: ItemEntity)
 
     /**
+     * Insert a list of items in the database. If the item already exists, replace it.
+     *
+     * @param itemEntity the item to be inserted.
+     */
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertItems(itemEntities: List<ItemEntity>)
+
+    /**
      * Update a item.
      *
      * @param itemEntity item to be updated
@@ -67,6 +75,15 @@ interface ItemsDao {
     suspend fun updateItem(itemEntity: ItemEntity): Int
 
     /**
+     * Update a list of items.
+     *
+     * @param itemEntity item to be updated
+     * @return the number of items updated. This should always be 1.
+     */
+    @Update
+    suspend fun updateItems(itemEntities: List<ItemEntity>): Int
+
+    /**
      * Update the complete status of a item
      *
      * @param itemId    id of the item
@@ -74,6 +91,24 @@ interface ItemsDao {
      */
     @Query("UPDATE items SET completed = :completed WHERE entryid = :itemId")
     suspend fun updateCompleted(itemId: String, completed: Boolean)
+
+    /**
+     * Update the delete status of a item
+     *
+     * @param itemId    id of the item
+     * @param completed status to be updated
+     */
+    @Query("UPDATE items SET deleted = :deleted WHERE entryid = :itemId")
+    suspend fun updateDeleted(itemId: String, deleted: Boolean)
+
+    /**
+     * Update the delete status of a item
+     *
+     * @param itemId    id of the item
+     * @param completed status to be updated
+     */
+    @Query("UPDATE items SET deleted = :deleted WHERE entryid = :itemId")
+    suspend fun updateDeleted(itemId: List<String>, deleted: Boolean)
 
     /**
      * Delete a item by id.

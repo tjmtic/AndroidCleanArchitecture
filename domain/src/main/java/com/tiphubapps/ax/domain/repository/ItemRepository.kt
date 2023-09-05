@@ -36,6 +36,8 @@ interface ItemsRepository {
     suspend fun deleteAllItems()
 
     suspend fun deleteItem(itemId: String)
+
+    suspend fun syncData()
 }
 
 

@@ -1,6 +1,7 @@
 package com.tiphubapps.ax.data.repository
 
 import com.tiphubapps.ax.data.db.Converters
+import com.tiphubapps.ax.data.repository.dataSource.ItemEntity
 import com.tiphubapps.ax.domain.model.Item
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -182,6 +183,56 @@ class DefaultItemsRepository(
         coroutineScope {
             launch { itemsRemoteDataSource.deleteItem(itemId) }
             launch { itemsLocalDataSource.deleteItem(itemId) }
+        }
+    }
+
+    override suspend fun syncData() {
+        // Fetch data from the remote source
+        val remoteItems  = when(val remoteItems1 = itemsRemoteDataSource.getItems()){
+            is Success -> remoteItems1.data
+            else -> { emptyList() }
+        }
+
+        // Convert remote data to local entities
+        val localItems = remoteItems.map { ItemEntity(it.id, it.title) }
+
+        //TODO: COMBINE this FILTER call to a single transaction
+        // Compare remote and local data
+        val newItems = localItems.filter { localItem ->
+            when(val item = itemsLocalDataSource.getItem(localItem.id)){
+                is Success -> item.data.id === localItem.id
+                else -> { false }
+            }
+        }
+
+        val localUpdates = localItems.filterNot { localItem ->
+            when(val item = itemsLocalDataSource.getItem(localItem.id)){
+                is Success -> item.data.id === localItem.id
+                else -> { false }
+            }
+        }
+
+        // Update the local database with new or updated items
+        //Update First...
+        itemsLocalDataSource.updateItems(localUpdates)
+        //...Then Save New
+        itemsLocalDataSource.saveItems(newItems)
+
+        // Handle deleted items if needed
+        handleDeletedItems(remoteItems, localItems)
+    }
+
+    private suspend fun handleDeletedItems(remoteItems: List<ItemEntity>, localItems: List<ItemEntity>) {
+        val remoteItemIds = remoteItems.map { it.id }
+        val localItemIds = localItems.map { it.id }
+
+        val deletedItemIds = localItemIds.filterNot { remoteItemIds.contains(it) }
+
+        coroutineScope {
+            launch {
+                // Mark items as deleted in the local database
+                itemsLocalDataSource.deleteItems(deletedItemIds)
+            }
         }
     }
 

@@ -55,6 +55,7 @@ class UserRemoteDataSourceImpl(private val userApi: UserApi,
         val response = userApi.getCurrentUser()
 
         response.body()?.let {
+            println("TIME123 REMOTE DATAT SOURCE RESPONSE: ${it}")
             val entity = Converters.userEntityFromJsonObject(it)
             return Result.Success(entity)
         }

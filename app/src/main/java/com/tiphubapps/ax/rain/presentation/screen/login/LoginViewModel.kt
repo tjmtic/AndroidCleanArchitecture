@@ -35,7 +35,6 @@ import kotlin.math.absoluteValue
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val userUseCases: LoginUseCases,
-    private val sessionManager: SessionManager,
     private val coroutineContextProvider: CoroutineContextProvider
 ) : ViewModel() {
 
@@ -62,23 +61,25 @@ class LoginViewModel @Inject constructor(
         println("TIME123 LoginViewModel Start")
         //Initialize token from DB to check for loginUiState?
         //TODO: SHOULD DO THIS IN MAINACTIVITY?
-        sessionManager.getUserToken()?.let {
+        //sessionManager.getUserToken()?.let {
             ///////////////////DEFAULT INIT VALUES///////////////////////////////////////
 
-            userUseCases.useCaseUserSetValue(it)
+            userUseCases.useCaseUserSetValue("LoginViewModel Value")
 
             //(PIPE) Expose/Stream values as Flows
             viewModelScope.launch {
-                when(userUseCases.useCaseUserGetValue()){
-                    is UseCaseResult.UseCaseSuccess -> { _localValueFlow.value = it }
-                    is UseCaseResult.UseCaseError -> { onEvent(LoginViewEvent.CreateError(it)) }
+                when(val value = userUseCases.useCaseUserGetValue()){
+                    is UseCaseResult.UseCaseSuccess -> { _localValueFlow.value = value.data.value }
+                    is UseCaseResult.UseCaseError -> { value.exception.message?.let{
+                        onEvent(LoginViewEvent.CreateError(it))
+                    } ?: run{ onEvent(LoginViewEvent.CreateError("Unknown Error")) } }
                     else -> {
                         onEvent(LoginViewEvent.CreateError("Unknown Error "))
                     }
                 }
             }
             /////////////////////////////////////////////////////////////////////////////////
-        }
+        //}
     }
 
     override fun onCleared() {
@@ -164,7 +165,8 @@ class LoginViewModel @Inject constructor(
                 when (val loginResult: UseCaseResult<String> = userUseCases.useCaseLogin(username, password)) {
                         //Display Error or Success
                        is UseCaseResult.UseCaseSuccess -> {
-                           sessionManager.setUserToken(loginResult.data)
+                           //Should Happen implicitly in AUTHREPOSITORY while using USECASELOGIN
+                          // sessionManager.setUserToken(loginResult.data)
                        }
                        is UseCaseResult.UseCaseError -> {
                            loginResult.exception.message?.let {

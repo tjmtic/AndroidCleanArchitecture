@@ -87,7 +87,7 @@ fun SendItem(user: JsonObject?,
 
     val currentUserInfo = User(
         0,
-        0,
+        "0",
         null,
         currentUser?.get("payerBalance")?.asInt,
         currentUser?.get("receiverBalance")?.asInt,

@@ -80,8 +80,37 @@ object ItemsRemoteDataSource : DefaultDataSource {
         TASKS_SERVICE_DATA[itemEntity.id] = itemEntity
     }
 
+    override suspend fun saveItems(task: List<ItemEntity>) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun updateItem(task: ItemEntity): Int {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun updateItems(task: List<ItemEntity>): Int {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun deleteItem(itemEntity: ItemEntity) {
+        val deletedItemEntity = ItemEntity(itemEntity.title, itemEntity.description, itemEntity.isCompleted, true, itemEntity.id)
+        TASKS_SERVICE_DATA[itemEntity.id] = deletedItemEntity
+    }
+
+    override suspend fun deleteItem(itemId: String) {
+        // Not required for the remote data source
+    }
+
+    override suspend fun deleteItems(task: List<String>) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun deleteAllItems() {
+        TODO("Not yet implemented")
+    }
+
     override suspend fun completeItem(itemEntity: ItemEntity) {
-        val completedItemEntity = ItemEntity(itemEntity.title, itemEntity.description, true, itemEntity.id)
+        val completedItemEntity = ItemEntity(itemEntity.title, itemEntity.description, true, itemEntity.isDeleted, itemEntity.id)
         TASKS_SERVICE_DATA[itemEntity.id] = completedItemEntity
     }
 
@@ -90,7 +119,7 @@ object ItemsRemoteDataSource : DefaultDataSource {
     }
 
     override suspend fun activateItem(itemEntity: ItemEntity) {
-        val activeItemEntity = ItemEntity(itemEntity.title, itemEntity.description, false, itemEntity.id)
+        val activeItemEntity = ItemEntity(itemEntity.title, itemEntity.description, false, itemEntity.isDeleted, itemEntity.id)
         TASKS_SERVICE_DATA[itemEntity.id] = activeItemEntity
     }
 
@@ -104,11 +133,11 @@ object ItemsRemoteDataSource : DefaultDataSource {
         } as LinkedHashMap<String, ItemEntity>
     }
 
-    override suspend fun deleteAllItems() {
+    override suspend fun clearAllItems() {
         TASKS_SERVICE_DATA.clear()
     }
 
-    override suspend fun deleteItem(itemId: String) {
+    override suspend fun clearItem(itemId: String) {
         TASKS_SERVICE_DATA.remove(itemId)
     }
 }

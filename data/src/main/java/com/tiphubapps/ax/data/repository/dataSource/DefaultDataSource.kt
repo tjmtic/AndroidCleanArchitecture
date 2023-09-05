@@ -23,9 +23,23 @@ interface DefaultDataSource {
 
     suspend fun saveItem(task: ItemEntity)
 
+    suspend fun saveItems(task: List<ItemEntity>)
+
+    suspend fun updateItem(task: ItemEntity) : Int
+
+    suspend fun updateItems(task: List<ItemEntity>) : Int
+
     suspend fun completeItem(task: ItemEntity)
 
     suspend fun completeItem(taskId: String)
+
+    suspend fun deleteItem(task: ItemEntity)
+
+    suspend fun deleteItem(task: String)
+
+    suspend fun deleteItems(task: List<String>)
+
+    suspend fun deleteAllItems()
 
     suspend fun activateItem(task: ItemEntity)
 
@@ -33,7 +47,7 @@ interface DefaultDataSource {
 
     suspend fun clearCompletedItems()
 
-    suspend fun deleteAllItems()
+    suspend fun clearAllItems()
 
-    suspend fun deleteItem(taskId: String)
+    suspend fun clearItem(taskId: String)
 }
