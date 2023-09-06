@@ -18,12 +18,14 @@ import com.tiphubapps.ax.data.db.Converters
 import com.tiphubapps.ax.data.db.UserDao
 import com.tiphubapps.ax.data.repository.dataSource.Result
 import com.tiphubapps.ax.data.repository.dataSource.UserDataSource
+import com.tiphubapps.ax.domain.repository.AuthRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
 
 class UserRemoteDataSourceImpl(private val userApi: UserApi,
-                               private val userDao: UserDao, ) :
+                               private val userDao: UserDao,
+) :
     UserDataSource {
     //private val userDao = userDB.userDao()
 

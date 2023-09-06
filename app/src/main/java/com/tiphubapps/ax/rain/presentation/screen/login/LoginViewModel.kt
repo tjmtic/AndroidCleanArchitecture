@@ -69,7 +69,13 @@ class LoginViewModel @Inject constructor(
             //(PIPE) Expose/Stream values as Flows
             viewModelScope.launch {
                 when(val value = userUseCases.useCaseAuthGetToken()){
-                    is UseCaseResult.UseCaseSuccess -> { _localValueFlow.value = value.data }
+                    is UseCaseResult.UseCaseSuccess -> {
+                        //TODO: Yes. Figure this out.
+                        // IMPLICIT TOKEN HANDLING AND LOGINSTATUS
+                        println("GOT AUTH TOKEN ${value.data}")
+                        _localValueFlow.value = value.data
+                        println("GOT AUTH TOKEN ${localValueFlow.value}")
+                    }
                     is UseCaseResult.UseCaseError -> { value.exception.message?.let{
                         //TODO: Probably don't need to create banner errors for this
                         onEvent(LoginViewEvent.CreateError(it))

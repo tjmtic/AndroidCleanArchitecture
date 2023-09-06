@@ -12,6 +12,7 @@ import com.tiphubapps.ax.data.repository.dataSource.Result
 import com.tiphubapps.ax.data.repository.dataSource.UserDataSource
 import com.tiphubapps.ax.data.repository.dataSource.succeeded
 import com.tiphubapps.ax.domain.model.User
+import com.tiphubapps.ax.domain.repository.AuthRepository
 import com.tiphubapps.ax.domain.repository.UseCaseResult
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -27,6 +28,7 @@ import org.json.JSONObject
 class UserRepositoryImpl(
     private val userRemoteDataSource: UserDataSource,
     private val userLocalDataSource: UserDataSource,
+    private val authRepository: AuthRepository,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
    // val authToken: String
 ) :
@@ -192,6 +194,8 @@ class UserRepositoryImpl(
                         setLoggedInUser(it.asString)
 
                         updateLocalValue(it.asString)
+
+                        authRepository.saveToken(it.asString)
                     }
 
                     //TODO: Investigate this method
