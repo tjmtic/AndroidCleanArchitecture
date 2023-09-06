@@ -29,7 +29,7 @@ fun NavGraph(navController: NavHostController) {
                                 onNavigateToHome = { navController.navigate(route = Screen.Home.route) })
         }
         composable(route = Screen.Home.route) {
-            HomeScreen(navController = navController,
+            HomeScreen(navController = navController, onNavigateToLogin = { navController.navigate(route = Screen.Login.route)},
                         onNavigateToProfile = { navController.navigate(route = Screen.UserDetails.route) })
         }
         composable(

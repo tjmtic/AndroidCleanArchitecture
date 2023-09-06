@@ -13,6 +13,7 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.tiphubapps.ax.domain.repository.UseCaseResult
 import com.tiphubapps.ax.data.util.SessionManager
+import com.tiphubapps.ax.domain.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineStart
@@ -36,6 +37,7 @@ import javax.inject.Named
 class HomeViewModel @Inject constructor(
     @Named("suite") private val userUseCases: UserUseCases,
     private val sessionManager: SessionManager,
+    private val authRepository: AuthRepository,
     application: Application
 ) : AndroidViewModel(application) {
     //val getAllUsers = userUseCases.getAllUsersUseCase()
@@ -97,8 +99,8 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             Log.d("TIME123","initializeing homewVIEWMODEL....1");
 
-            token.let {
-                Log.d("TIME123","initializeing homewVIEWMODEL....2");
+            if(token.value.isNotEmpty()) {
+                Log.d("TIME123","initializeing homewVIEWMODEL....2 ${token.value}");
 
                 //_currentUser.value = userUseCases.getCurrentUserWithTokenUseCase(token.value)
                 val cu = userUseCases.getCurrentUserWithTokenUseCase!!(token.value)
@@ -106,7 +108,7 @@ class HomeViewModel @Inject constructor(
                     is UseCaseResult.UseCaseSuccess -> _currentUser.value = JsonObject().apply{ addProperty("user", Gson().toJson(cu.data)) }
                     else -> {}
                 }
-                Log.d("TIME123","initializeing homewVIEWMODEL....3 ${_currentUser.value}");
+                Log.d("TIME123","initializeing homewVIEWMODEL....3$cu ${_currentUser.value}");
 
 
                 _historyUsers.apply{
@@ -255,6 +257,9 @@ class HomeViewModel @Inject constructor(
 
 
                 start();
+            }
+            else{
+                performLogout()
             }
         }
     }
@@ -528,6 +533,7 @@ class HomeViewModel @Inject constructor(
     }
 
     fun performLogout(){
+        println("TIME123 Logging Out...")
         (getApplication<Application>().applicationContext as Rain).logout()
         _uiStateLogin.value = LoginUiState.Invalid("Invalid User Token")
     }

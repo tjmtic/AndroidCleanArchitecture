@@ -58,19 +58,20 @@ class LoginViewModel @Inject constructor(
     ///////////////////////////////////////////
 
     init {
-        println("TIME123 LoginViewModel Start")
+        println("TIME123 LoginViewModel Init Start")
         //Initialize token from DB to check for loginUiState?
         //TODO: SHOULD DO THIS IN MAINACTIVITY?
         //sessionManager.getUserToken()?.let {
             ///////////////////DEFAULT INIT VALUES///////////////////////////////////////
 
-            userUseCases.useCaseUserSetValue("LoginViewModel Value")
+            //userUseCases.useCaseUserSetValue("LoginViewModel Value")
 
             //(PIPE) Expose/Stream values as Flows
             viewModelScope.launch {
-                when(val value = userUseCases.useCaseUserGetValue()){
-                    is UseCaseResult.UseCaseSuccess -> { _localValueFlow.value = value.data.value }
+                when(val value = userUseCases.useCaseAuthGetToken()){
+                    is UseCaseResult.UseCaseSuccess -> { _localValueFlow.value = value.data }
                     is UseCaseResult.UseCaseError -> { value.exception.message?.let{
+                        //TODO: Probably don't need to create banner errors for this
                         onEvent(LoginViewEvent.CreateError(it))
                     } ?: run{ onEvent(LoginViewEvent.CreateError("Unknown Error")) } }
                     else -> {
@@ -80,6 +81,7 @@ class LoginViewModel @Inject constructor(
             }
             /////////////////////////////////////////////////////////////////////////////////
         //}
+        println("TIME123 LoginViewModel Init End")
     }
 
     override fun onCleared() {

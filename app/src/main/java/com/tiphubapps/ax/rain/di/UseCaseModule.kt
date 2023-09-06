@@ -1,5 +1,6 @@
 package com.tiphubapps.ax.rain.di
 
+import com.tiphubapps.ax.domain.repository.AuthRepository
 import com.tiphubapps.ax.domain.repository.UserRepository
 import com.tiphubapps.ax.domain.useCase.*
 import com.tiphubapps.ax.domain.useCase.CreateSessionByUsersUseCase
@@ -12,6 +13,7 @@ import com.tiphubapps.ax.domain.useCase.GetUsersByIdUseCase
 import com.tiphubapps.ax.domain.useCase.GetUsersFromDBUseCase
 import com.tiphubapps.ax.domain.useCase.PostLoginUseCase
 import com.tiphubapps.ax.domain.useCase.UserUseCases
+import com.tiphubapps.ax.domain.useCase.auth.UseCaseAuthGetToken
 import com.tiphubapps.ax.domain.useCase.users.UseCaseUserGetValue
 import com.tiphubapps.ax.domain.useCase.users.UseCaseUserSetValue
 import dagger.Module
@@ -49,9 +51,10 @@ object UseCaseModule {
     )
 
     @Provides
-    fun provideLoginUseCases(userRepository: UserRepository) = LoginUseCases(
+    fun provideLoginUseCases(userRepository: UserRepository, authRepository: AuthRepository) = LoginUseCases(
         useCaseLogin = UseCaseLogin(userRepository = userRepository),
         useCaseUserGetValue = UseCaseUserGetValue(userRepository = userRepository) ,
-        useCaseUserSetValue = UseCaseUserSetValue(userRepository = userRepository)
+        useCaseUserSetValue = UseCaseUserSetValue(userRepository = userRepository),
+        useCaseAuthGetToken = UseCaseAuthGetToken(authRepository = authRepository)
     )
 }

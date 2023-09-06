@@ -105,6 +105,7 @@ fun LoginDetailsScreen(
                 "" -> Log.d("TIME123", "${it}Empty TOKEN VALUE in LOGIN VIEWMODEL")
                 "0x0" -> Log.d("TIME123", "No TOKEN VALUE in LOGIN VIEWMODEL")
                 else -> LaunchedEffect(currentToken.value){
+                    println("TIME123 TOKEN VALUE IN LOGIN SCREEN: ${currentToken.value}")
                     /*if (state.value.viewState is LoginViewModel.LoginUiState.Home)*/ navigateHome()
                 }
             }

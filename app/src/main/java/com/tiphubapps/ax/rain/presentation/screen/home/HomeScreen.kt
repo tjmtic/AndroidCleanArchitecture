@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -28,10 +29,12 @@ import com.tiphubapps.ax.rain.ui.theme.AppThemeColor
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.tiphubapps.ax.rain.presentation.components.WebViewComponent
+import com.tiphubapps.ax.rain.presentation.screen.details.UserDetailsViewModel
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun HomeScreen(navController: NavHostController,
+               onNavigateToLogin: () -> Unit,
                onNavigateToProfile: () -> Unit,
                viewModel: HomeViewModel = hiltViewModel()) {
 
@@ -47,6 +50,7 @@ fun HomeScreen(navController: NavHostController,
     val currentUsers = viewModel.allUsers.collectAsState()
 
     val uiState = viewModel.uiState.collectAsState()
+    val uiStateLogin = viewModel.uiStateLogin.collectAsState()
     val uiStateCamera = viewModel.uiStateCamera.collectAsState()
     val uiStateEvent = viewModel.uiStateEvent.collectAsState()
 
@@ -124,6 +128,18 @@ fun HomeScreen(navController: NavHostController,
             HomeTopBar({onNavigateToProfile()}, {showSend()}, {showReceive()}, {toggleCamera()})
         },
         content = {
+
+            when(uiStateLogin.value) {
+                is HomeViewModel.LoginUiState.Invalid -> {
+                    LaunchedEffect(uiState) {
+                        println("invalid Login State, loggin out $it")
+                        //viewModel.performLogout()
+                        //onNavigateToLogin()
+                    }
+                }
+
+                else -> {}
+            }
             if(showWebView1.value){
                 Log.d("TIME123", "Showing webview1:"+extra)
                 WebViewComponent(url = "https://tiphubapps.com/webview/checkout/?token=" + extra)
