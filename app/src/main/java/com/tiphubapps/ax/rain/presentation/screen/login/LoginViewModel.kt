@@ -67,8 +67,10 @@ class LoginViewModel @Inject constructor(
             //userUseCases.useCaseUserSetValue("LoginViewModel Value")
 
             //(PIPE) Expose/Stream values as Flows
-            viewModelScope.launch {
-                when(val value = userUseCases.useCaseAuthGetToken()){
+        viewModelScope.launch (
+            coroutineContextProvider.io, CoroutineStart.DEFAULT
+        ) {
+                when(val value = userUseCases.useCaseAuthGetToken?.let { it() }){
                     is UseCaseResult.UseCaseSuccess -> {
                         //TODO: Yes. Figure this out.
                         // IMPLICIT TOKEN HANDLING AND LOGINSTATUS
@@ -175,6 +177,7 @@ class LoginViewModel @Inject constructor(
                        is UseCaseResult.UseCaseSuccess -> {
                            //Should Happen implicitly in AUTHREPOSITORY while using USECASELOGIN
                           // sessionManager.setUserToken(loginResult.data)
+                           println("Success --- Login")
                        }
                        is UseCaseResult.UseCaseError -> {
                            loginResult.exception.message?.let {

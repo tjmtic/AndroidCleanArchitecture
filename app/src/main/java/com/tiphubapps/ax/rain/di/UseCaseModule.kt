@@ -57,4 +57,9 @@ object UseCaseModule {
         useCaseUserSetValue = UseCaseUserSetValue(userRepository = userRepository),
         useCaseAuthGetToken = UseCaseAuthGetToken(authRepository = authRepository)
     )
+
+    @Provides
+    fun provideAuthUseCases(authRepository: AuthRepository) = AuthUseCases(
+        useCaseAuthGetToken = UseCaseAuthGetToken(authRepository = authRepository)
+    )
 }

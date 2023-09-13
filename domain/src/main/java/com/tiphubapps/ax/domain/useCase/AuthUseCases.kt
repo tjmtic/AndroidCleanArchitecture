@@ -6,10 +6,7 @@ import com.tiphubapps.ax.domain.useCase.users.UseCaseUserGetValue
 import com.tiphubapps.ax.domain.useCase.users.UseCaseUserSetValue
 
 
-data class LoginUseCases(
-    val useCaseLogin: UseCaseLogin,
-    val useCaseUserGetValue: UseCaseUserGetValue,
-    val useCaseUserSetValue: UseCaseUserSetValue,
-    val useCaseAuthGetToken: UseCaseAuthGetToken?,
+data class AuthUseCases(
+    val useCaseAuthGetToken: UseCaseAuthGetToken,
 )
 

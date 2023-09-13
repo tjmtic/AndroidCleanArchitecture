@@ -19,20 +19,21 @@
         android:theme="@style/Theme.AppSplash"
         android:usesCleartextTraffic="true">
         <activity
-            android:name="com.tiphubapps.ax.rain.ui.login.LoginActivity"
+            android:name="com.tiphubapps.ax.rain.testWebviews.WebActivity"
             android:exported="true"
             android:label="@string/title_activity_login"
             android:theme="@style/Theme.AppCompat.Light" >
-        </activity>
-        <activity
-            android:name="com.tiphubapps.ax.rain.MainActivity"
-            android:exported="true"
-            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name="com.tiphubapps.ax.rain.MainActivity"
+            android:exported="true"
+            android:label="@string/app_name">
+
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />

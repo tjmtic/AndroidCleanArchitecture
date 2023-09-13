@@ -2,6 +2,7 @@ package test1
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.gson.JsonObject
 import com.tiphubapps.ax.data.util.CoroutineContextProvider
 import com.tiphubapps.ax.data.util.TestCoroutineContextProvider
@@ -31,6 +32,8 @@ import org.mockito.kotlin.mock
 import com.tiphubapps.ax.rain.Rain
 import com.tiphubapps.ax.rain.presentation.screen.details.LoginViewModel
 import com.tiphubapps.ax.data.util.SessionManager
+import com.tiphubapps.ax.domain.repository.AuthRepository
+import com.tiphubapps.ax.domain.useCase.auth.UseCaseAuthGetToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
@@ -43,13 +46,12 @@ import org.junit.After
 import org.junit.Assert
 import org.junit.runner.RunWith
 import javax.inject.Inject
-
-//@RunWith(AndroidJUnit4::class)
 @ExperimentalCoroutinesApi
+@RunWith(AndroidJUnit4::class)
 class LoginViewModelTest {
     private var fakeDefaultUsersRepository : DefaultUsersRepository = FakeDefaultUsersRepository()
     private var fakeUserRepository : UserRepository = FakeUserRepository()
-    private var fakeUseCases : LoginUseCases = useCaseBuilder(fakeUserRepository)
+    private var fakeUseCases : LoginUseCases = useCaseBuilder(fakeUserRepository, null)
     private var coroutineContextProvider : CoroutineContextProvider = TestCoroutineContextProvider()
     private lateinit var viewModel : LoginViewModel
 
@@ -343,11 +345,12 @@ class LoginViewModelTest {
 
 
     companion object {
-        fun useCaseBuilder (userRepository: UserRepository): LoginUseCases{
+        fun useCaseBuilder (userRepository: UserRepository, authRepository: AuthRepository?): LoginUseCases{
             return LoginUseCases(
                 useCaseLogin = UseCaseLogin(userRepository = userRepository),
                 useCaseUserGetValue = UseCaseUserGetValue(userRepository = userRepository),
-                useCaseUserSetValue = UseCaseUserSetValue(userRepository = userRepository)
+                useCaseUserSetValue = UseCaseUserSetValue(userRepository = userRepository),
+                null,
             )
         }
     }
