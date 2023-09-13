@@ -10,6 +10,8 @@ import com.tiphubapps.ax.data.repository.dataSource.UserLocalDataSource
 import com.tiphubapps.ax.data.repository.dataSource.auth.AuthDataSource
 import com.tiphubapps.ax.data.repository.dataSourceImpl.UserLocalDataSourceImpl
 import com.tiphubapps.ax.data.repository.dataSourceImpl.auth.SessionManagerAuthDataSource
+import com.tiphubapps.ax.data.util.CoroutineContextProvider
+import com.tiphubapps.ax.data.util.MainCoroutineContextProvider
 import com.tiphubapps.ax.data.util.SessionManager
 import com.tiphubapps.ax.domain.repository.AuthRepository
 import com.tiphubapps.ax.rain.R
@@ -25,6 +27,9 @@ import javax.inject.Named
 @Module
 @InstallIn(SingletonComponent::class)
 object AuthDataModule {
+
+    @Provides
+    fun provideCoroutineContextProvider(): CoroutineContextProvider = MainCoroutineContextProvider()
     @Provides
     @Named("shared")
     fun provideSharedPreferences(@ApplicationContext context: Context): SharedPreferences {

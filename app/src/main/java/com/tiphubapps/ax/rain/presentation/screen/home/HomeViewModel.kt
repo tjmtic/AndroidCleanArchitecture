@@ -13,6 +13,7 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.tiphubapps.ax.domain.repository.UseCaseResult
 import com.tiphubapps.ax.data.util.SessionManager
+import com.tiphubapps.ax.data.util.WebSocketManager
 import com.tiphubapps.ax.domain.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -38,6 +39,7 @@ class HomeViewModel @Inject constructor(
     @Named("suite") private val userUseCases: UserUseCases,
     private val sessionManager: SessionManager,
     private val authRepository: AuthRepository,
+    private val webSocketManager: WebSocketManager,
     application: Application
 ) : AndroidViewModel(application) {
     //val getAllUsers = userUseCases.getAllUsersUseCase()

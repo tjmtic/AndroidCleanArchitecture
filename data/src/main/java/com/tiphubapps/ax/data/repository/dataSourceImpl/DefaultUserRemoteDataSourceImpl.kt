@@ -24,7 +24,7 @@ import kotlinx.coroutines.withContext
 
 
 /**
- * Implementation of the data source that adds a latency simulating network.
+ * Implementation of the data source from network.
  */
 class DefaultUserRemoteDataSource internal constructor(
                                     private val userApi: UserApi,

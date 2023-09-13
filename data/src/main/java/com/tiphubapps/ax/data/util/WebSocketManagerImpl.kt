@@ -25,62 +25,42 @@ import java.util.Date
 import java.util.concurrent.Executors
 import javax.inject.Inject
 
-class WebSocketManagerImpl @Inject constructor(authRepository: AuthRepository,
-                                               okHttpClient: OkHttpClient,
+class WebSocketManagerImpl @Inject constructor(private val authRepository: AuthRepository,
+                                               private val client: OkHttpClient,
                                                private val coroutineContextProvider: CoroutineContextProvider
                                                ): WebSocketManager {
 
-    //TODO:
-    // Should come from authRepository? Implicit from LoginStatus
-    private val _currentToken = MutableStateFlow<String>("")
-    val token : StateFlow<String> = _currentToken
-    private val _currentUserId = MutableStateFlow<String>("")
-    val currentUserId : StateFlow<String> = _currentUserId
-
-    //This still set separately?
-    private val _selectedUserId = MutableStateFlow<String>("")
-    val selectedUserId : StateFlow<String> = _selectedUserId
-
-    private val _selectedUserSession = MutableStateFlow<String>("")
-    val selectedUserSession : StateFlow<String> = _selectedUserSession
-
-    private val _selectedUserSessionId = MutableStateFlow<String>("")
-    val selectedUserSessionId : StateFlow<String> = _selectedUserSessionId
-
-
-    //UI STATES
-    private val _tipState = MutableStateFlow<TipState>(TipState.Default)
-    val tipSate: StateFlow<TipState> = _tipState
-
-
+    private val _state = MutableStateFlow(WebSocketState())
+    val state : StateFlow<WebSocketState> = _state
 
     var ws: WebSocket? = null
-    private val client = okHttpClient
+    //private val client = okHttpClient
     val WEBSOCKET_URL = "ws://3.239.168.240"
 
     lateinit var request: Request
-    var listener: WebSocketListener? = null
+    private var listener: WebSocketListener? = null
 
-    //TODO: Implement threaded execution in MainActivity?
+    //TODO: Implement threaded execution in MainActivity? or ViewModel?
+    // EXTEND AuthedViewModel with WebSocketViewModel (or implement TipRepository?)
+    // do something from WebSocketViewModel/Manager to user feedback interactions (can be lossy)
+    // still would do DB updates in background here though
     var thread = Executors.newSingleThreadExecutor()
 
-    init {
-        //Implicitly update from FLOW
-        //TODO: Remove NULLABLE value
-        authRepository.getToken()?.let{
-            _currentToken.value = it
-        }
-    }
+    override suspend fun connect(): Boolean {
+        return withContext(coroutineContextProvider.io) {
 
-    override suspend fun connect(){
-        withContext(coroutineContextProvider.io) {
-            val request: Request = Request.Builder()
-                .url(WEBSOCKET_URL)
-                .addHeader("Authorization", "Bearer ${token.value}")
-                .build()
-            //viewModelScope.launch(thread.asCoroutineDispatcher() + coroutineExceptionHandler, CoroutineStart.DEFAULT) {
-            ws = client.newWebSocket(request, createWebSocketListener())
-            //}
+            authRepository.getToken()?.let {
+
+                val request: Request = Request.Builder()
+                    .url(WEBSOCKET_URL)
+                    .addHeader("Authorization", "Bearer ${it}")
+                    .build()
+
+                ws = client.newWebSocket(request, createWebSocketListener())
+
+                return@withContext true
+            }
+            return@withContext false
         }
     }
 
@@ -145,16 +125,17 @@ private fun handleReceivedText(text: String) {
         "RECEIVER_TIP" -> {
             // Handle the RECEIVER_TIP action
             println("Socket Action: RECEIVER_TIP")
-           // _uiStateEvent.value = EventUiState.TIP;
+
             jsonObject["amount"]?.let{
                 println("Received tip amount: $it")
+                //add tip event, amount
             }
 
         }
         "RECEIVE_MESSAGE" -> {
             // Handle the RECEIVER_MESSAGE action
             println("Socket Action: RECEIVER_MESSAGE")
-            //_uiStateEvent.value = EventUiState.TIP;
+
             jsonObject["amount"]?.let{
                 println("Received message amount: $it")
             }
@@ -163,53 +144,49 @@ private fun handleReceivedText(text: String) {
         "RECEIVER_TIP_RAIN" -> {
             // Handle the RECEIVER_TIP_RAIN action
             println("Socket Action: RECEIVER_TIP_RAIN")
-            //_uiStateEvent.value = EventUiState.RAIN;
+
             jsonObject["amount"]?.let{
                 println("Received rain amount: $it")
+                //add tip rain event, amount
             }
         }
         "THANK_YOU" -> {
             // Handle the THANK_YOU action
             println("Socket Action: THANK_YOU")
-            //_uiStateEvent.value = EventUiState.DEFAULT;
         }
         "ACK" -> {
             // Handle the ACK action
             println("Socket Action: ACK")
-            //_uiStateEvent.value = EventUiState.DEFAULT;
+
             jsonObject["hash"]?.let{
-                _selectedUserSession.value = it.asString
+                onEvent(WebSocketEvent.UpdateSelectedUserSession(it.asString))
             }
-            //TODO:
-            // STATUS = NOTLOADING
-            _tipState.value = TipState.Success(jsonObject)
+
+            onEvent(WebSocketEvent.UpdateTipState(TipState.Success(jsonObject)))
         }
         "REFRESH" -> {
             // Handle the REFRESH action
             println("Socket Action: REFRESH")
-            //_uiStateEvent.value = EventUiState.DEFAULT;
+
             jsonObject["previous"]?.let{
-                _selectedUserSession.value = it.asString
+                onEvent(WebSocketEvent.UpdateSelectedUserSession(it.asString))
             }
-            //TODO:
-            // STATUS = NOTLOADING
-            _tipState.value = TipState.Success(jsonObject)
+
+            onEvent(WebSocketEvent.UpdateTipState(TipState.Success(jsonObject)))
 
         }
         "RECEIVER_TIP_BAG" -> {
             // Handle the RECEIVER_TIP_BAG action
             println("Socket Action: RECEIVER_TIP_BAG")
-           // _uiStateEvent.value = EventUiState.TIP;
+
             jsonObject["amount"]?.let{
                 println("Received bag amount: $it")
+                //add tip event, amount
             }
         }
         else -> {
             println("Unknown action")
-           // _uiStateEvent.value = EventUiState.DEFAULT;
-            //TODO:
-            // STATUS = NOTLOADING??
-            _tipState.value = TipState.Default
+            onEvent(WebSocketEvent.UpdateTipState(TipState.Default))
         }
     }
 }
@@ -218,18 +195,18 @@ private fun handleReceivedText(text: String) {
     //TODO:
     // message string will turn to ACTION VALUE
     // selection for  amount / tip type
-        when(_tipState.value){
+        when(_state.value.tipState){
             is TipState.Loading -> { /*do not send message til ack response*/ }
             else -> {
                 Log.d("TIME123", "SOCKET CONNECTED?")
 
                 val jsonOb = JSONObject().apply {
                     put("action", "TIP_USER");
-                    put("sender", currentUserId.value);
-                    put("receiver", selectedUserId.value);
+                    put("sender", _state.value.currentUserId);
+                    put("receiver", _state.value.selectedUserId);
                     put("value", "1")
-                    put("previous", selectedUserSession.value)
-                    put("sessionId", selectedUserSessionId.value)
+                    put("previous", _state.value.selectedUserSession)
+                    put("sessionId", _state.value.selectedUserSessionId)
                 }
 
                 Log.d("TIME123", "WEBSOCKET DATA:" + jsonOb.toString())
@@ -241,7 +218,7 @@ private fun handleReceivedText(text: String) {
                     println("TIME123 Sending message... SENT?" + send)
                     //IS THIS CORRECT??
                     if(!send){
-                        _tipState.value = TipState.Loading
+                        onEvent(WebSocketEvent.UpdateTipState(TipState.Loading))
                     }
                 }
             }
@@ -249,23 +226,63 @@ private fun handleReceivedText(text: String) {
 
     }
 
+    //UPDATE STATE EVENTS//
+
+    fun onEvent(event: WebSocketEvent) {
+        when(event){
+            //is WebSocketEvent.UpdateToken -> { _state.value = _state.value.copy(token = event.token) }
+            is WebSocketEvent.UpdateTipState -> { _state.value = _state.value.copy(tipState = event.tipState) }
+            is WebSocketEvent.UpdateCurrentUser -> { _state.value = _state.value.copy(currentUserId = event.id) }
+            is WebSocketEvent.UpdateSelectedUser -> { _state.value = _state.value.copy(selectedUserId = event.id) }
+            is WebSocketEvent.UpdateSelectedUserSession -> { _state.value = _state.value.copy(selectedUserSession = event.id) }
+            is WebSocketEvent.UpdateSelectedUserSessionId -> { _state.value = _state.value.copy(selectedUserSessionId = event.id) }
+            else -> { /* add tip message, consume, throttle, expire/garbage collect unread messages */}
+        }
+    }
+
+    ///////////////////////
+
     override fun clearEvents(){
        // _uiStateEvent.value = EventUiState.DEFAULT;
-        _tipState.value = TipState.Default
+       // _tipState.value = TipState.Default
+
+        onEvent(WebSocketEvent.UpdateTipState(TipState.Default))
+        //clear/remove list of event messages...
     }
 
+    /////STATE EVENTS//////
+    sealed class WebSocketEvent{
+        /*object OnConnect: WebSocketEvent()
+        object OnDisconnect: WebSocketEvent()
+        object OnSetListener: WebSocketEvent()
+        object OnMessageReceived: WebSocketEvent()*/
+        //data class UpdateToken(val token: String): WebSocketEvent()
+        data class UpdateTipState(val tipState: TipState): WebSocketEvent()
+        data class UpdateCurrentUser(val id: String): WebSocketEvent()
+        data class UpdateSelectedUser(val id: String): WebSocketEvent()
+        data class UpdateSelectedUserSession(val id: String): WebSocketEvent()
+        data class UpdateSelectedUserSessionId(val id: String): WebSocketEvent()
+
+
+    }
+
+    /////////////////
+
+    /////STATES//////
 
     //TODO:
-    // is this neccessary?>
+    // is this neccessary?> in memory cache...
     // SHould hold tokens, sessionIds, and cachedMessages, ack status
-    sealed class ManagerState {
-        //token
-        //events (tips)
-        //viewState
-        //loginState
-        //networkState???
-
-    }
+    data class WebSocketState(
+        //val token: String = "",
+        val tipState: TipState = TipState.Default,
+        val currentUserId: String = "",
+        val selectedUserId: String = "",
+        val selectedUserSession: String = "",
+        val selectedUserSessionId: String = "",
+        //messages
+        //ack status? = tipState
+    )
 
     sealed class TipState {
             object Default: TipState()

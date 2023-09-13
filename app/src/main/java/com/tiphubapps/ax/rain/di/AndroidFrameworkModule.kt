@@ -23,9 +23,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(ActivityRetainedComponent::class)
 object AndroidFrameworkModule {
-
-    @Provides
-    fun provideCoroutineContextProvider(): CoroutineContextProvider = MainCoroutineContextProvider()
     @Provides
     fun provideMyRepository(context: Context): AndroidFrameworkRepository {
         return AndroidFrameworkRepository(context)
