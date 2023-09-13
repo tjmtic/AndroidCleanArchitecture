@@ -14,6 +14,9 @@ import com.tiphubapps.ax.data.repository.dataSource.UserRemoteDataSource
 import com.tiphubapps.ax.data.entity.UserEntity
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import com.tiphubapps.ax.data.api.CreateSessionRequest
+import com.tiphubapps.ax.data.api.GetUsersRequest
+import com.tiphubapps.ax.data.api.IdRequest
 import com.tiphubapps.ax.data.db.Converters
 import com.tiphubapps.ax.data.db.UserDao
 import com.tiphubapps.ax.data.repository.dataSource.Result
@@ -37,7 +40,7 @@ class UserRemoteDataSourceImpl(private val userApi: UserApi,
     }
 
     override suspend fun getAllUsers() : Result<List<UserEntity>> {
-        val response = userApi.getAllUsers(authedHeaders = headersProvider.getAuthenticatedHeaders(authToken))
+        val response = userApi.getAllUsers()
 
         response.body()?.let { array ->
             val entityList = array.mapNotNull { element ->
@@ -67,10 +70,8 @@ class UserRemoteDataSourceImpl(private val userApi: UserApi,
 
     override suspend fun getUserById(id: String): Result<UserEntity>{
 
-        val body = JsonObject().also{
-            it.addProperty("id", id)
-        }
-        val response = userApi.getUserById(id = body, authedHeaders = headersProvider.getAuthenticatedHeaders(authToken))
+        val body = IdRequest(id)
+        val response = userApi.getUserById(request = body)
 
 
         response.body()?.let {
@@ -83,20 +84,21 @@ class UserRemoteDataSourceImpl(private val userApi: UserApi,
         return Result.Error(Exception("Empty Error"))
     }
 
-    override suspend fun createSessionByUsers(d: JsonObject): JsonObject? {
-        val response = userApi.createSessionByUser(data = d, authedHeaders = headersProvider.getAuthenticatedHeaders(authToken))
+    override suspend fun createSessionByUsers(receiverId: String): JsonObject? {
+        val d = CreateSessionRequest(receiver = receiverId, )
+        val response = userApi.createSessionByUser(request = d)
 
         return response.body()
     }
 
     override suspend fun getAllUsersById(historyIds: JsonArray, contributorIds: JsonArray): Result<List<UserEntity>>{
 
-        val body = JsonObject().also{
+        val body = GetUsersRequest(history = historyIds.toString(), contributors = contributorIds.toString())/*JsonObject().also{
             it.addProperty("history", historyIds.toString())
             it.addProperty("contributors", contributorIds.toString())
-        }
+        }*/
 
-        val response = userApi.getUsersByIds(history = body, authedHeaders = headersProvider.getAuthenticatedHeaders(authToken))
+        val response = userApi.getUsersByIds(request = body)
 
         //TODO: This ABSOLUTELY BREAKS the UI
         response.body()?.let { array ->

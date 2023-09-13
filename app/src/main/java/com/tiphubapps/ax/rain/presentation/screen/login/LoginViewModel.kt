@@ -25,6 +25,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 import com.tiphubapps.ax.data.util.SessionManager
+import com.tiphubapps.ax.domain.useCase.AuthUseCases
+import com.tiphubapps.ax.rain.presentation.screen.login.AuthedViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
@@ -35,8 +37,9 @@ import kotlin.math.absoluteValue
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val userUseCases: LoginUseCases,
+    private val authUseCases: AuthUseCases,
     private val coroutineContextProvider: CoroutineContextProvider
-) : ViewModel() {
+) : AuthedViewModel(authUseCases, coroutineContextProvider) {
 
     //TODO: implement injection (and use!) of this?
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
@@ -178,6 +181,7 @@ class LoginViewModel @Inject constructor(
                            //Should Happen implicitly in AUTHREPOSITORY while using USECASELOGIN
                           // sessionManager.setUserToken(loginResult.data)
                            println("Success --- Login")
+                           //continueFromNavigation()
                        }
                        is UseCaseResult.UseCaseError -> {
                            loginResult.exception.message?.let {

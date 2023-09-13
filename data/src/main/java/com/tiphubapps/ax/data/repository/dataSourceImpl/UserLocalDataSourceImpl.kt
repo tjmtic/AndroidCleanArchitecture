@@ -31,7 +31,7 @@ class UserLocalDataSourceImpl(private val userDao: UserDao) : UserDataSource {
         TODO("Not yet implemented")
     }
 
-    override suspend fun createSessionByUsers(d: JsonObject): JsonObject? {
+    override suspend fun createSessionByUsers(receiverId: String): JsonObject? {
         TODO("Not yet implemented")
     }
 

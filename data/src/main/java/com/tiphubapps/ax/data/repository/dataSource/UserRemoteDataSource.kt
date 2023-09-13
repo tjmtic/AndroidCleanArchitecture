@@ -13,7 +13,7 @@ interface UserRemoteDataSource {
      suspend fun getUserById(d: String): Result<UserEntity>
      suspend fun getAllUsersById(historyIds: JsonArray, contributorIds: JsonArray): Result<List<UserEntity>>
      suspend fun getAllUsers(): Result<List<UserEntity>>
-     suspend fun createSessionByUsers(d: JsonObject): JsonObject?
+     suspend fun createSessionByUsers(receiverId: String): JsonObject?
      suspend fun postLogin(email:String, password:String): JsonObject?
      suspend fun postLogout()
      fun setUserToken(token: String)

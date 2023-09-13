@@ -3,6 +3,7 @@ package com.tiphubapps.ax.rain.presentation.screen.home
 import android.app.Application
 import android.graphics.Bitmap
 import android.util.Log
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.*
 import com.google.gson.Gson
 import com.tiphubapps.ax.rain.Rain
@@ -11,10 +12,13 @@ import com.tiphubapps.ax.domain.useCase.UserUseCases
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import com.tiphubapps.ax.data.util.CoroutineContextProvider
 import com.tiphubapps.ax.domain.repository.UseCaseResult
 import com.tiphubapps.ax.data.util.SessionManager
 import com.tiphubapps.ax.data.util.WebSocketManager
 import com.tiphubapps.ax.domain.repository.AuthRepository
+import com.tiphubapps.ax.domain.useCase.AuthUseCases
+import com.tiphubapps.ax.rain.presentation.screen.login.AuthedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineStart
@@ -37,11 +41,18 @@ import javax.inject.Named
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     @Named("suite") private val userUseCases: UserUseCases,
+    private val authUseCases: AuthUseCases,
+    private val coroutineContextProvider: CoroutineContextProvider,
     private val sessionManager: SessionManager,
-    private val authRepository: AuthRepository,
+   // private val authRepository: AuthRepository,
     private val webSocketManager: WebSocketManager,
-    application: Application
-) : AndroidViewModel(application) {
+    //private val authViewModel: AuthedViewModel,
+    //application: Application
+) : AuthedViewModel(authUseCases, coroutineContextProvider) {
+
+
+    //val isLoggedIn = true//authViewModel.isLoggedIn
+
     //val getAllUsers = userUseCases.getAllUsersUseCase()
     private val _allUsers: MutableStateFlow<JsonObject?> = MutableStateFlow(JsonObject())
     val allUsers: StateFlow<JsonObject?> = _allUsers
@@ -89,7 +100,8 @@ class HomeViewModel @Inject constructor(
    // val socketToken : StateFlow<String> = _socketToken
     //val token = (getApplication<Application>().applicationContext as AndroidCleanArchitecture).currentUserToken
 
-    val qrImage: Bitmap? = token?.let{(getApplication<Application>().applicationContext as Rain).generateQR(token.value)}
+
+    val qrImage: Bitmap? = null//token?.let{(getApplication<Application>().applicationContext as Rain).generateQR(token.value)}
 
 
 
@@ -252,13 +264,29 @@ class HomeViewModel @Inject constructor(
 
                 //user id to set socket namespace
                 //MainActivity.setSocketNamespace(userId)
-                _currentUser.value?.get("socketId")?.let {
-                    (getApplication<Application>().applicationContext as Rain).currentUserSocketId =
-                        it.asString;
-                }
+                //_currentUser.value?.get("socketId")?.let {
+                //    (getApplication<Application>().applicationContext as Rain).currentUserSocketId =
+                //        it.asString;
+                //}
 
 
-                start();
+                //start();
+
+                webSocketManager.setListener(object: WebSocketListener() {
+                    override fun onMessage(webSocket: WebSocket, text: String) {
+                        val currentTime: Date = Calendar.getInstance().time
+                        //exampleUiState.addMessage(
+                        //   Message("Web", text, currentTime.toString()))
+                        Log.d("TIME123", "From HOMEVIEWMODEL:" + text)
+
+                        handleReceivedText(text)
+                        //vibrate
+                        //show messages
+                        //play animation
+                    }
+                })
+
+                webSocketManager.connect()
             }
             else{
                 performLogout()
@@ -501,7 +529,7 @@ class HomeViewModel @Inject constructor(
                     it.addProperty("receiver", id )
                 }
 
-                val respo2 = userUseCases.createSessionByUserUseCase!!(data , token.value)
+                val respo2 = userUseCases.createSessionByUserUseCase!!(id )
 
                 respo2?.get("previous")?.let{
                 _selectedUserSession.value = it.asString
@@ -536,7 +564,9 @@ class HomeViewModel @Inject constructor(
 
     fun performLogout(){
         println("TIME123 Logging Out...")
-        (getApplication<Application>().applicationContext as Rain).logout()
+        //authViewModel.logout()
+
+        //(getApplication<Application>().applicationContext as Rain).logout()
         _uiStateLogin.value = LoginUiState.Invalid("Invalid User Token")
     }
 

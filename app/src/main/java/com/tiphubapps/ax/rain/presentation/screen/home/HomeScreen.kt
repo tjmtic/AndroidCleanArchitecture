@@ -17,6 +17,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -55,6 +56,8 @@ fun HomeScreen(navController: NavHostController,
     val uiStateEvent = viewModel.uiStateEvent.collectAsState()
 
     val token = viewModel.token.collectAsState()
+
+    val isLoggedIn = viewModel.isLoggedIn.collectAsState()
 
 
     val backgroundColor by animateColorAsState(
@@ -129,12 +132,28 @@ fun HomeScreen(navController: NavHostController,
         },
         content = {
 
+            //TODO:
+            // Base AuthedScreen Composable should be wrapped in this function
+            // extend other screens from that
+            when(isLoggedIn.value) {
+                true -> { }
+
+                else -> {
+                    LaunchedEffect(isLoggedIn) {
+                        println("Not Logged in According to authViewModel, loggin out $it")
+                        viewModel.performLogout()
+                        onNavigateToLogin()
+                    }
+                }
+            }
+
+            //REDUNDANT / DEPRECATED
             when(uiStateLogin.value) {
                 is HomeViewModel.LoginUiState.Invalid -> {
                     LaunchedEffect(uiState) {
                         println("invalid Login State, loggin out $it")
-                        //viewModel.performLogout()
-                        //onNavigateToLogin()
+                      //  viewModel.performLogout()
+                      //  onNavigateToLogin()
                     }
                 }
 

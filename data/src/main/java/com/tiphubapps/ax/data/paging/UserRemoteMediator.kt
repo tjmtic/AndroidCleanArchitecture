@@ -51,7 +51,7 @@ class UserRemoteMediator(private val userApi: UserApi, private val userDB: UserD
             }
 
             Log.d("TIME123", "REMOTE MEDIATOR - LOGGING FOR GET ALL USERS");
-            val response = userApi.getAllUsers(authedHeaders = headersProvider.getAuthenticatedHeaders(""))
+            val response = userApi.getAllUsers()
             var endOfPaginationReached = false
             if (response.isSuccessful) {
                 val responseData = response.body()

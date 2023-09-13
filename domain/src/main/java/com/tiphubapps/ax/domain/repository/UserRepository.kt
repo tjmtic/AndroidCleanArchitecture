@@ -14,7 +14,7 @@ interface UserRepository {
     suspend fun getUserById(id:String, token: String): UseCaseResult<User>
     suspend fun getUsersById(historyIds:JsonArray, contributorIds:JsonArray, token: String): UseCaseResult<List<User>>
 
-    suspend fun createSessionByUsers(data: JsonObject, token: String): JsonObject?
+    suspend fun createSessionByUsers(receiverId: String): JsonObject?
     suspend fun getAllUsers(): UseCaseResult<List<User>>
     suspend fun getAllUsersWithToken(token: String): UseCaseResult<List<User>>
     fun getUsersFromDB(userId: Int): Flow<User?>

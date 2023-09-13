@@ -122,9 +122,9 @@ class UserRepositoryImpl(
         }
     }
 
-    override suspend fun createSessionByUsers(data: JsonObject, token: String): JsonObject? {
-        userRemoteDataSource.setUserToken(token)
-        return userRemoteDataSource.createSessionByUsers(data)
+    override suspend fun createSessionByUsers(receiverId: String): JsonObject? {
+        //userRemoteDataSource.setUserToken(token)
+        return userRemoteDataSource.createSessionByUsers(receiverId)
     }
 
     override suspend fun getAllUsers() : UseCaseResult<List<User>> {

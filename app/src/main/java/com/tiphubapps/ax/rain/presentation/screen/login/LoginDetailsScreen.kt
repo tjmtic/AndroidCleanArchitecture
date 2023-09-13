@@ -31,6 +31,8 @@ fun LoginDetailsScreen(
     //val networkUiState = viewModel.networkUiState.collectAsState()
     val currentToken = viewModel.localValueFlow.collectAsStateWithLifecycle()//viewModel.currentToken.collectAsState()
 
+    val isLoggedIn = viewModel.isLoggedIn.collectAsStateWithLifecycle()
+
     var hasError by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
@@ -101,6 +103,19 @@ fun LoginDetailsScreen(
 
             //////WHat is this for???
             //Fixed later on? Other Effects?
+
+            when(isLoggedIn.value) {
+                true -> { }
+
+                else -> {
+                    LaunchedEffect(isLoggedIn) {
+                        println("Not Logged in According to authViewModel, loggin out $it")
+                        //viewModel.performLogout()
+                        onNavigateToHome()
+                    }
+                }
+            }
+
             when(currentToken.value){
                 "" -> Log.d("TIME123", "${it}Empty TOKEN VALUE in LOGIN VIEWMODEL")
                 "0x0" -> Log.d("TIME123", "No TOKEN VALUE in LOGIN VIEWMODEL")

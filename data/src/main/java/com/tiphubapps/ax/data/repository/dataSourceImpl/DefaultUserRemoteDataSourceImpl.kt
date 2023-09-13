@@ -3,6 +3,7 @@ package com.tiphubapps.ax.data.repository.dataSourceImpl
 import android.annotation.SuppressLint
 import com.google.gson.JsonObject
 import com.tiphubapps.ax.data.api.ApiMainHeadersProvider
+import com.tiphubapps.ax.data.api.IdRequest
 import com.tiphubapps.ax.data.api.UserApi
 import com.tiphubapps.ax.data.db.Converters
 import com.tiphubapps.ax.data.db.UserDB
@@ -80,7 +81,7 @@ class DefaultUserRemoteDataSource internal constructor(
 
     override suspend fun getUsers(): Result<List<UserEntity>> = withContext(ioDispatcher){
         // Simulate network by delaying the execution.
-        val response = userApi.getAllUsers(headersProvider.getAuthenticatedHeaders(""))//TASKS_SERVICE_DATA.values.toList()
+        val response = userApi.getAllUsers()//TASKS_SERVICE_DATA.values.toList()
         //delay(SERVICE_LATENCY_IN_MILLIS)
 
         //return Success(users)
@@ -95,11 +96,9 @@ class DefaultUserRemoteDataSource internal constructor(
     }
 
     override suspend fun getUser(userId: String): Result<UserEntity> = withContext(ioDispatcher) {
-        val body = JsonObject().also{
-            it.addProperty("id", userId)
-        }
+        val body = IdRequest(userId)
 
-        val response = userApi.getUserById(body, headersProvider.getAuthenticatedHeaders(""))
+        val response = userApi.getUserById(body)
         response.body()?.let {
             val entity = Converters.userEntityFromJsonObject(it)
             return@withContext Success(entity)
