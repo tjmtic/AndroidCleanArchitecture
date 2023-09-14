@@ -44,7 +44,7 @@ class HomeViewModel @Inject constructor(
     @Named("suite") private val userUseCases: UserUseCases,
     private val authUseCases: AuthUseCases,
     private val coroutineContextProvider: CoroutineContextProvider,
-    private val sessionManager: SessionManager,
+    //private val sessionManager: SessionManager,
    // private val authRepository: AuthRepository,
     private val webSocketManager: WebSocketManager,
     //private val authViewModel: AuthedViewModel,
@@ -57,14 +57,14 @@ class HomeViewModel @Inject constructor(
     //val getAllUsers = userUseCases.getAllUsersUseCase()
     private val _allUsers: MutableStateFlow<JsonObject?> = MutableStateFlow(JsonObject())
     val allUsers: StateFlow<JsonObject?> = _allUsers
-    val sendUsers: StateFlow<JsonObject?> = _allUsers
-    val receiveUsers: StateFlow<JsonObject?> = _allUsers
+    //val sendUsers: StateFlow<JsonObject?> = _allUsers
+    //val receiveUsers: StateFlow<JsonObject?> = _allUsers
 
     private val _historyUsers: MutableStateFlow<JsonArray?> = MutableStateFlow(JsonArray())
     val historyUsers: StateFlow<JsonArray?> = _historyUsers
 
-    private val _contributorUsers: MutableStateFlow<JsonObject?> = MutableStateFlow(JsonObject())
-    val contributorUsers: StateFlow<JsonObject?> = _contributorUsers
+    private val _contributorUsers: MutableStateFlow<JsonArray?> = MutableStateFlow(JsonArray())
+    val contributorUsers: StateFlow<JsonArray?> = _contributorUsers
 
     //val userSocketId: String;
     private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Default)
@@ -83,19 +83,19 @@ class HomeViewModel @Inject constructor(
     private val _currentUser: MutableStateFlow<User?> = MutableStateFlow(null)
     val currentUser: StateFlow<User?> = _currentUser
 
-    private val _selectedUser: MutableStateFlow<JsonObject?> = MutableStateFlow(JsonObject())
-    val selectedUser: StateFlow<JsonObject?> = _selectedUser
+    private val _selectedUser: MutableStateFlow<User?> = MutableStateFlow(null)
+    val selectedUser: StateFlow<User?> = _selectedUser
     //val selectedUserToken : StateFlow<String?> = MutableStateFlow("");
 
-    private val _selectedUserSession: MutableStateFlow<String> = MutableStateFlow("")
+    //private val _selectedUserSession: MutableStateFlow<String> = MutableStateFlow("")
     //val selectedUserSession: StateFlow<String> = _selectedUserSession
-    private val _selectedUserSessionId: MutableStateFlow<String> = MutableStateFlow("")
+    //private val _selectedUserSessionId: MutableStateFlow<String> = MutableStateFlow("")
     //val selectedUserSessionId: StateFlow<String> = _selectedUserSessionId
 
     private val _disabled: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
-    private val _currentToken = MutableStateFlow<String>((sessionManager.getUserToken()) as String)
-    val token : StateFlow<String> = _currentToken
+    //private val _currentToken = MutableStateFlow<String>((sessionManager.getUserToken()) as String)
+    //val token : StateFlow<String> = _currentToken
 
    // private val _socketToken = MutableStateFlow<String>(((application.applicationContext as AndroidCleanArchitecture).currentUserSocketId ) as String)
    // val socketToken : StateFlow<String> = _socketToken
@@ -111,10 +111,10 @@ class HomeViewModel @Inject constructor(
     init {
         viewModelScope.launch {
 
-            if(token.value.isNotEmpty()) {
+            //if(token.value.isNotEmpty()) {
 
                 //_currentUser.value = userUseCases.getCurrentUserWithTokenUseCase(token.value)
-                val cu = userUseCases.getCurrentUserWithTokenUseCase!!(token.value)
+                val cu = userUseCases.getCurrentUserUseCase!!()
                 when(cu){
                     is UseCaseResult.UseCaseSuccess -> _currentUser.value = cu.data//JsonObject().apply{ addProperty("user", Gson().toJson(cu.data)) }
                     else -> {}
@@ -124,10 +124,14 @@ class HomeViewModel @Inject constructor(
                     value = _currentUser.value?.history//get("history")?.asJsonArray
                 }
 
+                _contributorUsers.apply{
+                    value = _currentUser.value?.contributors//get("history")?.asJsonArray
+                }
+
                 _allUsers.apply{
 
                     historyUsers.value?.let { it1 ->
-                        userUseCases.getUsersByIdUseCase!!(it1,it1, token.value)?.let { users ->
+                        userUseCases.getUsersByIdUseCase!!(it1,it1)?.let { users ->
 
                             //this.value =
                             val ja = JsonArray().also { array ->
@@ -168,13 +172,13 @@ class HomeViewModel @Inject constructor(
                                 it.add("contributors", ja)
                             }
                         }
-                    } ?: run{
+                   // } ?: run{
 
-                        performLogout();
-                    }
+                   //     performLogout();
+                   // }
                 }
 
-                webSocketManager.setListener(object: WebSocketListener() {
+               /* webSocketManager.setListener(object: WebSocketListener() {
                     override fun onMessage(webSocket: WebSocket, text: String) {
                         val currentTime: Date = Calendar.getInstance().time
                         //exampleUiState.addMessage(
@@ -188,12 +192,37 @@ class HomeViewModel @Inject constructor(
                     }
                 })
 
-                webSocketManager.connect()
+                webSocketManager.connect()*/
+
+                    websocketInit()
+
+
             }
-            else{
-                performLogout()
-            }
+            //else{
+            //    performLogout()
+            //}
         }
+    }
+
+    suspend fun websocketInit(){
+            webSocketManager.setListener(object : WebSocketListener() {
+                override fun onMessage(webSocket: WebSocket, text: String) {
+                    val currentTime: Date = Calendar.getInstance().time
+                    //exampleUiState.addMessage(
+                    //   Message("Web", text, currentTime.toString()))
+                    Log.d("TIME123", "From HOMEVIEWMODEL:" + text)
+
+                    handleReceivedText(text)
+                    //vibrate
+                    //show messages
+                    //play animation
+                }
+            })
+
+        //viewModelScope.launch(coroutineContextProvider.io, CoroutineStart.DEFAULT) {
+
+            webSocketManager.connect()
+        //}
     }
 
     fun sendWsMessage(amount: Int){
@@ -438,45 +467,35 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             Log.d("TIME123","SELECTION BY ID....1 "+id);
 
-            token.let {
-                val respo = userUseCases.getUserByIdUseCase!!(id , token.value)
-
-                val data = JsonObject().also{
-                    it.addProperty("sender", currentUser.value?.id)//.get("id")?.asString )
-                    it.addProperty("receiver", id )
-                }
+            //token.let {
+                val respo = userUseCases.getUserByIdUseCase!!(id)
 
                 val respo2 = userUseCases.createSessionByUserUseCase!!(id )
 
                 respo2?.get("previous")?.let{
-                _selectedUserSession.value = it.asString
+                    //TODO WEBSOCKET SET VALUE
+                    webSocketManager.setSelectedUserSession(it.asString)
+                //_selectedUserSession.value = it.asString
             };
 
                 respo2?.get("_id")?.let{
-                    _selectedUserSessionId.value = it.asString
+                    //TODO WEBSOCKET SET VALUE
+                    webSocketManager.setSelectedUserSessionId(it.asString)
+                   // _selectedUserSessionId.value = it.asString
                 };
 
                 Log.d("TIME123","SELECTION BY ID....2 "+respo.toString());
 
-                Log.d("TIME123","SELECTION BY ID....2A "+data.toString()+respo2.toString());
-
-
                 when(respo){
-                    is UseCaseResult.UseCaseSuccess -> _selectedUser.value = JsonObject().apply{ addProperty("user", Gson().toJson(respo.data)) }
+                    is UseCaseResult.UseCaseSuccess -> _selectedUser.value = respo.data
                     else -> {}
                 }
-                //_selectedUser.value = respo
-
-            }
-
-            Log.d("TIME123","SELECTION BY ID....3 ");
-
         }
 
     }
 
     fun setUnselectedUser(){
-        _selectedUser.value = JsonObject()
+        _selectedUser.value = null
     }
 
     fun performLogout(){

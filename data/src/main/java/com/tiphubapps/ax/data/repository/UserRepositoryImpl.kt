@@ -58,25 +58,9 @@ class UserRepositoryImpl(
     }
 
     override suspend fun getCurrentUser(): UseCaseResult<User> {
-        val re = userRemoteDataSource.getCurrentUser()
-
-        return when (re) {
-            is Result.Loading -> UseCaseResult.Loading
-            is Result.Error -> UseCaseResult.UseCaseError(re.exception)
-            is Result.Success -> {
-                UseCaseResult.UseCaseSuccess(
-                    Converters.userFromUserEntity(re.data)
-                )
-            }
-        }
-    }
-
-    override suspend fun getCurrentUserWithToken(token: String): UseCaseResult<User> {
-        //Log.d("TIME123", "GEtting User with token ${token}")
-        return withContext(ioDispatcher) {
-            userRemoteDataSource.setUserToken(token)
-            //return@withContext userRemoteDataSource.getCurrentUser()
+        return return withContext(ioDispatcher) {
             val re = userRemoteDataSource.getCurrentUser()
+
             return@withContext when (re) {
                 is Result.Loading -> UseCaseResult.Loading
                 is Result.Error -> UseCaseResult.UseCaseError(re.exception)
@@ -89,8 +73,8 @@ class UserRepositoryImpl(
         }
     }
 
-    override suspend fun getUserById(id: String, token: String): UseCaseResult<User> {
-        userRemoteDataSource.setUserToken(token)
+    override suspend fun getUserById(id: String): UseCaseResult<User> {
+        //userRemoteDataSource.setUserToken(token)
         //return userRemoteDataSource.getUserById(id)
 
         val re = userRemoteDataSource.getUserById(id)
@@ -105,8 +89,8 @@ class UserRepositoryImpl(
             }
         }
     }
-    override suspend fun getUsersById(historyIds: JsonArray, contributorIds: JsonArray, token: String): UseCaseResult<List<User>> {
-        userRemoteDataSource.setUserToken(token)
+    override suspend fun getUsersById(historyIds: JsonArray, contributorIds: JsonArray): UseCaseResult<List<User>> {
+        //userRemoteDataSource.setUserToken(token)
         //return userRemoteDataSource.getAllUsersById(historyIds, contributorIds)
 
         val re =  userRemoteDataSource.getAllUsersById(historyIds, contributorIds)
@@ -130,6 +114,8 @@ class UserRepositoryImpl(
     override suspend fun getAllUsers() : UseCaseResult<List<User>> {
         //TODO: CONVETER for Result to UseCaseResult
         //TODO: CONVERTER for MULTIPLE SUBSTITUTION
+        // ... is that what converters are really for?
+        // Separate this functionality from TypeConverter.
 
         val re = userRemoteDataSource.getAllUsers()
         return when (re) {
@@ -143,23 +129,6 @@ class UserRepositoryImpl(
         }
     }
 
-    override suspend fun getAllUsersWithToken(token: String): UseCaseResult<List<User>> {
-        userRemoteDataSource.setUserToken(token)
-        //Log.d("TIME123","GETTING ALL USERS 2");
-       // val allUsersResp = userRemoteDataSource.getAllUsers()
-        //Log.d("TIME123","GETTING ALL USERS RESPONSE 2" + allUsersResp.toString());
-
-        val re = userRemoteDataSource.getAllUsers()
-        return when (re) {
-            is Result.Loading -> UseCaseResult.Loading
-            is Result.Error -> UseCaseResult.UseCaseError(re.exception)
-            is Result.Success -> {
-                UseCaseResult.UseCaseSuccess(re.data.map { itemEntity ->
-                    Converters.userFromUserEntity(itemEntity)
-                })
-            }
-        }
-    }
 
     override fun getUsersFromDB(userId: Int): Flow<User?> {
         val baseUser = userLocalDataSource.getUsersFromDB(userId)

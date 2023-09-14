@@ -47,6 +47,7 @@ import coil.compose.rememberImagePainter
 import coil.size.Scale
 import com.tiphubapps.ax.rain.R
 import com.google.gson.JsonObject
+import com.tiphubapps.ax.domain.model.User
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import java.util.Timer
@@ -54,7 +55,7 @@ import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun GPTProfileScreen2(user: JsonObject?, url: String, onClick: () -> Unit, onTip: () -> Unit) {
+fun GPTProfileScreen2(user: User?, url: String, onClick: () -> Unit, onTip: () -> Unit) {
     Log.d("TIME123", "PRIFLE SCREEN CHECK: " + url)
     var startX by remember { mutableStateOf(0f) }
     val threshold = 80.dp // Adjust the threshold as needed
@@ -190,9 +191,9 @@ fun GPTProfileScreen2(user: JsonObject?, url: String, onClick: () -> Unit, onTip
                 Column(
                     modifier = Modifier.padding(start = 16.dp)
                 ) {
-                    user?.get("name")?.let {
+                    user?.name?.let {
                         Text(
-                            text = it.asString,
+                            text = it,
                             style = MaterialTheme.typography.h5.merge(
                                 TextStyle(color = Color.White)
                             ),
@@ -213,7 +214,7 @@ fun GPTProfileScreen2(user: JsonObject?, url: String, onClick: () -> Unit, onTip
                 textAlign = TextAlign.Center
 //            style = TextStyle(color = Color.White)
             )
-            user?.get("payerBalance")?.asString?.let {
+            user?.payerBalance?.let {
                 Text(
                     text = " ${it}",
                     style = MaterialTheme.typography.body1.merge(
@@ -275,5 +276,5 @@ fun GPTProfileScreen2(user: JsonObject?, url: String, onClick: () -> Unit, onTip
 @Preview
 @Composable
 fun PreviewProfileScreen2() {
-    GPTProfileScreen2(JsonObject(), "", {}, {})
+    GPTProfileScreen2(null, "", {}, {})
 }

@@ -5,9 +5,9 @@ import com.tiphubapps.ax.domain.repository.UserRepository
 import com.tiphubapps.ax.domain.useCase.*
 import com.tiphubapps.ax.domain.useCase.CreateSessionByUsersUseCase
 import com.tiphubapps.ax.domain.useCase.GetAllUsersUseCase
-import com.tiphubapps.ax.domain.useCase.GetAllUsersWithTokenUseCase
+//import com.tiphubapps.ax.domain.useCase.GetAllUsersWithTokenUseCase
 import com.tiphubapps.ax.domain.useCase.GetCurrentUserUseCase
-import com.tiphubapps.ax.domain.useCase.GetCurrentUserWithTokenUseCase
+//import com.tiphubapps.ax.domain.useCase.GetCurrentUserWithTokenUseCase
 import com.tiphubapps.ax.domain.useCase.GetUserByIdUseCase
 import com.tiphubapps.ax.domain.useCase.GetUsersByIdUseCase
 import com.tiphubapps.ax.domain.useCase.GetUsersFromDBUseCase
@@ -33,9 +33,9 @@ object UseCaseModule {
         getUserByIdUseCase = GetUserByIdUseCase(userRepository = userRepository),
         getUsersByIdUseCase = GetUsersByIdUseCase(userRepository = userRepository),
         createSessionByUserUseCase = CreateSessionByUsersUseCase(userRepository = userRepository),
-        getCurrentUserWithTokenUseCase = GetCurrentUserWithTokenUseCase(userRepository = userRepository),
+        //getCurrentUserWithTokenUseCase = GetCurrentUserWithTokenUseCase(userRepository = userRepository),
         getAllUsersUseCase = GetAllUsersUseCase(userRepository = userRepository),
-        getAllUsersWithTokenUseCase = GetAllUsersWithTokenUseCase(userRepository = userRepository),
+        //getAllUsersWithTokenUseCase = GetAllUsersWithTokenUseCase(userRepository = userRepository),
         getUsersFromDBUseCase = GetUsersFromDBUseCase(userRepository = userRepository),
         postLoginUseCase = PostLoginUseCase(userRepository = userRepository),
 

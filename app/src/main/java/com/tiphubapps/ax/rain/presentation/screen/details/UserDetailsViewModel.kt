@@ -40,7 +40,7 @@ class UserDetailsViewModel @Inject constructor(
         viewModelScope.launch {
             token.let {
                // _selectedUser.value = userUseCases.getCurrentUserWithTokenUseCase(it.value)
-                val respo = userUseCases.getCurrentUserWithTokenUseCase!!(it.value)
+                val respo = userUseCases.getCurrentUserUseCase!!()
 
                 when(respo){
                     is UseCaseResult.UseCaseSuccess -> _selectedUser.value = JsonObject().apply{ addProperty("user", Gson().toJson(respo.data)) }

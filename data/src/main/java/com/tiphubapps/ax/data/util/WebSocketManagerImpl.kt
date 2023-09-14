@@ -233,6 +233,14 @@ private fun handleReceivedText(text: String) {
 
     }
 
+    override fun setSelectedUserSession(id: String) {
+        onEvent(WebSocketEvent.UpdateSelectedUserSession(id))
+    }
+
+    override fun setSelectedUserSessionId(id: String) {
+        onEvent(WebSocketEvent.UpdateSelectedUserSessionId(id))
+    }
+
     //UPDATE STATE EVENTS//
 
     fun onEvent(event: WebSocketEvent) {

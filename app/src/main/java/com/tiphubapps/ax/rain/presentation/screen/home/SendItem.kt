@@ -32,7 +32,7 @@ import com.tiphubapps.ax.rain.presentation.components.UserListComponent
 
 
 @Composable
-fun SendItem(user: JsonObject?,
+fun SendItem(user: User?,
              users: JsonObject?,
              currentUser: User?,
              onSetSelectedUser: (String) -> Unit,
@@ -72,18 +72,7 @@ fun SendItem(user: JsonObject?,
         }
     }*/
 
-    val userImage = user?.get("images")?.asJsonArray.let {
-        it?.let {
-            var url = "none"
-            for (image in it) {
-                if (image.asJsonObject.get("type").asString.equals("profile")) {
-                    url = image.asJsonObject.get("url").asString
-                }
-            }
-            Log.d("TIME123", "LOGGING THE USER IMAGE:"+url)
-            url
-        }
-    }
+    val userImage = user?.profileImage
 
     val currentUserInfo = User(
         0,
@@ -153,7 +142,7 @@ fun SendItem(user: JsonObject?,
                     //ButtonComponent(text = "Following", onClick = { toggleUserList() }, enabled = true)
                     //ButtonComponent(text = "Show View", onClick = { toggleUserList() }, enabled = false)
                     var isFull = false;
-                    user?.get("name")?.isJsonNull?.let {
+                    user?.let {
                         println("full")
                         //FullSendItemComponent(user = user)
                         GPTProfileScreen2 (user, userImage!!, {onUnsetSelectedUser()}, {onTip()})

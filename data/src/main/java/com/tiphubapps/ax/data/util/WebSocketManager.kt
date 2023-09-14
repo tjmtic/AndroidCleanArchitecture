@@ -9,5 +9,7 @@ interface WebSocketManager {
     suspend fun disconnect()
     fun sendMessage(message: String)
     fun setListener(listener: WebSocketListener)
+    fun setSelectedUserSession(id: String)
+    fun setSelectedUserSessionId(id: String)
     fun clearEvents()
 }

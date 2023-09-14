@@ -55,7 +55,7 @@ fun HomeScreen(navController: NavHostController,
     val uiStateCamera = viewModel.uiStateCamera.collectAsState()
     val uiStateEvent = viewModel.uiStateEvent.collectAsState()
 
-    val token = viewModel.token.collectAsState()
+    //val token = viewModel.token.collectAsState()
 
     val isLoggedIn = viewModel.isLoggedIn.collectAsState()
 
@@ -68,7 +68,7 @@ fun HomeScreen(navController: NavHostController,
     )
 
     var showWebView1 = remember { mutableStateOf(false) }
-    var extra = token
+    //var extra = token
     fun toggleWebview1(){
         showWebView1.value = !showWebView1.value
     }
@@ -117,7 +117,7 @@ fun HomeScreen(navController: NavHostController,
     }
 
 
-    println("THIS HOME VIEW TOKEN=="+token.value)
+    //println("THIS HOME VIEW TOKEN=="+token.value)
 
     SideEffect {
         systemUiController.setStatusBarColor(
@@ -161,8 +161,8 @@ fun HomeScreen(navController: NavHostController,
                 else -> {}
             }
             if(showWebView1.value){
-                Log.d("TIME123", "Showing webview1:"+extra)
-                WebViewComponent(url = "https://tiphubapps.com/webview/checkout/?token=" + extra)
+                //Log.d("TIME123", "Showing webview1:"+extra)
+                //WebViewComponent(url = "https://tiphubapps.com/webview/checkout/?token=" + extra)
             }
             when(uiStateCamera.value) {
                 is HomeViewModel.CameraUiState.Enabled -> CameraComponent(Modifier.fillMaxSize(), { id -> hideCamera(id)})

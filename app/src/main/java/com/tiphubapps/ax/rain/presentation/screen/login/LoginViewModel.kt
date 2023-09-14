@@ -67,7 +67,7 @@ class LoginViewModel @Inject constructor(
         //TODO: REMOVE THIS
         // left for app architecture blueprint
         viewModelScope.launch (
-            coroutineContextProvider.io, CoroutineStart.DEFAULT
+            coroutineContextProvider.io + coroutineExceptionHandler, CoroutineStart.DEFAULT
         ) {
                 when(val value = userUseCases.useCaseAuthGetToken?.let { it() }){
                     is UseCaseResult.UseCaseSuccess -> {
@@ -170,10 +170,8 @@ class LoginViewModel @Inject constructor(
                 when (val loginResult: UseCaseResult<String> = userUseCases.useCaseLogin(username, password)) {
                         //Display Error or Success
                        is UseCaseResult.UseCaseSuccess -> {
-                           //Should Happen implicitly in AUTHREPOSITORY while using USECASELOGIN
-                          // sessionManager.setUserToken(loginResult.data)
                            println("Success --- Login")
-                           //continueFromNavigation()
+                           //continueFromNavigationDeeplink()
                        }
                        is UseCaseResult.UseCaseError -> {
                            loginResult.exception.message?.let {
