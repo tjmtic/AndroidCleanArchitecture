@@ -112,7 +112,8 @@ fun HomeScreen(navController: NavHostController,
     }
 
     fun sendTip(){
-        viewModel.sendTip();
+        //viewModel.sendTip();
+        viewModel.sendWsMessage(1)
     }
 
 

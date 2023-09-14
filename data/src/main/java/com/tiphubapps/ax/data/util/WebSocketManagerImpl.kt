@@ -1,6 +1,7 @@
 package com.tiphubapps.ax.data.util
 
 import android.util.Log
+import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.viewModelScope
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
@@ -11,6 +12,7 @@ import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
@@ -32,6 +34,8 @@ class WebSocketManagerImpl @Inject constructor(private val authRepository: AuthR
 
     private val _state = MutableStateFlow(WebSocketState())
     val state : StateFlow<WebSocketState> = _state
+
+    override val isConnected = _state.map{ it.connected }
 
     var ws: WebSocket? = null
     //private val client = okHttpClient
@@ -58,6 +62,7 @@ class WebSocketManagerImpl @Inject constructor(private val authRepository: AuthR
 
                 ws = client.newWebSocket(request, createWebSocketListener())
 
+                onEvent(WebSocketEvent.UpdateConnected(true))
                 return@withContext true
             }
             return@withContext false
@@ -69,6 +74,7 @@ class WebSocketManagerImpl @Inject constructor(private val authRepository: AuthR
             //TODO: Check for other garbage
             try {
                 ws?.close(1000, "User disconnected")
+                onEvent(WebSocketEvent.UpdateConnected(false))
             } catch (e: IOException) {
                 // Handle disconnection error
                 // Implement reconnection logic here
@@ -213,11 +219,12 @@ private fun handleReceivedText(text: String) {
 
                 //TODO:
                 // ...check this over....
+
                 ws?.let {
                     val send = it.send(jsonOb.toString());
                     println("TIME123 Sending message... SENT?" + send)
-                    //IS THIS CORRECT??
-                    if(!send){
+
+                    if(send){
                         onEvent(WebSocketEvent.UpdateTipState(TipState.Loading))
                     }
                 }
@@ -231,6 +238,7 @@ private fun handleReceivedText(text: String) {
     fun onEvent(event: WebSocketEvent) {
         when(event){
             //is WebSocketEvent.UpdateToken -> { _state.value = _state.value.copy(token = event.token) }
+            is WebSocketEvent.UpdateConnected -> { _state.value = _state.value.copy(connected = event.connected) }
             is WebSocketEvent.UpdateTipState -> { _state.value = _state.value.copy(tipState = event.tipState) }
             is WebSocketEvent.UpdateCurrentUser -> { _state.value = _state.value.copy(currentUserId = event.id) }
             is WebSocketEvent.UpdateSelectedUser -> { _state.value = _state.value.copy(selectedUserId = event.id) }
@@ -257,6 +265,7 @@ private fun handleReceivedText(text: String) {
         object OnSetListener: WebSocketEvent()
         object OnMessageReceived: WebSocketEvent()*/
         //data class UpdateToken(val token: String): WebSocketEvent()
+        data class UpdateConnected(val connected: Boolean): WebSocketEvent()
         data class UpdateTipState(val tipState: TipState): WebSocketEvent()
         data class UpdateCurrentUser(val id: String): WebSocketEvent()
         data class UpdateSelectedUser(val id: String): WebSocketEvent()
@@ -274,6 +283,7 @@ private fun handleReceivedText(text: String) {
     // is this neccessary?> in memory cache...
     // SHould hold tokens, sessionIds, and cachedMessages, ack status
     data class WebSocketState(
+        val connected: Boolean = false,
         //val token: String = "",
         val tipState: TipState = TipState.Default,
         val currentUserId: String = "",

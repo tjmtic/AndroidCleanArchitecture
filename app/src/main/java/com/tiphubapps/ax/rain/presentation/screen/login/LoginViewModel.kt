@@ -37,7 +37,7 @@ import kotlin.math.absoluteValue
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val userUseCases: LoginUseCases,
-    private val authUseCases: AuthUseCases,
+    authUseCases: AuthUseCases,
     private val coroutineContextProvider: CoroutineContextProvider
 ) : AuthedViewModel(authUseCases, coroutineContextProvider) {
 
@@ -62,24 +62,16 @@ class LoginViewModel @Inject constructor(
 
     init {
         println("TIME123 LoginViewModel Init Start")
-        //Initialize token from DB to check for loginUiState?
-        //TODO: SHOULD DO THIS IN MAINACTIVITY?
-        //sessionManager.getUserToken()?.let {
-            ///////////////////DEFAULT INIT VALUES///////////////////////////////////////
 
-            //userUseCases.useCaseUserSetValue("LoginViewModel Value")
-
-            //(PIPE) Expose/Stream values as Flows
+        //(PIPE) Expose/Stream values as Flows
+        //TODO: REMOVE THIS
+        // left for app architecture blueprint
         viewModelScope.launch (
             coroutineContextProvider.io, CoroutineStart.DEFAULT
         ) {
                 when(val value = userUseCases.useCaseAuthGetToken?.let { it() }){
                     is UseCaseResult.UseCaseSuccess -> {
-                        //TODO: Yes. Figure this out.
-                        // IMPLICIT TOKEN HANDLING AND LOGINSTATUS
-                        println("GOT AUTH TOKEN ${value.data}")
                         _localValueFlow.value = value.data
-                        println("GOT AUTH TOKEN ${localValueFlow.value}")
                     }
                     is UseCaseResult.UseCaseError -> { value.exception.message?.let{
                         //TODO: Probably don't need to create banner errors for this
