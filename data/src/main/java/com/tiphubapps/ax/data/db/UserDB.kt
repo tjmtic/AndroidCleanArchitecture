@@ -15,7 +15,7 @@ import net.sqlcipher.database.SupportFactory
     version = 1,
     exportSchema = false
 )
-@TypeConverters(Converters::class)
+@TypeConverters(Converters::class, ListTypeConverter::class)
 abstract class UserDB : RoomDatabase() {
     abstract fun userDao(): UserDao
     abstract fun userRemoteKeysDao(): UserRemoteKeysDao

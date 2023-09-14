@@ -79,8 +79,8 @@ class HomeViewModel @Inject constructor(
     val uiStateEvent: StateFlow<EventUiState> = _uiStateEvent
 
     //private val _currentUser: MutableLiveData<User> = MutableLiveData(null)
-    private val _currentUser: MutableStateFlow<JsonObject?> = MutableStateFlow(JsonObject())
-    val currentUser: StateFlow<JsonObject?> = _currentUser
+    private val _currentUser: MutableStateFlow<User?> = MutableStateFlow(null)
+    val currentUser: StateFlow<User?> = _currentUser
 
     private val _selectedUser: MutableStateFlow<JsonObject?> = MutableStateFlow(JsonObject())
     val selectedUser: StateFlow<JsonObject?> = _selectedUser
@@ -119,14 +119,14 @@ class HomeViewModel @Inject constructor(
                 //_currentUser.value = userUseCases.getCurrentUserWithTokenUseCase(token.value)
                 val cu = userUseCases.getCurrentUserWithTokenUseCase!!(token.value)
                 when(cu){
-                    is UseCaseResult.UseCaseSuccess -> _currentUser.value = JsonObject().apply{ addProperty("user", Gson().toJson(cu.data)) }
+                    is UseCaseResult.UseCaseSuccess -> _currentUser.value = cu.data//JsonObject().apply{ addProperty("user", Gson().toJson(cu.data)) }
                     else -> {}
                 }
                 Log.d("TIME123","initializeing homewVIEWMODEL....3$cu ${_currentUser.value}");
 
 
                 _historyUsers.apply{
-                    value = _currentUser.value?.get("history")?.asJsonArray
+                    value = _currentUser.value?.history//get("history")?.asJsonArray
                 }
 
                 //_allUsers.value = userUseCases.getAllUsersWithTokenUseCase(token.value)
@@ -164,7 +164,7 @@ class HomeViewModel @Inject constructor(
                                                             "_id",
                                                             it.id
                                                         )
-                                                        addProperty(
+                                                        add(
                                                             "images",
                                                             it.images
                                                         )
@@ -459,7 +459,7 @@ class HomeViewModel @Inject constructor(
         //val send = ws?.send("ANDROID MESSAGE SENT");
         var jsonOb = JSONObject();
         jsonOb.put("action", "TIP_USER");
-        jsonOb.put("sender", currentUser.value?.get("id")?.asString);
+        jsonOb.put("sender", currentUser.value?.id)//get("id")?.asString);
         jsonOb.put("receiver", selectedUser.value?.get("id")?.asString);
         jsonOb.put("value", "1")
         jsonOb.put("previous", selectedUserSession.value)
@@ -525,7 +525,7 @@ class HomeViewModel @Inject constructor(
                 val respo = userUseCases.getUserByIdUseCase!!(id , token.value)
 
                 val data = JsonObject().also{
-                    it.addProperty("sender", currentUser.value?.get("id")?.asString )
+                    it.addProperty("sender", currentUser.value?.id)//.get("id")?.asString )
                     it.addProperty("receiver", id )
                 }
 

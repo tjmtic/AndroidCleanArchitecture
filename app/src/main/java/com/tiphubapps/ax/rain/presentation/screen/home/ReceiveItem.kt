@@ -19,14 +19,14 @@ import com.google.gson.JsonObject
 
 
 @Composable
-fun ReceiveItem(user: JsonObject?,
+fun ReceiveItem(user: User?,
                 qrImage: Bitmap?,
                 users: JsonObject?,
                 navController: NavHostController) {
 
     val showUserList = remember { mutableStateOf(false) }
 
-    val coverImage = user?.get("images")?.asJsonArray.let {
+    val coverImage = user?.coverImage /*images?.asJsonArray.let {
         it?.let {
             var url = "none"
             for (image in it) {
@@ -37,9 +37,9 @@ fun ReceiveItem(user: JsonObject?,
 
             url
         }
-    }
+    }*/
 
-    val profileImage = user?.get("images")?.asJsonArray.let {
+    val profileImage = user?.profileImage /*get("images")?.asJsonArray.let {
         it?.let {
             var url = "none"
             for (image in it) {
@@ -50,14 +50,15 @@ fun ReceiveItem(user: JsonObject?,
 
             url
         }
-    }
+    }*/
 
     val currentUserInfo = User(
         0,
         "0",
         null,
-        user?.get("payerBalance")?.asInt,
-        user?.get("receiverBalance")?.asInt,
+        null,
+        user?.payerBalance,//.get("payerBalance")?.asInt,
+        user?.receiverBalance,//get("receiverBalance")?.asInt,
         null,
         null,
         null,
@@ -65,15 +66,26 @@ fun ReceiveItem(user: JsonObject?,
         null,
         null,
         null,
-        user?.get("email")?.asString,
-        user?.get("name")?.asString,
+        //user?.email,//get("email")?.asString,
+        user?.name,//get("name")?.asString,
         null,
         null,
         null,
         null,
         null,
         coverImage,
-        profileImage)
+        profileImage,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+    null)
 
     fun toggleUserList(){
         showUserList.value = !showUserList.value

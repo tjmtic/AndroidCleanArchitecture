@@ -220,6 +220,7 @@ fun PreviewProfileScreen() {
         0,
         "0",
         null,
+            null,
         null,
         null,
         null,
@@ -237,7 +238,18 @@ fun PreviewProfileScreen() {
         null,
         null,
         "https://tip-hub.s3.amazonaws.com/users/img/5e22b8a4bf397f08932de490-profile.png",
-        "https://tip-hub.s3.amazonaws.com/users/img/5e22b8a4bf397f08932de490-profile.png"),
+        "https://tip-hub.s3.amazonaws.com/users/img/5e22b8a4bf397f08932de490-profile.png",
+        null,
+        null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+        ),
 
          {})
 }

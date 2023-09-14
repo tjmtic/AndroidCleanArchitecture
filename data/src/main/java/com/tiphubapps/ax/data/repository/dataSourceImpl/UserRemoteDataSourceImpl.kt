@@ -103,6 +103,7 @@ class UserRemoteDataSourceImpl(private val userApi: UserApi,
         //TODO: This ABSOLUTELY BREAKS the UI
         response.body()?.let { array ->
             val entityList = array.get("history").asJsonArray.mapNotNull { element ->
+                println("TIME123 history JSON OBJECT: $element")
                 Converters.userEntityFromJsonObject(element.asJsonObject)
             }
             val entityList2 = array.get("contributors").asJsonArray.mapNotNull { element ->

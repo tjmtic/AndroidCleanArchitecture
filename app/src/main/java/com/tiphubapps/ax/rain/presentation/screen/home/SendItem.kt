@@ -34,7 +34,7 @@ import com.tiphubapps.ax.rain.presentation.components.UserListComponent
 @Composable
 fun SendItem(user: JsonObject?,
              users: JsonObject?,
-             currentUser: JsonObject?,
+             currentUser: User?,
              onSetSelectedUser: (String) -> Unit,
              onUnsetSelectedUser: () -> Unit,
              onTip: () -> Unit,
@@ -46,7 +46,7 @@ fun SendItem(user: JsonObject?,
 
     val showUserList = remember { mutableStateOf(false) }
 
-    val coverImage = currentUser?.get("images")?.asJsonArray.let {
+    val coverImage = currentUser?.coverImage/*.get("images")?.asJsonArray.let {
         it?.let {
             var url = "none"
             for (image in it) {
@@ -57,9 +57,9 @@ fun SendItem(user: JsonObject?,
 
             url
         }
-    }
+    }*/
 
-    val profileImage = currentUser?.get("images")?.asJsonArray.let {
+    val profileImage = currentUser?.profileImage /*.get("images")?.asJsonArray.let {
         it?.let {
             var url = "none"
             for (image in it) {
@@ -70,7 +70,7 @@ fun SendItem(user: JsonObject?,
 
             url
         }
-    }
+    }*/
 
     val userImage = user?.get("images")?.asJsonArray.let {
         it?.let {
@@ -89,8 +89,9 @@ fun SendItem(user: JsonObject?,
         0,
         "0",
         null,
-        currentUser?.get("payerBalance")?.asInt,
-        currentUser?.get("receiverBalance")?.asInt,
+        null,
+        currentUser?.payerBalance,//.get("payerBalance")?.asInt,
+        currentUser?.receiverBalance,//.get("receiverBalance")?.asInt,
         null,
         null,
         null,
@@ -98,15 +99,27 @@ fun SendItem(user: JsonObject?,
         null,
         null,
         null,
-        currentUser?.get("email")?.asString,
-        currentUser?.get("name")?.asString,
+        //currentUser?.get("email")?.asString,
+        currentUser?.name,//.get("name")?.asString,
         null,
         null,
         null,
         null,
         null,
         coverImage,
-        profileImage)
+        profileImage,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+        )
 
     fun toggleUserList(){
         showUserList.value = !showUserList.value

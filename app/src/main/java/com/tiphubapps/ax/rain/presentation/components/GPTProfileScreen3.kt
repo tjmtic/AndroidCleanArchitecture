@@ -107,9 +107,9 @@ fun GPTProfileScreen3(user: User, qrImage: Bitmap, onClick : () -> Unit) {
                             textAlign = TextAlign.Start
                         )
                     }
-                    user.balance?.let {
+                    user.receiverBalance?.let {
                         Text(
-                            text = "Total Earned:" + user.balance.toString(),
+                            text = "Total Earned:" + user.receiverBalance.toString(),
                             style = MaterialTheme.typography.body1.merge(TextStyle(color = Color.White)),
                             textAlign = TextAlign.Start
                         )

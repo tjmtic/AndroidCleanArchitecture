@@ -105,14 +105,15 @@ fun LoginDetailsScreen(
             //Fixed later on? Other Effects?
 
             when(isLoggedIn.value) {
-                true -> { }
+                true -> {
+                    LaunchedEffect(isLoggedIn) {
+                    println("Logged in According to authViewModel, going to HOME")
+                    //viewModel.performLogout()
+                    onNavigateToHome()
+                } }
 
                 else -> {
-                    LaunchedEffect(isLoggedIn) {
-                        println("Not Logged in According to authViewModel, loggin out $it")
-                        //viewModel.performLogout()
-                        onNavigateToHome()
-                    }
+
                 }
             }
 

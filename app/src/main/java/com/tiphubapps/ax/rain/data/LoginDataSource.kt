@@ -27,7 +27,7 @@ class LoginDataSource @Inject constructor(
             Log.d("TIME123", "ACtual;ly loging in.3333..")
 
             //val fakeUser = LoggedInUser(java.util.UUID.randomUUID().toString(), "Jane Doe")
-            val fakeUser = User(0,
+            /*val fakeUser = User(0,
                 "1",
                 "5e22b8a4bf397f08932de490",
                 3372,
@@ -46,7 +46,7 @@ class LoginDataSource @Inject constructor(
                 "sb-khu2t8374628@personal.example.com",
             "https://tip-hub.s3.amazonaws.com/users/img/5e22b8a4bf397f08932de490-profile.png",
                 "https://tip-hub.s3.amazonaws.com/users/img/5e22b8a4bf397f08932de490-profile.png",
-                "https://tip-hub.s3.amazonaws.com/users/img/5e22b8a4bf397f08932de490-profile.png")
+                "https://tip-hub.s3.amazonaws.com/users/img/5e22b8a4bf397f08932de490-profile.png")*/
 
             return Result.Error(Exception("No Token Found"))
         } catch (e: Throwable) {

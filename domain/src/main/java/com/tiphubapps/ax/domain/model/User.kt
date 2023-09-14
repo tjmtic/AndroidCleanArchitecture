@@ -2,6 +2,7 @@ package com.tiphubapps.ax.domain.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
@@ -14,6 +15,8 @@ data class User(
     val id: String,
     @SerializedName("id")
     val userId: String?,
+    @SerializedName("from")
+    val from: String?,
     @SerializedName("payerBalance")
     val payerBalance: Int?,
     @SerializedName("receiverBalance")
@@ -21,23 +24,23 @@ data class User(
     @SerializedName("available")
     val available: Int?,
     @SerializedName("contacts")
-    val contacts: String?,
+    val contacts: JsonArray?,
     @SerializedName("favorites")
-    val favorites: String?,
+    val favorites: JsonArray?,
     @SerializedName("history")
-    val history: String?,
+    val history: JsonArray?,
     @SerializedName("contributors")
-    val contributors: String?,
+    val contributors: JsonArray?,
     @SerializedName("sponsors")
-    val sponsors: String?,
-    @SerializedName("balance")
-    val balance: Int?,
-    @SerializedName("email")
-    val email: String?,
+    val sponsors: JsonArray?,
+    //@SerializedName("balance")
+    //val balance: Int?,
+    //@SerializedName("email")
+    //val email: String?,
     @SerializedName("name")
     val name: String?,
-    @SerializedName("paypal")
-    val paypal: String?,
+    //@SerializedName("paypal")
+    //val paypal: String?,
     @SerializedName("socketId")
     val socketId: String?,
     @SerializedName("firebaseDeviceToken")
@@ -45,9 +48,35 @@ data class User(
     @SerializedName("payerEmail")
     val payerEmail: String?,
     @SerializedName("images")
-    val images: String?,
+    val images: JsonArray?,
     @SerializedName("coverImage")
     val coverImage: String?,
     @SerializedName("profileImage")
-    val profileImage: String?
+    val profileImage: String?,
+    @SerializedName("wsSocketId")
+    val wsSocketId: String?,
+    @SerializedName("onboardingLink")
+    val onboardingLink: String?,
+    @SerializedName("username")
+    val username: String?,
+    @SerializedName("verificationCode")
+    val verificationCode: String?,
+    @SerializedName("verified")
+    val verified: Boolean?,
+    @SerializedName("stripeId")
+    val stripeId: String?,
+    @SerializedName("appVersion")
+    val appVersion: String?,
+    @SerializedName("transferBalance")
+    val transferBalance: Int?,
+    @SerializedName("paymentFlagged")
+    val paymentFlagged: Boolean?,
+    @SerializedName("oboarded")
+    val onboarded: Boolean?,
+    @SerializedName("createdAt")
+    val createdAt: String?,
+    @SerializedName("updatedAt")
+    val updatedAt: String?,
+    @SerializedName("socialLinks")
+    val socialLinks: String?,
 ) : Serializable
