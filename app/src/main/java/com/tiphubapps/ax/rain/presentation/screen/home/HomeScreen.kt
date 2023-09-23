@@ -136,14 +136,35 @@ fun HomeScreen(navController: NavHostController,
             //TODO:
             // Base AuthedScreen Composable should be wrapped in this function
             // extend other screens from that
-            when(isLoggedIn.value) {
+            /*when(isLoggedIn.value) {
                 true -> { }
 
-                else -> {
+                false -> {
                     LaunchedEffect(isLoggedIn) {
-                        println("Not Logged in According to authViewModel, loggin out $it")
+                        println("Not Logged in According to authViewModel, loggin out")
                         viewModel.performLogout()
                         onNavigateToLogin()
+                    }
+                }
+
+                else -> {
+                    println("isLoggedIn value else:  $isLoggedIn.value")
+                }
+            }*/
+
+            LaunchedEffect(isLoggedIn) {
+                when(isLoggedIn.value) {
+                    true -> { }
+
+                    false -> {
+                            println("Not Logged in According to authViewModel, loggin out")
+                            viewModel.performLogout()
+                            onNavigateToLogin()
+
+                    }
+
+                    else -> {
+                        println("isLoggedIn value else:  $isLoggedIn.value")
                     }
                 }
             }

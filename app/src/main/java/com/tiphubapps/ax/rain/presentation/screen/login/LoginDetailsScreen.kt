@@ -29,7 +29,7 @@ fun LoginDetailsScreen(
     val state = viewModel.state.collectAsStateWithLifecycle()
     //val uiState = viewModel.uiState.collectAsState()//WithLifecycle()
     //val networkUiState = viewModel.networkUiState.collectAsState()
-    val currentToken = viewModel.localValueFlow.collectAsStateWithLifecycle()//viewModel.currentToken.collectAsState()
+    //val currentToken = viewModel.localValueFlow.collectAsStateWithLifecycle()//viewModel.currentToken.collectAsState()
 
     val isLoggedIn = viewModel.isLoggedIn.collectAsStateWithLifecycle()
 
@@ -104,27 +104,30 @@ fun LoginDetailsScreen(
             //////WHat is this for???
             //Fixed later on? Other Effects?
 
-            when(isLoggedIn.value) {
-                true -> {
-                    LaunchedEffect(isLoggedIn) {
-                    println("Logged in According to authViewModel, going to HOME")
-                    //viewModel.performLogout()
-                    onNavigateToHome()
-                } }
+            println("LOGIN SCREEN isLoggedIn: ${isLoggedIn.value}")
+                    LaunchedEffect(isLoggedIn.value) {
+                        when(isLoggedIn.value) {
+                            true -> {
+                                println("Logged in According to authViewModel, going to HOME $it")
+                                //viewModel.performLogout()
+                                navigateHome()
+                            }
+                            else -> {
+                                //Show Loading?
+                            }
+                    }
 
-                else -> {
 
-                }
             }
 
-            when(currentToken.value){
+           /* when(currentToken.value){
                 "" -> Log.d("TIME123", "${it}Empty TOKEN VALUE in LOGIN VIEWMODEL")
                 "0x0" -> Log.d("TIME123", "No TOKEN VALUE in LOGIN VIEWMODEL")
                 else -> LaunchedEffect(currentToken.value){
                     println("TIME123 TOKEN VALUE IN LOGIN SCREEN: ${currentToken.value}")
                     /*if (state.value.viewState is LoginViewModel.LoginUiState.Home)*/ navigateHome()
                 }
-            }
+            }*/
 
             when(state.value.viewState){
                 //logindetailscontent

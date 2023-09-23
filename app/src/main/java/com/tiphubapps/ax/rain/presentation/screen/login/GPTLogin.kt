@@ -38,7 +38,7 @@ import com.tiphubapps.ax.rain.presentation.screen.details.LoginViewModel
 
 @Composable
 fun GPTLogin(
-    state: LoginViewModel.LoginViewState,
+    state: LoginViewModel.LoginState,
     onLoginClick: (String, String) -> Unit,
     onSignupClick: () -> Unit,
     onForgotClick: () -> Unit,
@@ -124,8 +124,8 @@ fun GPTLogin(
             )
 
             TextField(
-                value = password,
-                onValueChange = { password = it ;/* onEvent(LoginViewModel.LoginViewEvent.PasswordChanged(it))*/ onEventPassword(it) },
+                value = state.password,
+                onValueChange = { /*password = it*/ ;/* onEvent(LoginViewModel.LoginViewEvent.PasswordChanged(it))*/ onEventPassword(it) },
                 label = { Text(text = "Password", color = Color.White) },
                 leadingIcon = { Icon(Icons.Default.Lock, contentDescription = "Password") },
                 modifier = Modifier
@@ -230,9 +230,12 @@ fun GPTLogin(
                 .background(Color(0x55000000))
         )
             LoadingOverlay(isLoading = true)
+            //CONTENT
         }
 
-        else -> {}
+        else -> {
+            //CONTENT
+        }
     }
 
     //Custom Message Box
@@ -268,7 +271,7 @@ fun GPTLogin(
 @Preview
 @Composable
 fun PreviewLoginScreen() {
-    GPTLogin(LoginViewModel.LoginViewState(
+    GPTLogin(LoginViewModel.LoginState(
         name="",
         email = "ttest e",
         password = "",

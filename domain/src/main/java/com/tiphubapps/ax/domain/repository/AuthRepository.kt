@@ -11,6 +11,8 @@ interface AuthRepository {
 
     fun getToken(): String?
 
+    fun getTokenFlow(): Flow<String>?
+
     fun saveToken(token: String)
 
 }

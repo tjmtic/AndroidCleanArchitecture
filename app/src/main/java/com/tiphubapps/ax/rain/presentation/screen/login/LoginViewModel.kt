@@ -49,8 +49,8 @@ class LoginViewModel @Inject constructor(
 
     ///////// ViewModel State setup ///////////
     //(OPEN) slug value
-    private val _state = MutableStateFlow(LoginViewState())
-    val state : StateFlow<LoginViewState> = _state
+    private val _state = MutableStateFlow(LoginState())
+    val state : StateFlow<LoginState> = _state
 
     private val _localValueFlow = MutableStateFlow("")
     val localValueFlow: StateFlow<String> = _localValueFlow
@@ -65,7 +65,7 @@ class LoginViewModel @Inject constructor(
 
         //(PIPE) Expose/Stream values as Flows
         //TODO: REMOVE THIS
-        // left for app architecture blueprint
+        // left as app architecture blueprint
         viewModelScope.launch (
             coroutineContextProvider.io + coroutineExceptionHandler, CoroutineStart.DEFAULT
         ) {
@@ -95,6 +95,12 @@ class LoginViewModel @Inject constructor(
     /////////////////////View Events  --- View-ViewModel State Changes/////////////////////////
     fun onEvent(event: LoginViewEvent) {
         when (event) {
+            is LoginViewEvent.ViewChanged -> {
+                _state.value = _state.value.copy(viewState = event.viewState)
+            }
+            is LoginViewEvent.LoadingChanged -> {
+                _state.value = _state.value.copy(isLoading = event.isLoading)
+            }
             is LoginViewEvent.EmailChanged -> {
                 _state.value = _state.value.copy(email = event.email)
             }
@@ -153,7 +159,9 @@ class LoginViewModel @Inject constructor(
                 // -- currently there is no Result.Loading...
                 // There IS NOW! This SHOULD be happening Somehow....
                 //Show Loading
-                _state.value = _state.value.copy(isLoading = true)
+            //LoadingEvent.Started
+                onEvent(LoginViewEvent.LoadingChanged(true))
+                //_state.value = _state.value.copy(isLoading = true)
 
                 /////////////////////TOLEARN///////////////////////////
                 //TODO: Should pass SessionManager with call?
@@ -187,7 +195,9 @@ class LoginViewModel @Inject constructor(
                         }
                 }
                 //Hide loading
-                _state.value = _state.value.copy(isLoading = false)
+            //LoadingEvent.Ended
+                onEvent(LoginViewEvent.LoadingChanged(false))
+            //    _state.value = _state.value.copy(isLoading = false)
         }
     }
 
@@ -208,19 +218,22 @@ class LoginViewModel @Inject constructor(
 
     ////////ViewState Changes (UI tests)//////////////////
     fun showLogin(){
-        _state.value = _state.value.copy(viewState = LoginUiState.Login)
+        onEvent(LoginViewEvent.ViewChanged(LoginUiState.Login))
+        //_state.value = _state.value.copy(viewState = LoginUiState.Login)
     }
     fun showSignup(){
-        _state.value = _state.value.copy(viewState = LoginUiState.Signup)
+        onEvent(LoginViewEvent.ViewChanged(LoginUiState.Signup))
+        //_state.value = _state.value.copy(viewState = LoginUiState.Signup)
     }
     fun showForgot(){
-        _state.value = _state.value.copy(viewState = LoginUiState.Forgot)
+        onEvent(LoginViewEvent.ViewChanged(LoginUiState.Forgot))
+        //_state.value = _state.value.copy(viewState = LoginUiState.Forgot)
     }
     ////////////////////////////////////////////////////////
 
 
     //ViewModel State Classes
-    data class LoginViewState(
+    data class LoginState(
         val name: String = "",
         val email: String = "",
         val password: String = "",
@@ -242,9 +255,16 @@ class LoginViewModel @Inject constructor(
 
     //ViewModel Events
     sealed class LoginViewEvent {
+        //GENERIC VIEWMODEL
+        data class ViewChanged(val viewState: LoginUiState) : LoginViewEvent()
+        data class LoadingChanged(val isLoading: Boolean) : LoginViewEvent()
+
+        //LOGIN SPECIFIC
+        //Input Values
         data class EmailChanged(val email: String) : LoginViewEvent()
         data class PasswordChanged(val password: String) : LoginViewEvent()
         data class NameChanged(val name: String) : LoginViewEvent()
+        //User Actions
         object LoginClicked : LoginViewEvent()
         object SignupClicked : LoginViewEvent()
         object ForgotClicked : LoginViewEvent()

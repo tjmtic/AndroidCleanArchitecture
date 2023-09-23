@@ -14,6 +14,7 @@ import com.tiphubapps.ax.domain.useCase.GetUsersFromDBUseCase
 import com.tiphubapps.ax.domain.useCase.PostLoginUseCase
 import com.tiphubapps.ax.domain.useCase.UserUseCases
 import com.tiphubapps.ax.domain.useCase.auth.UseCaseAuthGetToken
+import com.tiphubapps.ax.domain.useCase.auth.UseCaseAuthGetTokenFlow
 import com.tiphubapps.ax.domain.useCase.users.UseCaseUserGetValue
 import com.tiphubapps.ax.domain.useCase.users.UseCaseUserSetValue
 import dagger.Module
@@ -60,6 +61,7 @@ object UseCaseModule {
 
     @Provides
     fun provideAuthUseCases(authRepository: AuthRepository) = AuthUseCases(
-        useCaseAuthGetToken = UseCaseAuthGetToken(authRepository = authRepository)
+        useCaseAuthGetToken = UseCaseAuthGetToken(authRepository = authRepository),
+        useCaseAuthGetTokenFlow = UseCaseAuthGetTokenFlow(authRepository = authRepository)
     )
 }
