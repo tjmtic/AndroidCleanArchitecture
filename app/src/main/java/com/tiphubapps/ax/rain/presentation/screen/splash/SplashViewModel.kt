@@ -1,0 +1,206 @@
+package com.tiphubapps.ax.rain.presentation.screen.details
+
+import android.app.Application
+import android.content.Context
+import android.content.res.Resources
+import android.util.Log
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.capitalize
+import androidx.lifecycle.*
+import com.tiphubapps.ax.rain.Rain
+import com.tiphubapps.ax.domain.repository.UserRepository
+import com.tiphubapps.ax.domain.useCase.GetCurrentUserUseCase
+import com.tiphubapps.ax.domain.useCase.UserUseCases
+import com.google.gson.JsonObject
+import com.tiphubapps.ax.data.util.CoroutineContextProvider
+import com.tiphubapps.ax.domain.repository.AndroidFrameworkRepository
+import com.tiphubapps.ax.domain.repository.AppError
+import com.tiphubapps.ax.domain.repository.UseCaseResult
+import com.tiphubapps.ax.domain.useCase.LoginUseCases
+import com.tiphubapps.ax.rain.R
+import com.tiphubapps.ax.rain.presentation.helper.performVibration
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import javax.inject.Inject
+import com.tiphubapps.ax.data.util.SessionManager
+import com.tiphubapps.ax.domain.useCase.AuthUseCases
+import com.tiphubapps.ax.domain.useCase.SplashUseCases
+import com.tiphubapps.ax.rain.presentation.screen.login.AuthedViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.Flow
+import java.util.Locale
+import javax.inject.Named
+import kotlin.math.absoluteValue
+
+@HiltViewModel
+class SplashViewModel @Inject constructor(
+    private val splashUseCases: SplashUseCases,
+    private val coroutineContextProvider: CoroutineContextProvider
+) : ViewModel() {
+
+    //TODO: implement injection (and use!) of this?
+    private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        val errorMessage = throwable.message ?: "An error occurred"
+        //showToast(errorMessage)
+    }
+
+    ///////// ViewModel State setup ///////////
+    //(OPEN) slug value
+    private val _state = MutableStateFlow(SplashState())
+    val state : StateFlow<SplashState> = _state
+
+    //private val _localValueFlow = MutableStateFlow("")
+    //val localValueFlow: StateFlow<String> = _localValueFlow
+
+    //(MIX) Transform Data as appropriate
+    // ...
+
+
+    var splashJob : Job?
+
+    ///////////////////////////////////////////
+
+    init {
+        println("TIME123 SplashViewModel Init Start")
+
+        //Init Firebase
+        //Init Analytics/Logging?
+        //Init Background Services
+        //Init Websocket
+        //Init UserData
+
+
+        //(PIPE) Expose/Stream values as Flows
+        splashJob = viewModelScope.launch (
+            coroutineContextProvider.io + coroutineExceptionHandler, CoroutineStart.DEFAULT
+        ) {
+                when(val value = splashUseCases.useCaseAuthGetToken()){
+                    is UseCaseResult.UseCaseSuccess -> {
+                        //_localValueFlow.value = value.data
+                        //setLoggedIn
+                        //getUserData -> state.finishedLoading = true
+                        onEvent(SplashViewEvent.LoginChanged(isLoggedIn = true))
+                        initUserData()
+                    }
+                    //is UseCaseResult.UseCaseError -> { //finishedLoading }
+                    else -> { /*state.finishedLoading = true*/ onEvent(SplashViewEvent.StatusChanged(viewState = SplashUiState.Ready, isLoading = false))}
+                }
+            }
+            /////////////////////////////////////////////////////////////////////////////////
+        //}
+        println("TIME123 SplashViewModel Init End")
+    }
+
+    override fun onCleared() {
+        //TODO: How to test?
+        viewModelScope.cancel()
+
+        splashJob?.cancel()
+    }
+
+    suspend fun initUserData(){
+        //TODO: Convert to flow, emit status.LOADING
+        when(val response = splashUseCases.useCaseUserGetCurrentUser()){
+            is UseCaseResult.UseCaseSuccess -> {
+                /*state.finishedLoading = true*/
+                onEvent(SplashViewEvent.StatusChanged(viewState = SplashUiState.Ready, isLoading = false))
+               // onEvent(SplashViewEvent.LoadingChanged(isLoading = false))
+            }
+            is UseCaseResult.Loading -> {
+                /*state.finishedLoading = false*/
+                onEvent(SplashViewEvent.LoadingChanged(isLoading = true))
+            }
+            else -> {
+                /*state.finishedLoading = true*/
+                onEvent(SplashViewEvent.StatusChanged(viewState = SplashUiState.Error(Exception("Loading Error")), isLoading = false))
+            }
+        }
+    }
+
+    /////////////////////View Events  --- View-ViewModel State Changes/////////////////////////
+    fun onEvent(event: SplashViewEvent) {
+        when (event) {
+            is SplashViewEvent.ViewChanged -> {
+                _state.value = _state.value.copy(viewState = event.viewState)
+            }
+            is SplashViewEvent.LoadingChanged -> {
+                _state.value = _state.value.copy(isLoading = event.isLoading)
+            }
+
+            is SplashViewEvent.CreateError -> {
+                updateErrorMessage(event.message)
+            }
+            is SplashViewEvent.ConsumeError -> {
+                _state.value = _state.value.copy(errors = _state.value.errors.filterNot { it  == _state.value.error }, error = "")
+
+                //Reset Current Error if one exists
+                if (_state.value.errors.isNotEmpty()) { _state.value = _state.value.copy(error = _state.value.errors[0]) }
+            }
+
+            else -> { println("Unknown Event Called") }
+        }
+    }
+    internal fun updateErrorMessage(error: String){
+        val errorMessage = when(error){
+            "Service Issue."  -> {
+                "Service Issue."
+            }
+            "Input Error."  -> {
+                "Input Error."
+            }
+            "Network Error." -> {
+                "Network Error"
+            }
+            else -> { "Unknown Error" }
+        }
+        _state.value = _state.value.copy(error = errorMessage, errors = _state.value.errors.plus(errorMessage))
+    }
+    ////////////////////////////
+
+
+    ////////////////////////////////////////////////////////
+
+
+    //ViewModel State Classes
+    data class SplashState(
+        val isLoggedIn: Boolean = false,
+        val isLoading: Boolean = false,
+        val error: String = "",
+        val errors: List<String> = emptyList(),
+        val viewState: SplashUiState = SplashUiState.Default
+    )
+
+    sealed class SplashUiState {
+        object Default: SplashUiState()
+        object Ready: SplashUiState()
+        data class Error(val exception: Throwable): SplashUiState()
+    }
+
+
+    //ViewModel Events
+    sealed class SplashViewEvent {
+        //GENERIC VIEWMODEL
+        data class ViewChanged(val viewState: SplashUiState) : SplashViewEvent()
+        data class LoadingChanged(val isLoading: Boolean) : SplashViewEvent()
+
+        data class StatusChanged(val viewState: SplashUiState, val isLoading: Boolean) : SplashViewEvent()
+        data class LoginChanged(val isLoggedIn: Boolean) : SplashViewEvent()
+
+        //TokenLoaded
+        //LoginFinished
+
+        /////////////////////////////////////////////////////////////////////////
+        //TODO: This is an opportunity for a presenter-ui architecture.
+        // errorViewModel (or messageViewModel) and UI components (i.e. different types of messages)
+        // Injected and wrapped-ui
+        data class CreateError(val message: String) : SplashViewEvent()
+        object ConsumeError : SplashViewEvent()
+        /////////////////////////////////////////////////////////////////////////
+    }
+
+
+
+}

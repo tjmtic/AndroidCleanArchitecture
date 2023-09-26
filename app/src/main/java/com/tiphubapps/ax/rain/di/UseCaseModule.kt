@@ -64,4 +64,10 @@ object UseCaseModule {
         useCaseAuthGetToken = UseCaseAuthGetToken(authRepository = authRepository),
         useCaseAuthGetTokenFlow = UseCaseAuthGetTokenFlow(authRepository = authRepository)
     )
+
+    @Provides
+    fun provideSplashUseCases(userRepository: UserRepository, authRepository: AuthRepository) = SplashUseCases(
+        useCaseAuthGetToken = UseCaseAuthGetToken(authRepository = authRepository),
+        useCaseUserGetCurrentUser = GetCurrentUserUseCase(userRepository = userRepository),
+    )
 }
