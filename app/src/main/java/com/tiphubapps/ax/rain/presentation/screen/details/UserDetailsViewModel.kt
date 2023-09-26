@@ -77,6 +77,8 @@ class UserDetailsViewModel @Inject constructor(
         (getApplication<Application>().applicationContext as Rain).logout()
         _uiState.value = LoginUiState.Invalid
 
+        //userUseCases.useCaseLogout()
+
     }
 
     sealed class LoginUiState {

@@ -1,7 +1,9 @@
 package com.tiphubapps.ax.domain.repository;
 
+import androidx.lifecycle.LiveData
 import com.tiphubapps.ax.domain.model.Item
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 
 
 /**
@@ -11,9 +13,10 @@ interface AuthRepository {
 
     fun getToken(): String?
 
-    fun getTokenFlow(): Flow<String>?
+    fun getTokenFlow(): StateFlow<Boolean>
+    //fun getTokenLiveData(): LiveData<Boolean>
 
-    fun saveToken(token: String)
+    suspend fun saveToken(token: String)
 
 }
 

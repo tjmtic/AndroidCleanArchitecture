@@ -31,6 +31,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.tiphubapps.ax.rain.presentation.components.WebViewComponent
 import com.tiphubapps.ax.rain.presentation.screen.details.UserDetailsViewModel
+import com.tiphubapps.ax.rain.presentation.screen.login.AuthedViewModel
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -57,8 +58,8 @@ fun HomeScreen(navController: NavHostController,
 
     //val token = viewModel.token.collectAsState()
 
-    val isLoggedIn = viewModel.isLoggedIn.collectAsState()
-
+    val isLoggedIn = viewModel.authState.collectAsState(initial = AuthedViewModel.AuthState.REFRESH)
+    val isTokenValid = viewModel.isTokenValid.collectAsState()
 
     val backgroundColor by animateColorAsState(
         when(uiStateEvent.value){
@@ -152,21 +153,38 @@ fun HomeScreen(navController: NavHostController,
                 }
             }*/
 
-            LaunchedEffect(isLoggedIn) {
+            /*LaunchedEffect(isLoggedIn) {
                 when(isLoggedIn.value) {
-                    true -> { }
+                    AuthedViewModel.AuthState.AUTHED -> { }
 
-                    false -> {
+                    AuthedViewModel.AuthState.NOTAUTHED  -> {
                             println("Not Logged in According to authViewModel, loggin out")
                             viewModel.performLogout()
                             onNavigateToLogin()
 
                     }
 
+                    AuthedViewModel.AuthState.REFRESH  -> {
+                        println("isLoggedIn value refresh:  ${isLoggedIn.value}")
+                    }
+                    else -> {println("isLoggedIn value else:  ${isLoggedIn.value}")}
+                }
+            }*/
+            println("LOGIN SCREEN tokenValid: ${isTokenValid.value}")
+            LaunchedEffect(isTokenValid.value) {
+                when(isTokenValid.value) {
+                    false  -> {
+                        println("Not Logged in According to authViewModel TOKEN, loggin out")
+                        viewModel.performLogout()
+                        onNavigateToLogin()
+                    }
+
                     else -> {
-                        println("isLoggedIn value else:  $isLoggedIn.value")
+                        //Show Error?
                     }
                 }
+
+
             }
 
             //REDUNDANT / DEPRECATED

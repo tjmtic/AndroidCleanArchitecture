@@ -214,6 +214,8 @@ class UserRepositoryImpl(
         token = null
         currentUser = null
 
+        authRepository.saveToken("")
+
         return true
     }
 }

@@ -58,6 +58,9 @@ class LoginViewModel @Inject constructor(
     //(MIX) Transform Data as appropriate
     // ...
 
+
+    var loginJob : Job?
+
     ///////////////////////////////////////////
 
     init {
@@ -66,7 +69,7 @@ class LoginViewModel @Inject constructor(
         //(PIPE) Expose/Stream values as Flows
         //TODO: REMOVE THIS
         // left as app architecture blueprint
-        viewModelScope.launch (
+        loginJob = viewModelScope.launch (
             coroutineContextProvider.io + coroutineExceptionHandler, CoroutineStart.DEFAULT
         ) {
                 when(val value = userUseCases.useCaseAuthGetToken?.let { it() }){
@@ -90,6 +93,8 @@ class LoginViewModel @Inject constructor(
     override fun onCleared() {
         //TODO: How to test?
         viewModelScope.cancel()
+
+        loginJob?.cancel()
     }
 
     /////////////////////View Events  --- View-ViewModel State Changes/////////////////////////
@@ -151,17 +156,24 @@ class LoginViewModel @Inject constructor(
 
     /////////////////////////////COROUTINES//////////////////////////////
     //Model Events ---  ViewModel-Model State -- Mocked Data Tests?
+    //TODO: This entire method can be de-coupled from loading status, (and thus other State-Flow updating events)
+    //      remove explicit loading change events
+    //
     fun postLogin(username: String, password:String) {
-        viewModelScope.launch (
+        loginJob?.cancel()
+        loginJob = viewModelScope.launch (
             coroutineContextProvider.io, CoroutineStart.DEFAULT
         ) {
+
                 //TODO: Can this be done when response = Result.Loading?
                 // -- currently there is no Result.Loading...
                 // There IS NOW! This SHOULD be happening Somehow....
+                // .
+                // YES -- So. Would have to convert the login call to a Flow<UseCaseResult>... or something like that
+                // initially, it will emit(STATUS.LOADING), with an api call
+                // followed by emit(STATUS.SUCCESS(data)).
                 //Show Loading
-            //LoadingEvent.Started
                 onEvent(LoginViewEvent.LoadingChanged(true))
-                //_state.value = _state.value.copy(isLoading = true)
 
                 /////////////////////TOLEARN///////////////////////////
                 //TODO: Should pass SessionManager with call?
@@ -192,12 +204,11 @@ class LoginViewModel @Inject constructor(
                             // Edge case here being if it does come back as LOADING it will not change.
                             // Need to check, stop, and re-start?
                             println("Loading --- Login")
+                            //TODO: NO. Should be useful for stateful responses, emit(LOADING) and emit(SUCCESS/ERROR)
                         }
                 }
                 //Hide loading
-            //LoadingEvent.Ended
                 onEvent(LoginViewEvent.LoadingChanged(false))
-            //    _state.value = _state.value.copy(isLoading = false)
         }
     }
 

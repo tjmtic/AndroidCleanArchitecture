@@ -7,6 +7,7 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -21,7 +22,7 @@ import com.tiphubapps.ax.rain.ui.theme.AppContentColor
 fun LoginDetailsScreen(
     //navController: NavHostController,
     onNavigateToHome: () -> Unit,
-    viewModel: LoginViewModel = hiltViewModel(),
+    viewModel: LoginViewModel = hiltViewModel()
 ) {
 
 
@@ -31,7 +32,8 @@ fun LoginDetailsScreen(
     //val networkUiState = viewModel.networkUiState.collectAsState()
     //val currentToken = viewModel.localValueFlow.collectAsStateWithLifecycle()//viewModel.currentToken.collectAsState()
 
-    val isLoggedIn = viewModel.isLoggedIn.collectAsStateWithLifecycle()
+    val isLoggedIn = viewModel.authState.collectAsStateWithLifecycle(AuthedViewModel.AuthState.REFRESH)
+    val isTokenValid = viewModel.isTokenValid.collectAsStateWithLifecycle()
 
     var hasError by remember { mutableStateOf(false) }
     val context = LocalContext.current
@@ -107,15 +109,36 @@ fun LoginDetailsScreen(
             println("LOGIN SCREEN isLoggedIn: ${isLoggedIn.value}")
                     LaunchedEffect(isLoggedIn.value) {
                         when(isLoggedIn.value) {
-                            true -> {
+                            AuthedViewModel.AuthState.AUTHED  -> {
                                 println("Logged in According to authViewModel, going to HOME $it")
-                                //viewModel.performLogout()
                                 navigateHome()
                             }
-                            else -> {
+                            AuthedViewModel.AuthState.NOTAUTHED  -> {
+                                //Do Nothing
+                            }
+                            AuthedViewModel.AuthState.REFRESH  -> {
                                 //Show Loading?
                             }
+                            else -> {
+                                //Show Error?
+                            }
                     }
+
+
+            }
+
+            println("LOGIN SCREEN tokenValid: ${isTokenValid.value}")
+            LaunchedEffect(isTokenValid.value) {
+                when(isTokenValid.value) {
+                    true  -> {
+                        println("Logged in According to authViewModel TOKEN, going to HOME $it")
+                        navigateHome()
+                    }
+
+                    else -> {
+                        //Show Error?
+                    }
+                }
 
 
             }
