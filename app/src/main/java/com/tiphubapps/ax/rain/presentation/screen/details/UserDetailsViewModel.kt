@@ -74,7 +74,7 @@ class UserDetailsViewModel @Inject constructor(
 
     fun logout(){
         sessionManager.clear()
-        (getApplication<Application>().applicationContext as Rain).logout()
+        //(getApplication<Application>().applicationContext as Rain).logout()
         _uiState.value = LoginUiState.Invalid
 
         //userUseCases.useCaseLogout()

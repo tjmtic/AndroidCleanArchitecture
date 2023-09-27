@@ -97,7 +97,7 @@ class SignupViewModel @Inject constructor(
                 //println(_selectedToken.value)
                 _networkUiState.value = NetworkUiState.Success
 
-                (getApplication<Application>().applicationContext as Rain).currentUserToken = it.asString;
+                //(getApplication<Application>().applicationContext as Rain).currentUserToken = it.asString;
                 //TODO: Convert to flow of userRepository (token/loggedInUser/getCurrentUser)
                 _uiState.value = LoginUiState.Home
 

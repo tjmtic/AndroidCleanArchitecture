@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import com.tiphubapps.ax.rain.presentation.screen.login.LoginDetailsScreen
 import com.tiphubapps.ax.rain.presentation.screen.details.UserDetailsScreen
 import com.tiphubapps.ax.rain.presentation.screen.home.HomeScreen
+import com.tiphubapps.ax.rain.presentation.screen.splash.SplashScreen
 import com.tiphubapps.ax.rain.util.Constant
 
 @Composable
@@ -15,15 +16,19 @@ fun NavGraph(navController: NavHostController) {
 
     val deepLinks = listOf(
         NavDeepLink.Builder()
-            .setUriPattern("rainapp://user_extras_screen/{parameters")
+            .setUriPattern("rainapp://user_extras_screen/{parameters}")
             .setAction("android.intent.action.VIEW")
             .build()
     )
 
     NavHost(
         navController = navController,
-        startDestination = Screen.Login.route
+        startDestination = Screen.Splash.route
     ) {
+        composable(route = Screen.Splash.route) {
+            SplashScreen(onNavigateToHome = { navController.navigate(route = Screen.Home.route) },
+                onNavigateToLogin = { navController.navigate(route = Screen.Login.route)})
+        }
         composable(route = Screen.Login.route) {
             LoginDetailsScreen(/*navController = navController,*/
                                 onNavigateToHome = { navController.navigate(route = Screen.Home.route) })

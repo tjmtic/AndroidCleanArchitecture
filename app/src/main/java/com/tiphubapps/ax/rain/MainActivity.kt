@@ -48,15 +48,15 @@ class MainActivity : ComponentActivity() {
 
     private val TAG = "MAinActivity TIME123 "
     private lateinit var navController: NavHostController
-    var contentHasLoaded = false;
+    //var contentHasLoaded = false;
 
-    private var ws: WebSocket? = null
-    private val client by lazy { OkHttpClient() }
+    //private var ws: WebSocket? = null
+    //private val client by lazy { OkHttpClient() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val splashScreen = installSplashScreen()
+        /*val splashScreen = installSplashScreen()
 
        // var remainingDuration: Long = 0L;
 
@@ -79,7 +79,7 @@ class MainActivity : ComponentActivity() {
 
             // Run your animation.
             slideUp.start()
-        }
+        }*/
 
         firebaseInit()
 
@@ -271,6 +271,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    /*
     private fun setupEncryptedPreferences(){
         val context = applicationContext
         val mainKey = MasterKey.Builder(applicationContext)
@@ -331,7 +332,8 @@ class MainActivity : ComponentActivity() {
         )
 
         return sharedPreferences.getString(key, "");
-    }
+    } */
+    /*
     private fun start() {
         val token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjYzMWJhZWM3OTA0ZDQ3ZmExMzQ4YzgyZCIsInVzZXJuYW1lIjoiMTIxMzU1NTEyMTIiLCJleHBpcmUiOjE2ODI3NDQ5MDQ5Mzh9.WAnFXtzPFeWsff6iXv_zUF5CBZhdadbSzNcjgtRCLk0";
 
@@ -377,7 +379,7 @@ class MainActivity : ComponentActivity() {
 
         //    timer()
        // }
-    }
+    }*/
 
     /*fun initSocket(){
         println("Initializing socket...")

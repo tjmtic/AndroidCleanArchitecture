@@ -65,7 +65,7 @@ class SplashViewModel @Inject constructor(
 
     init {
         println("TIME123 SplashViewModel Init Start")
-
+        onEvent(SplashViewEvent.LoadingChanged(isLoading = true))
         //Init Firebase
         //Init Analytics/Logging?
         //Init Background Services
@@ -79,15 +79,14 @@ class SplashViewModel @Inject constructor(
         ) {
                 when(val value = splashUseCases.useCaseAuthGetToken()){
                     is UseCaseResult.UseCaseSuccess -> {
-                        //_localValueFlow.value = value.data
-                        //setLoggedIn
-                        //getUserData -> state.finishedLoading = true
-                        onEvent(SplashViewEvent.LoginChanged(isLoggedIn = true))
+                        onEvent(SplashViewEvent.TokenLoaded)
                         initUserData()
                     }
-                    //is UseCaseResult.UseCaseError -> { //finishedLoading }
-                    else -> { /*state.finishedLoading = true*/ onEvent(SplashViewEvent.StatusChanged(viewState = SplashUiState.Ready, isLoading = false))}
+                    else -> { onEvent(SplashViewEvent.LoginFinished(isLoggedIn = false))}
                 }
+
+
+            onEvent(SplashViewEvent.LoadingChanged(isLoading = false))
             }
             /////////////////////////////////////////////////////////////////////////////////
         //}
@@ -129,38 +128,22 @@ class SplashViewModel @Inject constructor(
             is SplashViewEvent.LoadingChanged -> {
                 _state.value = _state.value.copy(isLoading = event.isLoading)
             }
-
-            is SplashViewEvent.CreateError -> {
-                updateErrorMessage(event.message)
+            is SplashViewEvent.StatusChanged -> {
+                _state.value = _state.value.copy(viewState = event.viewState, isLoading = event.isLoading)
             }
-            is SplashViewEvent.ConsumeError -> {
-                _state.value = _state.value.copy(errors = _state.value.errors.filterNot { it  == _state.value.error }, error = "")
 
-                //Reset Current Error if one exists
-                if (_state.value.errors.isNotEmpty()) { _state.value = _state.value.copy(error = _state.value.errors[0]) }
+            is SplashViewEvent.TokenLoaded -> {
+                _state.value = _state.value.copy(isLoggedIn = true)
             }
+
+            is SplashViewEvent.LoginFinished -> {
+                _state.value = _state.value.copy(isLoggedIn = event.isLoggedIn, viewState = SplashUiState.Ready, isLoading = false)
+            }
+
 
             else -> { println("Unknown Event Called") }
         }
     }
-    internal fun updateErrorMessage(error: String){
-        val errorMessage = when(error){
-            "Service Issue."  -> {
-                "Service Issue."
-            }
-            "Input Error."  -> {
-                "Input Error."
-            }
-            "Network Error." -> {
-                "Network Error"
-            }
-            else -> { "Unknown Error" }
-        }
-        _state.value = _state.value.copy(error = errorMessage, errors = _state.value.errors.plus(errorMessage))
-    }
-    ////////////////////////////
-
-
     ////////////////////////////////////////////////////////
 
 
@@ -168,8 +151,6 @@ class SplashViewModel @Inject constructor(
     data class SplashState(
         val isLoggedIn: Boolean = false,
         val isLoading: Boolean = false,
-        val error: String = "",
-        val errors: List<String> = emptyList(),
         val viewState: SplashUiState = SplashUiState.Default
     )
 
@@ -191,14 +172,9 @@ class SplashViewModel @Inject constructor(
 
         //TokenLoaded
         //LoginFinished
+        object TokenLoaded: SplashViewEvent()
+        data class LoginFinished(val isLoggedIn: Boolean) : SplashViewEvent()
 
-        /////////////////////////////////////////////////////////////////////////
-        //TODO: This is an opportunity for a presenter-ui architecture.
-        // errorViewModel (or messageViewModel) and UI components (i.e. different types of messages)
-        // Injected and wrapped-ui
-        data class CreateError(val message: String) : SplashViewEvent()
-        object ConsumeError : SplashViewEvent()
-        /////////////////////////////////////////////////////////////////////////
     }
 
 

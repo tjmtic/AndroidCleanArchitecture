@@ -26,6 +26,7 @@ import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -227,7 +228,7 @@ class HomeViewModel @Inject constructor(
 
     fun sendWsMessage(amount: Int){
         viewModelScope.launch {
-            webSocketManager.isConnected.collect {
+            webSocketManager.isConnected.collectLatest {
                 if (it) {
                     webSocketManager.sendMessage("test")
                 }

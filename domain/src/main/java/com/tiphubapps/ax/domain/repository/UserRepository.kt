@@ -19,6 +19,7 @@ interface UserRepository {
     //suspend fun getAllUsersWithToken(token: String): UseCaseResult<List<User>>
     fun getUsersFromDB(userId: Int): Flow<User?>
     suspend fun postLogin(email: String, password: String): JsonObject?
+    suspend fun postLogout(): UseCaseResult<Boolean>
     suspend fun logout(): Boolean
 
     fun getLocalValueFlow(): StateFlow<String>

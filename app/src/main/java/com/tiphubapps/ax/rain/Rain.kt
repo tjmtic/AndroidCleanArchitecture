@@ -11,7 +11,7 @@ import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
 class Rain : Application(){
-    var currentUserToken : String? = null
+    /*var currentUserToken : String? = null
         get set
 
     var currentUserSocketId : String = "none"
@@ -22,7 +22,7 @@ class Rain : Application(){
         currentUserSocketId = "none"
 
         //setEncryptedPreferences("userToken", "0x0");
-    }
+    }*/
 
     fun generateQR(base: String): Bitmap? {
         val qrCodeString = "https://www.tiphubapps.com/public?id=$base";
