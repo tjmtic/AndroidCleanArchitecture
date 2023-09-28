@@ -45,34 +45,33 @@ class SplashViewModel @Inject constructor(
     coroutineContextProvider: CoroutineContextProvider
 ) : ViewModel() {
 
-    //TODO: implement injection (and use!) of this?
-    private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
-        val errorMessage = throwable.message ?: "An error occurred"
-        //showToast(errorMessage)
-    }
-
-    ///////// ViewModel State setup ///////////
+    /////////Default ViewModel Setup///////////
     private val _state = MutableStateFlow(SplashState())
     val state : StateFlow<SplashState> = _state
 
-    var splashJob : Job?
-
-    val _eventBus = Channel<SplashEvent>()
+    private val _eventBus = Channel<SplashEvent>()
     val eventBus = _eventBus.receiveAsFlow()
+
+    var job : Job?
     ///////////////////////////////////////////////
 
-    sealed class SplashEvent {
-        object SPLASHING: SplashEvent()
-        object SPLASHED: SplashEvent()
-        data class Error(val msg: String = "Error"): SplashEvent()
-    }
 
-    /////////////
+    //TODO: implement injection of this?
+    // how to standardize onEvent responses?
+    // also, standardized onEvent a good thing?
+    private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        //val errorMessage = throwable.message ?: "An error occurred"
+        viewModelScope.launch {
+            onEvent(ERROR_A)
+            //TODO: should probably be fatal error here, close and re-open the app
+            // standardized responses are probably not the best approach
+            // default? for logging?
+        }
+    }
 
     init {
         println("TIME123 SplashViewModel Init Start")
 
-        onEvent(SplashViewEvent.LoadingStarted)
         //TODO:
         // Init Firebase - mainActivity?
         // Init Analytics/Logging?
@@ -81,41 +80,45 @@ class SplashViewModel @Inject constructor(
         // Init UserData -- complete
         // awaitAll()
 
-
-        //(PIPE) Expose/Stream values as Flows
-        splashJob = viewModelScope.launch (
+        job = viewModelScope.launch(
             coroutineContextProvider.io + coroutineExceptionHandler, CoroutineStart.DEFAULT
         ) {
-
-            //TODO: Events for UI and Events for STATE?
-            // ... double check this. could be right.
-            // Still DRY out the calls at least.
-            _eventBus.send(SplashEvent.SPLASHING)
-            onEvent(SplashViewEvent.LoadingStarted)
-
             try {
+                onEvent(LOADING_INIT)
+
                 when (splashUseCases.useCaseAuthGetToken()) {
                     is UseCaseResult.UseCaseSuccess -> {
-                        onEvent(SplashViewEvent.TokenLoaded)
+                        onEvent(TOKEN_LOADED)
                         initUserData()
                     }
 
                     else -> {
-                        onEvent(SplashViewEvent.LoginFinished(isLoggedIn = false))
+                        onEvent(LOGIN_FAIL)
                     }
                 }
 
-            } catch(e: Exception){
-                e.message?.let {
-                    _eventBus.send(SplashEvent.Error(msg = it))
-                } ?: run {_eventBus.send(SplashEvent.Error(msg = "Error 0")) }
+                onEvent(LOADING_STOP)
+
+            } catch (e: Exception) {
+                onEvent(ERROR_0)
                 return@launch
             }
+        }
+        println("TIME123 SplashViewModel Init End")
+    }
+
+    private suspend fun initUserData(){
+        when(splashUseCases.useCaseUserGetCurrentUser()){
+            is UseCaseResult.UseCaseSuccess -> { onEvent(LOGIN_SUCCESS) }
+            is UseCaseResult.Loading -> Unit
+            else -> { onEvent(ERROR_1) }
+        }
+    }
 
 //////////////////////////////
-            val bbcArticles = scrapeArticlesFromBBCNews()
+            //val bbcArticles = scrapeArticlesFromBBCNews()
 
-            bbcArticles.forEachIndexed { index, article ->
+           /* bbcArticles.forEachIndexed { index, article ->
                 println("Article ${index + 1}:")
                 println("Title: ${article.title}")
                 println("Description: ${article.description}")
@@ -125,16 +128,15 @@ class SplashViewModel @Inject constructor(
                 println("par: ${article.desc}")
 
                 println()
-            }
+            }*/
 ////////////////////////////////////
 
-            onEvent(SplashViewEvent.LoadingFinished)
-            _eventBus.send(SplashEvent.SPLASHED)
-            }
+
+     //   }
             /////////////////////////////////////////////////////////////////////////////////
         //}
-        println("TIME123 SplashViewModel Init End")
-    }
+    //    println("TIME123 SplashViewModel Init End")
+    //}
 
     data class Article(
         val title: String,
@@ -186,90 +188,76 @@ class SplashViewModel @Inject constructor(
         viewModelScope.cancel()
 
         //TODO: Also, is this redundant call after viewModelScope?
-        splashJob?.cancel()
+        job?.cancel()
     }
 
-    suspend fun initUserData(){
-        //TODO: Convert to flow, emit status.LOADING
-        // ... .... .... maybe check best practice implementations.
-        when(splashUseCases.useCaseUserGetCurrentUser()){
-            is UseCaseResult.UseCaseSuccess -> {
-                //onEvent(SplashViewEvent.StatusChanged(isLoading = false))
-               // onEvent(SplashViewEvent.LoadingChanged(isLoading = false))
-                onEvent(SplashViewEvent.LoginFinished(isLoggedIn = true))
-            }
-            is UseCaseResult.Loading -> {
-                //onEvent(SplashViewEvent.LoadingChanged(isLoading = true))
-            }
-            else -> {
-                //UseCaseError.message?
-                onEvent(SplashViewEvent.LoadingError(message ="Error"))
-            }
-        }
-    }
-
-    /////////////////////View Events  --- View-ViewModel State Changes/////////////////////////
-    fun onEvent(event: SplashViewEvent) {
+    /////////////////////State-UI Events/////////////////////////
+    //Update STATE -> Send EVENT
+    private suspend fun onEvent(event: SplashViewEvent) {
         when (event) {
-            //is SplashViewEvent.ViewChanged -> {
-            //    _state.value = _state.value.copy(viewState = event.viewState)
-            //}
-            is SplashViewEvent.LoadingError -> {
-                _state.value = _state.value.copy(isLoading = false, error = event.message)
-            }
             is SplashViewEvent.LoadingStarted -> {
                 _state.value = _state.value.copy(isLoading = true)
+                _eventBus.send(SplashEvent.SPLASHING)
             }
             is SplashViewEvent.LoadingFinished -> {
                 _state.value = _state.value.copy(isLoading = false)
+                _eventBus.send(SplashEvent.SPLASHED)
             }
-           /* is SplashViewEvent.StatusChanged -> {
-                _state.value = _state.value.copy(isLoading = event.isLoading)
-            }*/
-
+            is SplashViewEvent.LoadingError -> {
+                _state.value = _state.value.copy(isLoading = false, error = event.message)
+                _eventBus.send(SplashEvent.Error(msg = event.message))
+            }
             is SplashViewEvent.TokenLoaded -> {
                 //_state.value = _state.value.copy(isLoggedIn = true)
                 println("Event Called -- Token Loaded from AuthRepo")
             }
-
             is SplashViewEvent.LoginFinished -> {
-                _state.value = _state.value.copy(isLoggedIn = event.isLoggedIn)
+                _state.value = _state.value.copy(isLoggedIn = true)
             }
-
-
+            is SplashViewEvent.LoginFailed -> {
+                _state.value = _state.value.copy(isLoggedIn = false)
+            }
             else -> { println("Unknown Event Called") }
         }
     }
-    ////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////
 
 
-    //ViewModel State Classes
+    //ViewModel State (i.e. Status Implementation)
     data class SplashState(
         val isLoggedIn: Boolean = false,
         val isLoading: Boolean = false,
-       // val viewState: SplashUiState = SplashUiState.Default
         val error: String? = null
     )
 
+    //UI State-Events (i.e. Status Interface)
+    sealed class SplashEvent {
+        object SPLASHING: SplashEvent()
+        object SPLASHED: SplashEvent()
+        data class Error(val msg: String = "Error"): SplashEvent()
+    }
 
-    //ViewModel Events
+    //ViewModel State-Events (i.e. Event Interface)
     sealed class SplashViewEvent {
-        //GENERIC VIEWMODEL
-        //data class ViewChanged(val viewState: SplashUiState) : SplashViewEvent()
         object LoadingStarted: SplashViewEvent()
         object LoadingFinished: SplashViewEvent()
         data class LoadingError(val message: String): SplashViewEvent()
-
-        //data class StatusChanged(val viewState: SplashUiState, val isLoading: Boolean) : SplashViewEvent()
-       // data class LoginChanged(val isLoggedIn: Boolean) : SplashViewEvent()
-
-        //TokenLoaded
-        //LoginFinished
         object TokenLoaded: SplashViewEvent()
-        data class LoginFinished(val isLoggedIn: Boolean) : SplashViewEvent()
-
+        object LoginFinished : SplashViewEvent()
+        object LoginFailed : SplashViewEvent()
     }
-
-
-
+    //Enumerated Events (i.e. Event Implementation)
+    companion object {
+        //Loading Status (... Can We Use a Loading Delegate?)
+        val LOADING_INIT = SplashViewEvent.LoadingStarted
+        val LOADING_STOP = SplashViewEvent.LoadingFinished
+        //Action Steps
+        val TOKEN_LOADED = SplashViewEvent.TokenLoaded
+        val LOGIN_SUCCESS = SplashViewEvent.LoginFinished
+        val LOGIN_FAIL = SplashViewEvent.LoginFailed
+        //Error Responses
+        val ERROR_A = SplashViewEvent.LoadingError("Error A")
+        val ERROR_0 = SplashViewEvent.LoadingError("Error 0")
+        val ERROR_1 = SplashViewEvent.LoadingError("Error 1")
+    }
 }
