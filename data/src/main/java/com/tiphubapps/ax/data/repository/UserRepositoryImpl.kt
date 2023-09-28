@@ -195,6 +195,9 @@ class UserRepositoryImpl(
 
 
     }
+    override suspend fun postLogout() : UseCaseResult<Boolean> {
+        return UseCaseResult.UseCaseSuccess(true)
+    }
 
     override suspend fun logout() : Boolean{
 

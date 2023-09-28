@@ -30,7 +30,11 @@ import com.tiphubapps.ax.domain.useCase.SplashUseCases
 import com.tiphubapps.ax.rain.presentation.screen.login.AuthedViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.receiveAsFlow
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import java.util.Locale
 import javax.inject.Named
 import kotlin.math.absoluteValue
@@ -63,8 +67,22 @@ class SplashViewModel @Inject constructor(
 
     ///////////////////////////////////////////
 
+
+    /////////////event bus////////////
+    val _eventBus = Channel<SplashEvent>()
+    val eventBus = _eventBus.receiveAsFlow()
+
+    sealed class SplashEvent {
+        object SPLASHING: SplashEvent()
+        object SPLASHED: SplashEvent()
+        data class Error(val msg: String = "Error"): SplashEvent()
+    }
+
+    /////////////
+
     init {
         println("TIME123 SplashViewModel Init Start")
+
         onEvent(SplashViewEvent.LoadingChanged(isLoading = true))
         //Init Firebase
         //Init Analytics/Logging?
@@ -77,20 +95,96 @@ class SplashViewModel @Inject constructor(
         splashJob = viewModelScope.launch (
             coroutineContextProvider.io + coroutineExceptionHandler, CoroutineStart.DEFAULT
         ) {
-                when(val value = splashUseCases.useCaseAuthGetToken()){
+
+            _eventBus.send(SplashEvent.SPLASHING)
+
+            try {
+                when (val value = splashUseCases.useCaseAuthGetToken()) {
                     is UseCaseResult.UseCaseSuccess -> {
                         onEvent(SplashViewEvent.TokenLoaded)
                         initUserData()
                     }
-                    else -> { onEvent(SplashViewEvent.LoginFinished(isLoggedIn = false))}
+
+                    else -> {
+                        onEvent(SplashViewEvent.LoginFinished(isLoggedIn = false))
+                    }
                 }
+
+            } catch(e: Exception){
+                e.message?.let {
+                    _eventBus.send(SplashEvent.Error(msg = it))
+                } ?: run {_eventBus.send(SplashEvent.Error(msg = "Error 0")) }
+                return@launch
+            }
+
+
+            val bbcArticles = scrapeArticlesFromBBCNews()
+
+            bbcArticles.forEachIndexed { index, article ->
+                println("Article ${index + 1}:")
+                println("Title: ${article.title}")
+                println("Description: ${article.description}")
+                println("Link: ${article.link}")
+                println("header: ${article.header}")
+                println("image: ${article.image}")
+                println("par: ${article.desc}")
+
+                println()
+            }
 
 
             onEvent(SplashViewEvent.LoadingChanged(isLoading = false))
+
+            _eventBus.send(SplashEvent.SPLASHED)
             }
             /////////////////////////////////////////////////////////////////////////////////
         //}
         println("TIME123 SplashViewModel Init End")
+    }
+
+    data class Article(
+        val title: String,
+        val description: String,
+        val link: String,
+        val header: String,
+        val image: String,
+        val desc: String
+    )
+
+
+    fun scrapeArticlesFromBBCNews(): List<Article> {
+        val url = "https://www.bbc.com/news"
+        val articles = mutableListOf<Article>()
+
+        val fullArticles = mutableListOf<Article>()
+
+        try {
+            val doc: Document = Jsoup.connect(url).get()
+            val elements = doc.select("div.gs-c-promo")
+
+            for (element in elements) {
+                val title = element.select("h3.gs-c-promo-heading").text()
+                val description = element.select("p.gs-c-promo-summary").text()
+                val link = element.select("a.gs-c-promo-heading").attr("href")
+
+                val fullLink = if(link.contains("www")) link else "https://www.bbc.com$link"
+
+                val doc2: Document = Jsoup.connect(fullLink).get()
+                val elements2 = doc2.select("#main-content")
+
+                val header = elements2.select("#main-heading").text()
+                val image = elements2.select("picture source").attr("srcset")
+
+                val desc = elements2.select("p b").joinToString { it.text() }
+
+                val article = Article(title, description, fullLink, header, image, desc)
+                articles.add(article)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        return articles
     }
 
     override fun onCleared() {

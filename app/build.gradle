@@ -197,6 +197,9 @@ dependencies {
     androidTestImplementation 'android.arch.core:core-testing:1.1.1'
     testImplementation 'android.arch.core:core-testing:1.1.1'
 
+    //Web Scraping
+    implementation 'org.jsoup:jsoup:1.14.3'
+
 }
 
 kapt {
