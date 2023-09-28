@@ -19,6 +19,7 @@ data class UserUseCases(
 
     //1.0
     val useCaseLogin: UseCaseLogin? = null,
+    val useCaseLogout: UseCaseLogout? = null,
     val useCaseUserGetValue: UseCaseUserGetValue? = null,
     val useCaseUserSetValue: UseCaseUserSetValue? = null,
 )

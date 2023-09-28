@@ -196,6 +196,7 @@ class UserRepositoryImpl(
 
     }
     override suspend fun postLogout() : UseCaseResult<Boolean> {
+        authRepository.saveToken("")
         return UseCaseResult.UseCaseSuccess(true)
     }
 

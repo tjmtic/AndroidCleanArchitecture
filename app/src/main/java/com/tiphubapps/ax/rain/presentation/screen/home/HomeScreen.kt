@@ -153,7 +153,7 @@ fun HomeScreen(navController: NavHostController,
                 }
             }*/
 
-            /*LaunchedEffect(isLoggedIn) {
+            LaunchedEffect(isLoggedIn.value) {
                 when(isLoggedIn.value) {
                     AuthedViewModel.AuthState.AUTHED -> { }
 
@@ -169,8 +169,9 @@ fun HomeScreen(navController: NavHostController,
                     }
                     else -> {println("isLoggedIn value else:  ${isLoggedIn.value}")}
                 }
-            }*/
-            println("LOGIN SCREEN tokenValid: ${isTokenValid.value}")
+            }
+
+            println("HOME SCREEN tokenValid: ${isTokenValid.value}")
             LaunchedEffect(isTokenValid.value) {
                 when(isTokenValid.value) {
                     false  -> {

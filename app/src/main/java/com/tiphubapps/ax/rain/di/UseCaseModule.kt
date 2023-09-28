@@ -40,7 +40,8 @@ object UseCaseModule {
         getUsersFromDBUseCase = GetUsersFromDBUseCase(userRepository = userRepository),
         postLoginUseCase = PostLoginUseCase(userRepository = userRepository),
 
-        useCaseLogin = UseCaseLogin(userRepository = userRepository)
+        useCaseLogin = UseCaseLogin(userRepository = userRepository),
+        useCaseLogout = UseCaseLogout(userRepository = userRepository)
     )
 
     @Provides

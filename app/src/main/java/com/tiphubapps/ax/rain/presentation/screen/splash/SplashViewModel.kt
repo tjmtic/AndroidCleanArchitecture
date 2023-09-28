@@ -42,7 +42,7 @@ import kotlin.math.absoluteValue
 @HiltViewModel
 class SplashViewModel @Inject constructor(
     private val splashUseCases: SplashUseCases,
-    private val coroutineContextProvider: CoroutineContextProvider
+    coroutineContextProvider: CoroutineContextProvider
 ) : ViewModel() {
 
     //TODO: implement injection (and use!) of this?
@@ -52,25 +52,14 @@ class SplashViewModel @Inject constructor(
     }
 
     ///////// ViewModel State setup ///////////
-    //(OPEN) slug value
     private val _state = MutableStateFlow(SplashState())
     val state : StateFlow<SplashState> = _state
 
-    //private val _localValueFlow = MutableStateFlow("")
-    //val localValueFlow: StateFlow<String> = _localValueFlow
-
-    //(MIX) Transform Data as appropriate
-    // ...
-
-
     var splashJob : Job?
 
-    ///////////////////////////////////////////
-
-
-    /////////////event bus////////////
     val _eventBus = Channel<SplashEvent>()
     val eventBus = _eventBus.receiveAsFlow()
+    ///////////////////////////////////////////////
 
     sealed class SplashEvent {
         object SPLASHING: SplashEvent()
@@ -83,12 +72,14 @@ class SplashViewModel @Inject constructor(
     init {
         println("TIME123 SplashViewModel Init Start")
 
-        onEvent(SplashViewEvent.LoadingChanged(isLoading = true))
-        //Init Firebase
-        //Init Analytics/Logging?
-        //Init Background Services
-        //Init Websocket
-        //Init UserData
+        onEvent(SplashViewEvent.LoadingStarted)
+        //TODO:
+        // Init Firebase - mainActivity?
+        // Init Analytics/Logging?
+        // Init Background Services
+        // Init Websocket
+        // Init UserData -- complete
+        // awaitAll()
 
 
         //(PIPE) Expose/Stream values as Flows
@@ -96,10 +87,14 @@ class SplashViewModel @Inject constructor(
             coroutineContextProvider.io + coroutineExceptionHandler, CoroutineStart.DEFAULT
         ) {
 
+            //TODO: Events for UI and Events for STATE?
+            // ... double check this. could be right.
+            // Still DRY out the calls at least.
             _eventBus.send(SplashEvent.SPLASHING)
+            onEvent(SplashViewEvent.LoadingStarted)
 
             try {
-                when (val value = splashUseCases.useCaseAuthGetToken()) {
+                when (splashUseCases.useCaseAuthGetToken()) {
                     is UseCaseResult.UseCaseSuccess -> {
                         onEvent(SplashViewEvent.TokenLoaded)
                         initUserData()
@@ -117,7 +112,7 @@ class SplashViewModel @Inject constructor(
                 return@launch
             }
 
-
+//////////////////////////////
             val bbcArticles = scrapeArticlesFromBBCNews()
 
             bbcArticles.forEachIndexed { index, article ->
@@ -131,10 +126,9 @@ class SplashViewModel @Inject constructor(
 
                 println()
             }
+////////////////////////////////////
 
-
-            onEvent(SplashViewEvent.LoadingChanged(isLoading = false))
-
+            onEvent(SplashViewEvent.LoadingFinished)
             _eventBus.send(SplashEvent.SPLASHED)
             }
             /////////////////////////////////////////////////////////////////////////////////
@@ -191,24 +185,25 @@ class SplashViewModel @Inject constructor(
         //TODO: How to test?
         viewModelScope.cancel()
 
+        //TODO: Also, is this redundant call after viewModelScope?
         splashJob?.cancel()
     }
 
     suspend fun initUserData(){
         //TODO: Convert to flow, emit status.LOADING
-        when(val response = splashUseCases.useCaseUserGetCurrentUser()){
+        // ... .... .... maybe check best practice implementations.
+        when(splashUseCases.useCaseUserGetCurrentUser()){
             is UseCaseResult.UseCaseSuccess -> {
-                /*state.finishedLoading = true*/
-                onEvent(SplashViewEvent.StatusChanged(viewState = SplashUiState.Ready, isLoading = false))
+                //onEvent(SplashViewEvent.StatusChanged(isLoading = false))
                // onEvent(SplashViewEvent.LoadingChanged(isLoading = false))
+                onEvent(SplashViewEvent.LoginFinished(isLoggedIn = true))
             }
             is UseCaseResult.Loading -> {
-                /*state.finishedLoading = false*/
-                onEvent(SplashViewEvent.LoadingChanged(isLoading = true))
+                //onEvent(SplashViewEvent.LoadingChanged(isLoading = true))
             }
             else -> {
-                /*state.finishedLoading = true*/
-                onEvent(SplashViewEvent.StatusChanged(viewState = SplashUiState.Error(Exception("Loading Error")), isLoading = false))
+                //UseCaseError.message?
+                onEvent(SplashViewEvent.LoadingError(message ="Error"))
             }
         }
     }
@@ -216,22 +211,29 @@ class SplashViewModel @Inject constructor(
     /////////////////////View Events  --- View-ViewModel State Changes/////////////////////////
     fun onEvent(event: SplashViewEvent) {
         when (event) {
-            is SplashViewEvent.ViewChanged -> {
-                _state.value = _state.value.copy(viewState = event.viewState)
+            //is SplashViewEvent.ViewChanged -> {
+            //    _state.value = _state.value.copy(viewState = event.viewState)
+            //}
+            is SplashViewEvent.LoadingError -> {
+                _state.value = _state.value.copy(isLoading = false, error = event.message)
             }
-            is SplashViewEvent.LoadingChanged -> {
+            is SplashViewEvent.LoadingStarted -> {
+                _state.value = _state.value.copy(isLoading = true)
+            }
+            is SplashViewEvent.LoadingFinished -> {
+                _state.value = _state.value.copy(isLoading = false)
+            }
+           /* is SplashViewEvent.StatusChanged -> {
                 _state.value = _state.value.copy(isLoading = event.isLoading)
-            }
-            is SplashViewEvent.StatusChanged -> {
-                _state.value = _state.value.copy(viewState = event.viewState, isLoading = event.isLoading)
-            }
+            }*/
 
             is SplashViewEvent.TokenLoaded -> {
-                _state.value = _state.value.copy(isLoggedIn = true)
+                //_state.value = _state.value.copy(isLoggedIn = true)
+                println("Event Called -- Token Loaded from AuthRepo")
             }
 
             is SplashViewEvent.LoginFinished -> {
-                _state.value = _state.value.copy(isLoggedIn = event.isLoggedIn, viewState = SplashUiState.Ready, isLoading = false)
+                _state.value = _state.value.copy(isLoggedIn = event.isLoggedIn)
             }
 
 
@@ -245,24 +247,21 @@ class SplashViewModel @Inject constructor(
     data class SplashState(
         val isLoggedIn: Boolean = false,
         val isLoading: Boolean = false,
-        val viewState: SplashUiState = SplashUiState.Default
+       // val viewState: SplashUiState = SplashUiState.Default
+        val error: String? = null
     )
-
-    sealed class SplashUiState {
-        object Default: SplashUiState()
-        object Ready: SplashUiState()
-        data class Error(val exception: Throwable): SplashUiState()
-    }
 
 
     //ViewModel Events
     sealed class SplashViewEvent {
         //GENERIC VIEWMODEL
-        data class ViewChanged(val viewState: SplashUiState) : SplashViewEvent()
-        data class LoadingChanged(val isLoading: Boolean) : SplashViewEvent()
+        //data class ViewChanged(val viewState: SplashUiState) : SplashViewEvent()
+        object LoadingStarted: SplashViewEvent()
+        object LoadingFinished: SplashViewEvent()
+        data class LoadingError(val message: String): SplashViewEvent()
 
-        data class StatusChanged(val viewState: SplashUiState, val isLoading: Boolean) : SplashViewEvent()
-        data class LoginChanged(val isLoggedIn: Boolean) : SplashViewEvent()
+        //data class StatusChanged(val viewState: SplashUiState, val isLoading: Boolean) : SplashViewEvent()
+       // data class LoginChanged(val isLoggedIn: Boolean) : SplashViewEvent()
 
         //TokenLoaded
         //LoginFinished
