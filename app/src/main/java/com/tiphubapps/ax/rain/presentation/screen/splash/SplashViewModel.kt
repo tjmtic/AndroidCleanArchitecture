@@ -1,46 +1,21 @@
 package com.tiphubapps.ax.rain.presentation.screen.details
 
-import android.app.Application
-import android.content.Context
-import android.content.res.Resources
-import android.util.Log
-import android.widget.Toast
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.capitalize
 import androidx.lifecycle.*
-import com.tiphubapps.ax.rain.Rain
-import com.tiphubapps.ax.domain.repository.UserRepository
-import com.tiphubapps.ax.domain.useCase.GetCurrentUserUseCase
-import com.tiphubapps.ax.domain.useCase.UserUseCases
-import com.google.gson.JsonObject
 import com.tiphubapps.ax.data.util.CoroutineContextProvider
-import com.tiphubapps.ax.domain.repository.AndroidFrameworkRepository
-import com.tiphubapps.ax.domain.repository.AppError
 import com.tiphubapps.ax.domain.repository.UseCaseResult
-import com.tiphubapps.ax.domain.useCase.LoginUseCases
-import com.tiphubapps.ax.rain.R
-import com.tiphubapps.ax.rain.presentation.helper.performVibration
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
-import com.tiphubapps.ax.data.util.SessionManager
-import com.tiphubapps.ax.domain.useCase.AuthUseCases
 import com.tiphubapps.ax.domain.useCase.SplashUseCases
-import com.tiphubapps.ax.rain.presentation.screen.login.AuthedViewModel
 import com.tiphubapps.ax.rain.presentation.screen.splash.SplashState
 import com.tiphubapps.ax.rain.presentation.screen.splash.SplashStateEvent
 import com.tiphubapps.ax.rain.presentation.screen.splash.SplashUiEvent
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import java.util.Locale
-import javax.inject.Named
-import kotlin.math.absoluteValue
 
 @HiltViewModel
 class SplashViewModel @Inject constructor(

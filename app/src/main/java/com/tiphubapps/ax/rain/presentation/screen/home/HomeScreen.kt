@@ -1,7 +1,6 @@
 package com.tiphubapps.ax.rain.presentation.screen.home
 
 
-import android.util.Log
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.FabPosition
@@ -17,7 +16,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -29,9 +27,7 @@ import com.tiphubapps.ax.rain.ui.theme.AppContentColor
 import com.tiphubapps.ax.rain.ui.theme.AppThemeColor
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.tiphubapps.ax.rain.presentation.components.WebViewComponent
-import com.tiphubapps.ax.rain.presentation.screen.details.UserDetailsViewModel
-import com.tiphubapps.ax.rain.presentation.screen.login.AuthedViewModel
+import com.tiphubapps.ax.rain.presentation.delegate.AuthState
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -58,8 +54,8 @@ fun HomeScreen(navController: NavHostController,
 
     //val token = viewModel.token.collectAsState()
 
-    val isLoggedIn = viewModel.authState.collectAsState(initial = AuthedViewModel.AuthState.REFRESH)
-    val isTokenValid = viewModel.isTokenValid.collectAsState()
+    val authState = viewModel.authState.collectAsState(initial = AuthState.REFRESH)
+    //val isTokenValid = viewModel.isTokenValid.collectAsState(null)
 
     val backgroundColor by animateColorAsState(
         when(uiStateEvent.value){
@@ -153,26 +149,27 @@ fun HomeScreen(navController: NavHostController,
                 }
             }*/
 
-            LaunchedEffect(isLoggedIn.value) {
-                when(isLoggedIn.value) {
-                    AuthedViewModel.AuthState.AUTHED -> { }
+            LaunchedEffect(authState.value) {
+                when(authState.value) {
+                    AuthState.AUTHED -> Unit
 
-                    AuthedViewModel.AuthState.NOTAUTHED  -> {
+                    AuthState.NOTAUTHED  -> {
                             println("Not Logged in According to authViewModel, loggin out")
                             viewModel.performLogout()
                             onNavigateToLogin()
 
                     }
 
-                    AuthedViewModel.AuthState.REFRESH  -> {
-                        println("isLoggedIn value refresh:  ${isLoggedIn.value}")
+                    AuthState.REFRESH  -> {
+                        println("isLoggedIn value refresh:  ${authState.value}")
+                        //show loading?
                     }
-                    else -> {println("isLoggedIn value else:  ${isLoggedIn.value}")}
+                    else -> {println("isLoggedIn value else:  ${authState.value}")}
                 }
             }
 
-            println("HOME SCREEN tokenValid: ${isTokenValid.value}")
-            LaunchedEffect(isTokenValid.value) {
+           // println("HOME SCREEN tokenValid: ${isTokenValid.value}")
+           /* LaunchedEffect(isTokenValid.value) {
                 when(isTokenValid.value) {
                     false  -> {
                         println("Not Logged in According to authViewModel TOKEN, loggin out")
@@ -186,7 +183,7 @@ fun HomeScreen(navController: NavHostController,
                 }
 
 
-            }
+            }*/
 
             //REDUNDANT / DEPRECATED
             when(uiStateLogin.value) {

@@ -1,12 +1,8 @@
 package com.tiphubapps.ax.rain.presentation.screen.home
 
-import android.app.Application
 import android.graphics.Bitmap
 import android.util.Log
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.*
-import com.google.gson.Gson
-import com.tiphubapps.ax.rain.Rain
 import com.tiphubapps.ax.domain.model.User
 import com.tiphubapps.ax.domain.useCase.UserUseCases
 import com.google.gson.JsonArray
@@ -14,25 +10,18 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.tiphubapps.ax.data.util.CoroutineContextProvider
 import com.tiphubapps.ax.domain.repository.UseCaseResult
-import com.tiphubapps.ax.data.util.SessionManager
 import com.tiphubapps.ax.data.util.WebSocketManager
-import com.tiphubapps.ax.domain.repository.AuthRepository
 import com.tiphubapps.ax.domain.useCase.AuthUseCases
-import com.tiphubapps.ax.rain.presentation.screen.login.AuthedViewModel
+import com.tiphubapps.ax.rain.presentation.delegate.AuthorizationDelegate
+import com.tiphubapps.ax.rain.presentation.delegate.AuthorizationDelegateImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.CoroutineStart
-import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import okhttp3.OkHttpClient
-import okhttp3.Request
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
-import org.json.JSONObject
 import java.util.*
 import java.util.concurrent.Executors
 import javax.inject.Inject
@@ -50,7 +39,7 @@ class HomeViewModel @Inject constructor(
     private val webSocketManager: WebSocketManager,
     //private val authViewModel: AuthedViewModel,
     //application: Application
-) : AuthedViewModel(authUseCases, coroutineContextProvider) {
+) : ViewModel(), AuthorizationDelegate by AuthorizationDelegateImpl(authUseCases, coroutineContextProvider) {
 
 
     //val isLoggedIn = true//authViewModel.isLoggedIn

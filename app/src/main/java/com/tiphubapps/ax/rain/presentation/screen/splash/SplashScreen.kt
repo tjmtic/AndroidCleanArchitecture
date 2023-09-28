@@ -4,17 +4,11 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.navigation.NavController
 import com.tiphubapps.ax.rain.presentation.screen.details.SplashViewModel
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tiphubapps.ax.rain.presentation.helper.LoginIcon
-import com.tiphubapps.ax.rain.presentation.screen.login.AuthedViewModel
 import com.tiphubapps.ax.rain.ui.theme.AppContentColor
-import kotlinx.coroutines.delay
 
 @Composable
 fun SplashScreen(
@@ -23,7 +17,7 @@ fun SplashScreen(
     viewModel: SplashViewModel = hiltViewModel(),
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle()
-    val events = viewModel.eventBus.collectAsStateWithLifecycle(initialValue = SplashViewModel.SplashUiEvent.SPLASHING)
+    val events = viewModel.eventBus.collectAsStateWithLifecycle(initialValue = SplashUiEvent.SPLASHING)
 
     Scaffold(
         contentColor = MaterialTheme.colors.AppContentColor,
@@ -38,7 +32,7 @@ fun SplashScreen(
         println("State Update According to SplashViewModel")
 
             //delay(3000)
-        if(events.value == SplashViewModel.SplashUiEvent.SPLASHED && state.value.isLoggedIn){
+        if(events.value == SplashUiEvent.SPLASHED && state.value.isLoggedIn){
             println("Logged in According to SplashViewModel, going to HOME")
             onNavigateToHome()
         }

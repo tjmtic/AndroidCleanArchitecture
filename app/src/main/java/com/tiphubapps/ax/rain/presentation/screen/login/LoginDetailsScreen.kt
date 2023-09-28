@@ -2,17 +2,15 @@ package com.tiphubapps.ax.rain.presentation.screen.login
 
 import GPTForgot
 import GPTSignUp
-import android.util.Log
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.tiphubapps.ax.rain.presentation.delegate.AuthState
 //import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tiphubapps.ax.rain.presentation.screen.details.LoginViewModel
 import com.tiphubapps.ax.rain.ui.theme.AppContentColor
@@ -32,8 +30,8 @@ fun LoginDetailsScreen(
     //val networkUiState = viewModel.networkUiState.collectAsState()
     //val currentToken = viewModel.localValueFlow.collectAsStateWithLifecycle()//viewModel.currentToken.collectAsState()
 
-    val isLoggedIn = viewModel.authState.collectAsStateWithLifecycle(AuthedViewModel.AuthState.REFRESH)
-    val isTokenValid = viewModel.isTokenValid.collectAsStateWithLifecycle()
+    val authState = viewModel.authState.collectAsStateWithLifecycle(AuthState.REFRESH)
+    //val isTokenValid = viewModel.isTokenValid.collectAsStateWithLifecycle(initialValue = false)
 
     var hasError by remember { mutableStateOf(false) }
     val context = LocalContext.current
@@ -106,17 +104,17 @@ fun LoginDetailsScreen(
             //////WHat is this for???
             //Fixed later on? Other Effects?
 
-            println("LOGIN SCREEN isLoggedIn: ${isLoggedIn.value}")
-                    LaunchedEffect(isLoggedIn.value) {
-                        when(isLoggedIn.value) {
-                            AuthedViewModel.AuthState.AUTHED  -> {
+            println("LOGIN SCREEN isLoggedIn: ${authState.value}")
+                    LaunchedEffect(authState.value) {
+                        when(authState.value) {
+                            AuthState.AUTHED  -> {
                                 println("Logged in According to authViewModel, going to HOME $it")
                                 navigateHome()
                             }
-                            AuthedViewModel.AuthState.NOTAUTHED  -> {
+                            AuthState.NOTAUTHED  -> {
                                 //Do Nothing
                             }
-                            AuthedViewModel.AuthState.REFRESH  -> {
+                            AuthState.REFRESH  -> {
                                 //Show Loading?
                             }
                             else -> {
@@ -127,7 +125,7 @@ fun LoginDetailsScreen(
 
             }
 
-            println("LOGIN SCREEN tokenValid: ${isTokenValid.value}")
+            /*println("LOGIN SCREEN tokenValid: ${isTokenValid.value}")
             LaunchedEffect(isTokenValid.value) {
                 when(isTokenValid.value) {
                     true  -> {
@@ -141,7 +139,7 @@ fun LoginDetailsScreen(
                 }
 
 
-            }
+            }*/
 
            /* when(currentToken.value){
                 "" -> Log.d("TIME123", "${it}Empty TOKEN VALUE in LOGIN VIEWMODEL")

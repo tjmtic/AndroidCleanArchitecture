@@ -1,45 +1,25 @@
 package com.tiphubapps.ax.rain.presentation.screen.details
 
-import android.app.Application
-import android.content.Context
-import android.content.res.Resources
-import android.util.Log
-import android.widget.Toast
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.capitalize
 import androidx.lifecycle.*
-import com.tiphubapps.ax.rain.Rain
-import com.tiphubapps.ax.domain.repository.UserRepository
-import com.tiphubapps.ax.domain.useCase.GetCurrentUserUseCase
-import com.tiphubapps.ax.domain.useCase.UserUseCases
-import com.google.gson.JsonObject
 import com.tiphubapps.ax.data.util.CoroutineContextProvider
-import com.tiphubapps.ax.domain.repository.AndroidFrameworkRepository
-import com.tiphubapps.ax.domain.repository.AppError
 import com.tiphubapps.ax.domain.repository.UseCaseResult
 import com.tiphubapps.ax.domain.useCase.LoginUseCases
-import com.tiphubapps.ax.rain.R
-import com.tiphubapps.ax.rain.presentation.helper.performVibration
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
-import com.tiphubapps.ax.data.util.SessionManager
 import com.tiphubapps.ax.domain.useCase.AuthUseCases
-import com.tiphubapps.ax.rain.presentation.screen.login.AuthedViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
+import com.tiphubapps.ax.rain.presentation.delegate.AuthorizationDelegate
+import com.tiphubapps.ax.rain.presentation.delegate.AuthorizationDelegateImpl
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.Flow
-import java.util.Locale
-import javax.inject.Named
-import kotlin.math.absoluteValue
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val userUseCases: LoginUseCases,
+    //TODO: Can this be moved to the Impl declaration?
     authUseCases: AuthUseCases,
     private val coroutineContextProvider: CoroutineContextProvider
-) : AuthedViewModel(authUseCases, coroutineContextProvider) {
+) : ViewModel(), AuthorizationDelegate by AuthorizationDelegateImpl(authUseCases, coroutineContextProvider) {
 
     //TODO: implement injection (and use!) of this?
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
@@ -156,9 +136,6 @@ class LoginViewModel @Inject constructor(
 
     /////////////////////////////COROUTINES//////////////////////////////
     //Model Events ---  ViewModel-Model State -- Mocked Data Tests?
-    //TODO: This entire method can be de-coupled from loading status, (and thus other State-Flow updating events)
-    //      remove explicit loading change events
-    //
     fun postLogin(username: String, password:String) {
         loginJob?.cancel()
         loginJob = viewModelScope.launch (
