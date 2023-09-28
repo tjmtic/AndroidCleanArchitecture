@@ -17,9 +17,11 @@ import kotlinx.coroutines.*
 class LoginViewModel @Inject constructor(
     private val userUseCases: LoginUseCases,
     //TODO: Can this be moved to the Impl declaration?
-    authUseCases: AuthUseCases,
+    // Yes.
+    //authUseCases: AuthUseCases,
+    authorizationDelegateImpl: AuthorizationDelegateImpl,
     private val coroutineContextProvider: CoroutineContextProvider
-) : ViewModel(), AuthorizationDelegate by AuthorizationDelegateImpl(authUseCases, coroutineContextProvider) {
+) : ViewModel(), AuthorizationDelegate by authorizationDelegateImpl {
 
     //TODO: implement injection (and use!) of this?
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->

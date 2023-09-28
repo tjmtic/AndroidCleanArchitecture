@@ -1,5 +1,6 @@
 package com.tiphubapps.ax.rain.di
 
+import com.tiphubapps.ax.data.util.CoroutineContextProvider
 import com.tiphubapps.ax.domain.repository.AuthRepository
 import com.tiphubapps.ax.domain.repository.UserRepository
 import com.tiphubapps.ax.domain.useCase.*
@@ -17,6 +18,7 @@ import com.tiphubapps.ax.domain.useCase.auth.UseCaseAuthGetToken
 import com.tiphubapps.ax.domain.useCase.auth.UseCaseAuthGetTokenFlow
 import com.tiphubapps.ax.domain.useCase.users.UseCaseUserGetValue
 import com.tiphubapps.ax.domain.useCase.users.UseCaseUserSetValue
+import com.tiphubapps.ax.rain.presentation.delegate.AuthorizationDelegateImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -70,5 +72,12 @@ object UseCaseModule {
     fun provideSplashUseCases(userRepository: UserRepository, authRepository: AuthRepository) = SplashUseCases(
         useCaseAuthGetToken = UseCaseAuthGetToken(authRepository = authRepository),
         useCaseUserGetCurrentUser = GetCurrentUserUseCase(userRepository = userRepository),
+    )
+
+
+    @Provides
+    fun providesAuthorizationDelegateImpl(authUseCases: AuthUseCases, coroutineContextProvider: CoroutineContextProvider) = AuthorizationDelegateImpl(
+        useCases = authUseCases,
+        coroutineContextProvider = coroutineContextProvider
     )
 }
