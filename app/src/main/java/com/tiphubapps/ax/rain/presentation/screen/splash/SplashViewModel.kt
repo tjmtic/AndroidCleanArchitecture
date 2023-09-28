@@ -28,6 +28,9 @@ import com.tiphubapps.ax.data.util.SessionManager
 import com.tiphubapps.ax.domain.useCase.AuthUseCases
 import com.tiphubapps.ax.domain.useCase.SplashUseCases
 import com.tiphubapps.ax.rain.presentation.screen.login.AuthedViewModel
+import com.tiphubapps.ax.rain.presentation.screen.splash.SplashState
+import com.tiphubapps.ax.rain.presentation.screen.splash.SplashStateEvent
+import com.tiphubapps.ax.rain.presentation.screen.splash.SplashUiEvent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
@@ -49,12 +52,11 @@ class SplashViewModel @Inject constructor(
     private val _state = MutableStateFlow(SplashState())
     val state : StateFlow<SplashState> = _state
 
-    private val _eventBus = Channel<SplashEvent>()
+    private val _eventBus = Channel<SplashUiEvent>()
     val eventBus = _eventBus.receiveAsFlow()
 
     var job : Job?
     ///////////////////////////////////////////////
-
 
     //TODO: implement injection of this?
     // how to standardize onEvent responses?
@@ -71,7 +73,6 @@ class SplashViewModel @Inject constructor(
 
     init {
         println("TIME123 SplashViewModel Init Start")
-
         //TODO:
         // Init Firebase - mainActivity?
         // Init Analytics/Logging?
@@ -91,7 +92,6 @@ class SplashViewModel @Inject constructor(
                         onEvent(TOKEN_LOADED)
                         initUserData()
                     }
-
                     else -> {
                         onEvent(LOGIN_FAIL)
                     }
@@ -115,26 +115,87 @@ class SplashViewModel @Inject constructor(
         }
     }
 
-//////////////////////////////
-            //val bbcArticles = scrapeArticlesFromBBCNews()
+    override fun onCleared() {
+        //TODO: How to test?
+        viewModelScope.cancel()
 
-           /* bbcArticles.forEachIndexed { index, article ->
-                println("Article ${index + 1}:")
-                println("Title: ${article.title}")
-                println("Description: ${article.description}")
-                println("Link: ${article.link}")
-                println("header: ${article.header}")
-                println("image: ${article.image}")
-                println("par: ${article.desc}")
+        //TODO: Also, is this redundant call after viewModelScope?
+        job?.cancel()
+    }
 
-                println()
-            }*/
+    /////////////////////ViewModel Events/////////////////////////
+    //Update STATE -> Send EVENT
+    private suspend fun onEvent(event: SplashStateEvent) {
+        when (event) {
+            is SplashStateEvent.LoadingStarted -> {
+                _state.value = _state.value.copy(isLoading = true)
+                _eventBus.send(SplashUiEvent.SPLASHING)
+            }
+            is SplashStateEvent.LoadingFinished -> {
+                _state.value = _state.value.copy(isLoading = false)
+                _eventBus.send(SplashUiEvent.SPLASHED)
+            }
+            is SplashStateEvent.LoadingError -> {
+                _state.value = _state.value.copy(isLoading = false, error = event.message)
+                _eventBus.send(SplashUiEvent.Error(msg = event.message))
+            }
+            is SplashStateEvent.TokenLoaded -> {
+                //_state.value = _state.value.copy(isLoggedIn = true)
+                println("Event Called -- Token Loaded from AuthRepo")
+            }
+            is SplashStateEvent.LoginFinished -> {
+                _state.value = _state.value.copy(isLoggedIn = true)
+            }
+            is SplashStateEvent.LoginFailed -> {
+                _state.value = _state.value.copy(isLoggedIn = false)
+            }
+            else -> { println("Unknown Event Called") }
+        }
+    }
+    ////////////////////////////////////////////////////////////
+
+
+    //Enumerated Events (i.e. Event Implementation)
+    companion object {
+        //Loading Status (... Can We Use a Loading Delegate?)
+        val LOADING_INIT = SplashStateEvent.LoadingStarted
+        val LOADING_STOP = SplashStateEvent.LoadingFinished
+        //Action Steps
+        val TOKEN_LOADED = SplashStateEvent.TokenLoaded
+        val LOGIN_SUCCESS = SplashStateEvent.LoginFinished
+        val LOGIN_FAIL = SplashStateEvent.LoginFailed
+        //Error Responses
+        val ERROR_A = SplashStateEvent.LoadingError("Error A")
+        val ERROR_0 = SplashStateEvent.LoadingError("Error 0")
+        val ERROR_1 = SplashStateEvent.LoadingError("Error 1")
+    }
+
+
+
+
+
+
+
+    //////////////////////////////
+    //val bbcArticles = scrapeArticlesFromBBCNews()
+
+    /* bbcArticles.forEachIndexed { index, article ->
+         println("Article ${index + 1}:")
+         println("Title: ${article.title}")
+         println("Description: ${article.description}")
+         println("Link: ${article.link}")
+         println("header: ${article.header}")
+         println("image: ${article.image}")
+         println("par: ${article.desc}")
+
+         println()
+     }*/
 ////////////////////////////////////
 
 
-     //   }
-            /////////////////////////////////////////////////////////////////////////////////
-        //}
+    //   }
+    /////////////////////////////////////////////////////////////////////////////////
+    //}
     //    println("TIME123 SplashViewModel Init End")
     //}
 
@@ -181,83 +242,5 @@ class SplashViewModel @Inject constructor(
         }
 
         return articles
-    }
-
-    override fun onCleared() {
-        //TODO: How to test?
-        viewModelScope.cancel()
-
-        //TODO: Also, is this redundant call after viewModelScope?
-        job?.cancel()
-    }
-
-    /////////////////////State-UI Events/////////////////////////
-    //Update STATE -> Send EVENT
-    private suspend fun onEvent(event: SplashViewEvent) {
-        when (event) {
-            is SplashViewEvent.LoadingStarted -> {
-                _state.value = _state.value.copy(isLoading = true)
-                _eventBus.send(SplashEvent.SPLASHING)
-            }
-            is SplashViewEvent.LoadingFinished -> {
-                _state.value = _state.value.copy(isLoading = false)
-                _eventBus.send(SplashEvent.SPLASHED)
-            }
-            is SplashViewEvent.LoadingError -> {
-                _state.value = _state.value.copy(isLoading = false, error = event.message)
-                _eventBus.send(SplashEvent.Error(msg = event.message))
-            }
-            is SplashViewEvent.TokenLoaded -> {
-                //_state.value = _state.value.copy(isLoggedIn = true)
-                println("Event Called -- Token Loaded from AuthRepo")
-            }
-            is SplashViewEvent.LoginFinished -> {
-                _state.value = _state.value.copy(isLoggedIn = true)
-            }
-            is SplashViewEvent.LoginFailed -> {
-                _state.value = _state.value.copy(isLoggedIn = false)
-            }
-            else -> { println("Unknown Event Called") }
-        }
-    }
-    ////////////////////////////////////////////////////////////
-
-
-    //ViewModel State (i.e. Status Implementation)
-    data class SplashState(
-        val isLoggedIn: Boolean = false,
-        val isLoading: Boolean = false,
-        val error: String? = null
-    )
-
-    //UI State-Events (i.e. Status Interface)
-    sealed class SplashEvent {
-        object SPLASHING: SplashEvent()
-        object SPLASHED: SplashEvent()
-        data class Error(val msg: String = "Error"): SplashEvent()
-    }
-
-    //ViewModel State-Events (i.e. Event Interface)
-    sealed class SplashViewEvent {
-        object LoadingStarted: SplashViewEvent()
-        object LoadingFinished: SplashViewEvent()
-        data class LoadingError(val message: String): SplashViewEvent()
-        object TokenLoaded: SplashViewEvent()
-        object LoginFinished : SplashViewEvent()
-        object LoginFailed : SplashViewEvent()
-    }
-    //Enumerated Events (i.e. Event Implementation)
-    companion object {
-        //Loading Status (... Can We Use a Loading Delegate?)
-        val LOADING_INIT = SplashViewEvent.LoadingStarted
-        val LOADING_STOP = SplashViewEvent.LoadingFinished
-        //Action Steps
-        val TOKEN_LOADED = SplashViewEvent.TokenLoaded
-        val LOGIN_SUCCESS = SplashViewEvent.LoginFinished
-        val LOGIN_FAIL = SplashViewEvent.LoginFailed
-        //Error Responses
-        val ERROR_A = SplashViewEvent.LoadingError("Error A")
-        val ERROR_0 = SplashViewEvent.LoadingError("Error 0")
-        val ERROR_1 = SplashViewEvent.LoadingError("Error 1")
     }
 }

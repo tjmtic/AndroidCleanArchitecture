@@ -23,12 +23,9 @@ fun SplashScreen(
     viewModel: SplashViewModel = hiltViewModel(),
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle()
-    val events = viewModel.eventBus.collectAsStateWithLifecycle(initialValue = SplashViewModel.SplashEvent.SPLASHING)
+    val events = viewModel.eventBus.collectAsStateWithLifecycle(initialValue = SplashViewModel.SplashUiEvent.SPLASHING)
 
     Scaffold(
-        /* topBar={
-             LoginDetailsTopBar(navController)
-         },*/
         contentColor = MaterialTheme.colors.AppContentColor,
         content = {
             println("$it")
@@ -36,14 +33,12 @@ fun SplashScreen(
         }
     )
 
-
-
         // Check authentication status and navigate accordingly
     LaunchedEffect(events) {
         println("State Update According to SplashViewModel")
 
             //delay(3000)
-        if(events.value == SplashViewModel.SplashEvent.SPLASHED && state.value.isLoggedIn){
+        if(events.value == SplashViewModel.SplashUiEvent.SPLASHED && state.value.isLoggedIn){
             println("Logged in According to SplashViewModel, going to HOME")
             onNavigateToHome()
         }
