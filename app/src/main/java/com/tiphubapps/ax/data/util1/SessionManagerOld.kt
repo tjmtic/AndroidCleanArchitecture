@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
-import com.tiphubapps.ax.rain.R
+import com.tiphubapps.ax.Rain.R
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 

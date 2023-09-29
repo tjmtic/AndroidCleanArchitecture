@@ -13,7 +13,7 @@ android {
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.tiphubapps.ax.rain"
+        applicationId "com.tiphubapps.ax.Rain"
         minSdk 24
         targetSdk 32
         versionCode 4
@@ -61,7 +61,7 @@ android {
         }
     }
 
-    namespace 'com.tiphubapps.ax.rain'
+    namespace 'com.tiphubapps.ax.Rain'
 }
 
 dependencies {
@@ -177,6 +177,8 @@ dependencies {
     implementation("com.google.firebase:firebase-messaging-ktx")
     implementation("com.google.firebase:firebase-analytics-ktx")
     implementation("com.google.firebase:firebase-config-ktx")
+    implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-auth-ktx")
 
     // Import the Compose BOM
     implementation (platform("androidx.compose:compose-bom:2023.06.01"))
@@ -199,6 +201,8 @@ dependencies {
 
     //Web Scraping
     implementation 'org.jsoup:jsoup:1.14.3'
+
+    implementation("com.google.android.gms:play-services-auth:19.0.0")
 
 }
 

@@ -1,43 +1,23 @@
 package test1
 
-import android.content.Context
-import android.content.SharedPreferences
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.google.gson.JsonObject
 import com.tiphubapps.ax.data.util.CoroutineContextProvider
 import com.tiphubapps.ax.data.util.TestCoroutineContextProvider
 import com.tiphubapps.ax.domain.repository.DefaultUsersRepository
 import com.tiphubapps.ax.domain.repository.UseCaseResult
 import com.tiphubapps.ax.domain.repository.UserRepository
-import com.tiphubapps.ax.domain.useCase.CreateSessionByUsersUseCase
-import com.tiphubapps.ax.domain.useCase.GetAllUsersUseCase
-import com.tiphubapps.ax.domain.useCase.GetAllUsersWithTokenUseCase
-import com.tiphubapps.ax.domain.useCase.GetCurrentUserUseCase
-import com.tiphubapps.ax.domain.useCase.GetCurrentUserWithTokenUseCase
-import com.tiphubapps.ax.domain.useCase.GetUserByIdUseCase
-import com.tiphubapps.ax.domain.useCase.GetUsersByIdUseCase
-import com.tiphubapps.ax.domain.useCase.GetUsersFromDBUseCase
 import com.tiphubapps.ax.domain.useCase.LoginUseCases
-import com.tiphubapps.ax.domain.useCase.PostLoginUseCase
 import com.tiphubapps.ax.domain.useCase.UseCaseLogin
-import com.tiphubapps.ax.domain.useCase.UserUseCases
 import com.tiphubapps.ax.domain.useCase.users.UseCaseUserGetValue
 import com.tiphubapps.ax.domain.useCase.users.UseCaseUserSetValue
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mockito
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
-import com.tiphubapps.ax.rain.Rain
-import com.tiphubapps.ax.rain.presentation.screen.details.LoginViewModel
-import com.tiphubapps.ax.data.util.SessionManager
+import com.tiphubapps.ax.Rain.presentation.screen.details.LoginViewModel
 import com.tiphubapps.ax.domain.repository.AuthRepository
-import com.tiphubapps.ax.domain.useCase.auth.UseCaseAuthGetToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runBlockingTest
@@ -45,7 +25,7 @@ import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert
 import org.junit.runner.RunWith
-import javax.inject.Inject
+
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
 class LoginViewModelTest {

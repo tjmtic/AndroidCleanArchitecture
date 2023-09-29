@@ -4,10 +4,9 @@ import android.arch.core.executor.testing.InstantTaskExecutorRule
 import android.util.JsonReader
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.tiphubapps.ax.rain.testWebviews.ArticleData
-import com.tiphubapps.ax.rain.testWebviews.ArticleViewModel
+import com.tiphubapps.ax.Rain.testWebviews.ArticleData
+import com.tiphubapps.ax.Rain.testWebviews.ArticleViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Assert
 import org.junit.Assert.*
 import org.junit.Before
