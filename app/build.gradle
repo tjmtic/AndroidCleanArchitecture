@@ -4,13 +4,16 @@ plugins {
     id 'kotlin-kapt'
     id 'dagger.hilt.android.plugin'
     id 'org.jmailen.kotlinter'
+
+    //firebase
+    id 'com.google.gms.google-services'
 }
 
 android {
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.tiphubapps.ax.rain"
+        applicationId "com.tiphubapps.ax.Rain"
         minSdk 24
         targetSdk 32
         versionCode 4
@@ -51,7 +54,14 @@ android {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
         }
     }
-    namespace 'com.tiphubapps.ax.rain'
+
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
+
+    namespace 'com.tiphubapps.ax.Rain'
 }
 
 dependencies {
@@ -73,6 +83,7 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.compose.material3:material3:1.0.0-alpha08'
     implementation 'androidx.core:core-ktx:+'
+    implementation 'androidx.test.ext:junit-ktx:1.1.5'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
@@ -164,6 +175,10 @@ dependencies {
     //Firebase
     implementation platform('com.google.firebase:firebase-bom:32.2.2')
     implementation("com.google.firebase:firebase-messaging-ktx")
+    implementation("com.google.firebase:firebase-analytics-ktx")
+    implementation("com.google.firebase:firebase-config-ktx")
+    implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-auth-ktx")
 
     // Import the Compose BOM
     implementation (platform("androidx.compose:compose-bom:2023.06.01"))
@@ -178,6 +193,16 @@ dependencies {
     // Dependencies for Android instrumented unit tests
     androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutine_version"
 
+    //Coroutines test
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0"
+
+    androidTestImplementation 'android.arch.core:core-testing:1.1.1'
+    testImplementation 'android.arch.core:core-testing:1.1.1'
+
+    //Web Scraping
+    implementation 'org.jsoup:jsoup:1.14.3'
+
+    implementation("com.google.android.gms:play-services-auth:19.0.0")
 
 }
 

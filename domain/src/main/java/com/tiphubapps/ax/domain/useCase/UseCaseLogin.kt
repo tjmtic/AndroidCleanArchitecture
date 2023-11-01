@@ -2,7 +2,7 @@ package com.tiphubapps.ax.domain.useCase
 
 import android.util.Log
 import com.tiphubapps.ax.domain.repository.AppError
-import com.tiphubapps.ax.domain.repository.Result
+import com.tiphubapps.ax.domain.repository.UseCaseResult
 
 import com.tiphubapps.ax.domain.repository.UserRepository
 import com.google.gson.JsonObject
@@ -11,11 +11,7 @@ import java.io.IOException
 // Use case module
 class UseCaseLogin(private val userRepository: UserRepository) {
 
-    //lateinit var username: String;
-    //lateinit var password: String;
-    //operator suspend fun invoke() = userRepository.postLogin(username, password)
-
-    suspend operator fun invoke(username:String, password:String): Result<JsonObject> {
+    suspend operator fun invoke(username:String, password:String): UseCaseResult<String> {
         //Timber.d("fetchData: Fetching data from API")
 
         return try {
@@ -25,12 +21,12 @@ class UseCaseLogin(private val userRepository: UserRepository) {
 
             /////////THIS IS A TODO////////////////////
             if (response?.size()!! >= 0) {
-                val data = response!!.asJsonObject
+                val data = response.asJsonObject
 
                 val result = data.get("token")?.let {
-                    Result.Success(JsonObject().apply{add("data", it)})
+                    UseCaseResult.UseCaseSuccess(it.asString)
                 } ?:
-                    Result.Error(AppError.ServerError)
+                UseCaseResult.UseCaseError(Exception("Server Error"))
 
 
                 return result
@@ -41,14 +37,17 @@ class UseCaseLogin(private val userRepository: UserRepository) {
             //else if (){}
             else {
                 //Timber.e("fetchData: Server error. Code: ${response.code()}, Message: ${response.message()}")
-                Result.Error(AppError.ServerError)
+                //UseCaseResult.UseCaseError(AppError.ServerError)
+                UseCaseResult.UseCaseError(Exception("Server Error"))
             }
         } catch (e: IOException) {
             //Timber.e(e, "fetchData: Network error")
-            Result.Error(AppError.NetworkError)
+            //UseCaseResult.UseCaseError(AppError.NetworkError)
+            UseCaseResult.UseCaseError(Exception("Network Error"))
         } catch (e: Exception) {
             //Timber.e(e, "fetchData: Custom error")
-            Result.Error(AppError.CustomError(e.message ?: "Unknown error"))
+            //Result.Error(AppError.CustomError(e.message ?: "Unknown error"))
+            UseCaseResult.UseCaseError(Exception("Unknown Error"))
         }
     }
 }

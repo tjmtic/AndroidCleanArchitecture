@@ -1,27 +1,26 @@
 package com.tiphubapps.ax.domain.repository
 
-import androidx.paging.PagingData
-import com.tiphubapps.ax.domain.model.User
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import com.tiphubapps.ax.domain.model.User
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
-import org.json.JSONObject
 
 
 interface UserRepository {
     fun getCurrentToken(): String?
-    suspend fun getCurrentUser(): JsonObject?
-    suspend fun getCurrentUserWithToken(token: String): JsonObject?
-    suspend fun getUserById(id:String, token: String): JsonObject?
-    suspend fun getUsersById(historyIds:JsonArray, contributorIds:JsonArray, token: String): JsonObject?
+    suspend fun getCurrentUser(): UseCaseResult<User>
+    //suspend fun getCurrentUserWithToken(token: String): UseCaseResult<User>
+    suspend fun getUserById(id:String): UseCaseResult<User>
+    suspend fun getUsersById(historyIds:JsonArray, contributorIds:JsonArray): UseCaseResult<List<User>>
 
-    suspend fun createSessionByUsers(data: JsonObject, token: String): JsonObject?
-    suspend fun getAllUsers(): JsonArray?
-    suspend fun getAllUsersWithToken(token: String): JsonArray?
-    fun getUsersFromDB(userId: Int): Flow<User>
+    suspend fun createSessionByUsers(receiverId: String): JsonObject?
+    suspend fun getAllUsers(): UseCaseResult<List<User>>
+    //suspend fun getAllUsersWithToken(token: String): UseCaseResult<List<User>>
+    fun getUsersFromDB(userId: Int): Flow<User?>
     suspend fun postLogin(email: String, password: String): JsonObject?
-    suspend fun logout()
+    suspend fun postLogout(): UseCaseResult<Boolean>
+    suspend fun logout(): Boolean
 
     fun getLocalValueFlow(): StateFlow<String>
     fun updateLocalValue(value: String)
@@ -30,11 +29,11 @@ interface UserRepository {
 /**
  * A generic class that holds a value with its loading status.
  * @param <T>
- */
-sealed class Result<out T> {
-    data class Success<T>(val data: T) : Result<T>()
-    data class Error<T>(val error: AppError) : Result<T>()
-}
+ *//*
+sealed class UseCaseResult<out T> {
+    data class Success<T>(val data: T) : UseCaseResult<T>()
+    data class Error<T>(val error: AppError) : UseCaseResult<T>()
+}*/
 
 // Error types
 sealed class AppError {

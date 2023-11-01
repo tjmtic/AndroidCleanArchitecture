@@ -1,64 +1,87 @@
 package test1
 
-import android.content.Context
-import android.content.SharedPreferences
-import com.tiphubapps.ax.domain.repository.AppError
-import com.tiphubapps.ax.domain.repository.Result
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.tiphubapps.ax.data.util.CoroutineContextProvider
+import com.tiphubapps.ax.data.util.TestCoroutineContextProvider
+import com.tiphubapps.ax.domain.repository.DefaultUsersRepository
+import com.tiphubapps.ax.domain.repository.UseCaseResult
 import com.tiphubapps.ax.domain.repository.UserRepository
-import com.tiphubapps.ax.domain.useCase.UserUseCases
-import com.tiphubapps.ax.rain.presentation.screen.details.LoginInnerViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
-//import com.tiphubapps.ax.rain.presentation.screen.login.LoginViewModel
+import com.tiphubapps.ax.domain.useCase.LoginUseCases
+import com.tiphubapps.ax.domain.useCase.UseCaseLogin
+import com.tiphubapps.ax.domain.useCase.users.UseCaseUserGetValue
+import com.tiphubapps.ax.domain.useCase.users.UseCaseUserSetValue
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mockito
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
-import com.tiphubapps.ax.rain.R
-import com.tiphubapps.ax.rain.Rain
-import com.tiphubapps.ax.rain.presentation.screen.details.LoginViewModel
-import com.tiphubapps.ax.rain.util.SessionManager
+import com.tiphubapps.ax.Rain.presentation.screen.details.LoginViewModel
+import com.tiphubapps.ax.domain.repository.AuthRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.setMain
+import org.junit.After
+import org.junit.Assert
+import org.junit.runner.RunWith
 
 @ExperimentalCoroutinesApi
-class LoginInnerViewModelTest {
-    private lateinit var mockUseCases : UserUseCases
-    private lateinit var mockUserRepository : UserRepository
-
-
+@RunWith(AndroidJUnit4::class)
+class LoginViewModelTest {
+    private var fakeDefaultUsersRepository : DefaultUsersRepository = FakeDefaultUsersRepository()
+    private var fakeUserRepository : UserRepository = FakeUserRepository()
+    private var fakeUseCases : LoginUseCases = useCaseBuilder(fakeUserRepository, null)
+    private var coroutineContextProvider : CoroutineContextProvider = TestCoroutineContextProvider()
     private lateinit var viewModel : LoginViewModel
 
     @Before
     fun setupDependencies() {
+        Dispatchers.setMain(UnconfinedTestDispatcher())
+        viewModel = LoginViewModel(fakeUseCases,
+                                    coroutineContextProvider)
+    }
 
-        //val application =  Mockito.mock(Application::class.java)
+    @After
+    fun cleanup() {
+        Dispatchers.resetMain()
+    }
 
-        val sharedPrefMock = mock<SharedPreferences>{}
-        val context = Mockito.mock(Context::class.java)
-        val con2 = mock<Context>{
-           // on { getString(R.string.app_name) } doReturn("Rain by TipHub")
-           // on { getSharedPreferences("Rain by TipHub", Context.MODE_PRIVATE) } doReturn(sharedPrefMock)
-        }
-        val app2 = mock<Rain>{
-           on { applicationContext } doReturn(con2)
-        }
-       // Mockito.`when`(app2.applicationContext).thenReturn(con2)
 
-        mockUseCases = mock<UserUseCases>{
-           // on { it.useCaseLogin("","") } doReturn(Result.Success(JsonObject()))
-        }
-        mockUserRepository = mock<UserRepository>{
-           // on {  }
-        }
 
-        val mockSessionManager = mock<SessionManager>{
-            on { getEncryptedPreferencesValue("userToken") } doReturn("testToken123")
-        }
-        val mockViewModel = mock<LoginViewModel>{
+    @Test
+    fun testLogin() = runBlockingTest {
+        val res = fakeUseCases.useCaseLogin("","")
+        //viewModel.postLogin("","")
 
-        }
-        viewModel = LoginViewModel(mockUseCases, mockUserRepository, mockSessionManager, app2)
+        val actual = UseCaseResult.UseCaseSuccess("1")
+
+        Assert.assertEquals(res, actual)
+    }
+
+    @Test
+    fun testGetValue() = runBlockingTest {
+        val res = fakeUseCases.useCaseUserGetValue()
+
+        val log = flowOf("Initial Value")
+
+        val actual = UseCaseResult.UseCaseSuccess(log)
+
+        Assert.assertEquals(res, actual)
+    }
+
+    @Test
+    fun testSetValue() = runBlockingTest {
+        val res = fakeUseCases.useCaseUserGetValue()
+        val log = flowOf("Initial Value")
+        val actual = UseCaseResult.UseCaseSuccess(log)
+
+        fakeUseCases.useCaseUserSetValue!!("Next Value")
+        val res2 = fakeUseCases.useCaseUserGetValue()
+        val log2 = flowOf("Next Value")
+        val actual2 = UseCaseResult.UseCaseSuccess(log2)
+
+        Assert.assertEquals(res2, actual2)
     }
 
 
@@ -137,7 +160,7 @@ class LoginInnerViewModelTest {
         val actual0 = ""
         assertEquals(expected0, actual0)
 
-        viewModel.updateErrorMessage(AppError.NetworkError)
+        viewModel.updateErrorMessage("Service Issue.")
 
         val expected = viewModel.state.value.error
         val actual = "Service Issue."
@@ -150,7 +173,7 @@ class LoginInnerViewModelTest {
         val actual0 = ""
         assertEquals(expected0, actual0)
 
-        viewModel.updateErrorMessage(AppError.InputError("Input Error"))
+        viewModel.updateErrorMessage("Input Error.")
 
         val expected = viewModel.state.value.error
         val actual = "Input Error."
@@ -163,13 +186,28 @@ class LoginInnerViewModelTest {
         val actual0 = ""
         assertEquals(expected0, actual0)
 
-        val msg = "Error."
-        viewModel.updateErrorMessage(AppError.CustomError(msg))
+        val msg = "Network Error."
+        viewModel.updateErrorMessage(msg)
 
         val expected = viewModel.state.value.error
-        val actual = msg
+        val actual = "Network Error"
         assertEquals(expected, actual)
     }
+
+    @Test
+    fun test7a(){
+        val expected0 = viewModel.state.value.error
+        val actual0 = ""
+        assertEquals(expected0, actual0)
+
+        val msg = "Error."
+        viewModel.updateErrorMessage(msg)
+
+        val expected = viewModel.state.value.error
+        val actual = "Unknown Error"
+        assertEquals(expected, actual)
+    }
+
 
 
 ////////////////////////////////////////Events
@@ -215,11 +253,85 @@ class LoginInnerViewModelTest {
 
         val expected = testValue
         val actual = viewModel.state.value.password
-        assertEquals(testValue, actual)
+        assertEquals(expected, actual)
     }
 
-   /* @Test
+    @Test
+    fun testEventLoginClick() {
+        val expected0 = ""
+        val actual0 = viewModel.state.value.password
+        assertEquals(expected0, actual0)
+
+        val testValue = "Default Value"
+        val event = LoginViewModel.LoginViewEvent.EmailChanged(testValue)
+        viewModel.onEvent(event)
+        val testValue1 = "Default Value1"
+        val event1 = LoginViewModel.LoginViewEvent.PasswordChanged(testValue1)
+        viewModel.onEvent(event1)
+
+        val event2 = LoginViewModel.LoginViewEvent.LoginClicked
+        viewModel.onEvent(event2)
+
+        val expected = testValue1
+        val actual = viewModel.state.value.password
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun testEventSignupClick() {
+        val expected0 = ""
+        val actual0 = viewModel.state.value.password
+        assertEquals(expected0, actual0)
+
+        val testValue = "Default Value"
+        val event = LoginViewModel.LoginViewEvent.EmailChanged(testValue)
+        viewModel.onEvent(event)
+        val testValue1 = "Default Value1"
+        val event1 = LoginViewModel.LoginViewEvent.PasswordChanged(testValue1)
+        viewModel.onEvent(event1)
+
+        val event2 = LoginViewModel.LoginViewEvent.SignupClicked
+        viewModel.onEvent(event2)
+
+        val expected = testValue1
+        val actual = viewModel.state.value.password
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun testEventForgotClick() {
+        val expected0 = ""
+        val actual0 = viewModel.state.value.email
+        assertEquals(expected0, actual0)
+
+        val testValue = "Default Value"
+        val event = LoginViewModel.LoginViewEvent.EmailChanged(testValue)
+        viewModel.onEvent(event)
+
+        val event2 = LoginViewModel.LoginViewEvent.ForgotClicked
+        viewModel.onEvent(event2)
+
+        val expected = testValue
+        val actual = viewModel.state.value.email
+        assertEquals(expected, actual)
+    }
+/*
+    @Test
     fun test11() = runBlockingTest{
 
     }*/
+
+
+
+
+    companion object {
+        fun useCaseBuilder (userRepository: UserRepository, authRepository: AuthRepository?): LoginUseCases{
+            return LoginUseCases(
+                useCaseLogin = UseCaseLogin(userRepository = userRepository),
+                useCaseUserGetValue = UseCaseUserGetValue(userRepository = userRepository),
+                useCaseUserSetValue = UseCaseUserSetValue(userRepository = userRepository),
+                null,
+            )
+        }
+    }
 }

@@ -4,6 +4,6 @@ import com.tiphubapps.ax.domain.repository.UserRepository
 import com.google.gson.JsonArray
 
 class GetUsersByIdUseCase(private val userRepository: UserRepository) {
-    operator suspend fun invoke(historyIds: JsonArray, contributorIds: JsonArray, token: String) =
-        userRepository.getUsersById(historyIds, contributorIds, token)
+    operator suspend fun invoke(historyIds: JsonArray, contributorIds: JsonArray) =
+        userRepository.getUsersById(historyIds, contributorIds)
 }

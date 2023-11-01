@@ -11,17 +11,26 @@ import com.tiphubapps.ax.data.api.UserApi
 import com.tiphubapps.ax.data.db.UserDB
 import com.tiphubapps.ax.data.paging.UserRemoteMediator
 import com.tiphubapps.ax.data.repository.dataSource.UserRemoteDataSource
-import com.tiphubapps.ax.domain.model.User
+import com.tiphubapps.ax.data.entity.UserEntity
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import com.tiphubapps.ax.data.api.CreateSessionRequest
+import com.tiphubapps.ax.data.api.GetUsersRequest
+import com.tiphubapps.ax.data.api.IdRequest
+import com.tiphubapps.ax.data.db.Converters
+import com.tiphubapps.ax.data.db.UserDao
+import com.tiphubapps.ax.data.repository.dataSource.Result
+import com.tiphubapps.ax.data.repository.dataSource.UserDataSource
+import com.tiphubapps.ax.domain.repository.AuthRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
 
 class UserRemoteDataSourceImpl(private val userApi: UserApi,
-                               private val userDB: UserDB, ) :
-    UserRemoteDataSource {
-    private val userDao = userDB.userDao()
+                               private val userDao: UserDao,
+) :
+    UserDataSource {
+    //private val userDao = userDB.userDao()
 
     val headersProvider = ApiMainHeadersProvider()
     var authToken: String = ""
@@ -30,127 +39,90 @@ class UserRemoteDataSourceImpl(private val userApi: UserApi,
         authToken = token;
     }
 
-    override suspend fun getAllUsers() : JsonArray? {
-        /*Log.d("TIME123", "LOGGING FOR GET ALL USERS");
-        val pagingSourceFactory = { userDao.getAllUsers() }
-        return Pager(
-            config = PagingConfig(pageSize = 20),
-            remoteMediator = UserRemoteMediator(
-                userApi,
-                userDB
-            ),
-            pagingSourceFactory = pagingSourceFactory,
-        ).flow*/
-        Log.d("TIME123","GETTING ALL USERS 3");
+    override suspend fun getAllUsers() : Result<List<UserEntity>> {
+        val response = userApi.getAllUsers()
 
-        val response = userApi.getAllUsers(authedHeaders = headersProvider.getAuthenticatedHeaders(authToken))
-
-        Log.d("TIME123","GETTING ALL USERS 4");
-
-        response?.let{
-            Log.d("TIME123", it.body().toString())
-            Log.d("TIME123","GETTING ALL USERS 5");
-
+        response.body()?.let { array ->
+            val entityList = array.mapNotNull { element ->
+                Converters.userEntityFromJsonObject(element.asJsonObject)
+            }
+            return Result.Success(entityList)
         }
 
-
-        return response.body()
+        return Result.Error(Exception("Empty Error"))
     }
 
-    override suspend fun getCurrentUser(): JsonObject?{
-       /* return flow {
-            val response = userApi.getCurrentUser();
+    override fun getUsersFromDB(userId: Int): Flow<UserEntity?> {
+        TODO("Not yet implemented")
+    }
 
-            emit(response.body());
-        }*/
-        //val response = userApi.getCurrentUser(authedHeaders = headersProvider.getAuthenticatedHeaders(authToken))
+    override suspend fun getCurrentUser(): Result<UserEntity>{
         val response = userApi.getCurrentUser()
-        //Log.d("TIME123", "Got Response with headers ${headersProvider.getAuthenticatedHeaders(authToken)}")
-        Log.d("TIME123", "Got Response with authtoken ${authToken}")
-        Log.d("TIME123", "Got Response with authtoken ${response}")
-        return response.body()
-    }
 
-    override suspend fun getUserById(id: String): JsonObject?{
-        /* return flow {
-             val response = userApi.getCurrentUser();
-
-             emit(response.body());
-         }*/
-        val body = JsonObject().also{
-            it.addProperty("id", id)
+        response.body()?.let {
+            println("TIME123 REMOTE DATAT SOURCE RESPONSE: ${it}")
+            val entity = Converters.userEntityFromJsonObject(it)
+            return Result.Success(entity)
         }
-        val response = userApi.getUserById(id = body, authedHeaders = headersProvider.getAuthenticatedHeaders(authToken))
-        Log.d("TIME123", "RAW RESPONSE 1: " + response.toString())
-        return response.body()
+
+        return Result.Error(Exception("Empty Error"))
     }
 
-    override suspend fun createSessionByUsers(d: JsonObject): JsonObject? {
-       // TODO("Not yet implemented")
-        /* return flow {
-             val response = userApi.getCurrentUser();
+    override suspend fun getUserById(id: String): Result<UserEntity>{
 
-             emit(response.body());
-         }*/
-        val body = JsonObject().also{
-          //  it.addProperty("id", d)
+        val body = IdRequest(id)
+        val response = userApi.getUserById(request = body)
+
+
+        response.body()?.let {
+            val entity =
+                Converters.userEntityFromJsonObject(it)
+
+            return Result.Success(entity)
         }
-        val response = userApi.createSessionByUser(data = d, authedHeaders = headersProvider.getAuthenticatedHeaders(authToken))
-        Log.d("TIME123", "RAW RESPONSE 1: " + response.toString())
+
+        return Result.Error(Exception("Empty Error"))
+    }
+
+    override suspend fun createSessionByUsers(receiverId: String): JsonObject? {
+        val d = CreateSessionRequest(receiver = receiverId, )
+        val response = userApi.createSessionByUser(request = d)
+
         return response.body()
     }
 
-    override suspend fun getAllUsersById(historyIds: JsonArray, contributorIds: JsonArray): JsonObject?{
-        /* return flow {
-             val response = userApi.getCurrentUser();
+    override suspend fun getAllUsersById(historyIds: JsonArray, contributorIds: JsonArray): Result<List<UserEntity>>{
 
-             emit(response.body());
-         }*/
-        val body = JsonObject().also{
+        val body = GetUsersRequest(history = historyIds.toString(), contributors = contributorIds.toString())/*JsonObject().also{
             it.addProperty("history", historyIds.toString())
             it.addProperty("contributors", contributorIds.toString())
+        }*/
+
+        val response = userApi.getUsersByIds(request = body)
+
+        //TODO: This ABSOLUTELY BREAKS the UI
+        response.body()?.let { array ->
+            val entityList = array.get("history").asJsonArray.mapNotNull { element ->
+                println("TIME123 history JSON OBJECT: $element")
+                Converters.userEntityFromJsonObject(element.asJsonObject)
+            }
+            val entityList2 = array.get("contributors").asJsonArray.mapNotNull { element ->
+                Converters.userEntityFromJsonObject(element.asJsonObject)
+            }
+            return Result.Success(entityList.plus(entityList2))
         }
 
-        Log.d("TIME123", "Checkming BODY:"+body)
-
-        val response = userApi.getUsersByIds(history = body, authedHeaders = headersProvider.getAuthenticatedHeaders(authToken))
-
-        Log.d("TIME123", "Checkming BODY response:"+ response)
-        return response.body()
+        return Result.Error(Exception("Empty Error"))
     }
 
     override suspend fun postLogin(email:String, password:String): JsonObject? {
-        Log.d("TIME123", "ACtual;ly loging in aaa posting 555..." + email + password)
-
         val response = userApi.postLogin(LoginRequest(email, password))
-        Log.d("TIME123", "ACtual;ly loging in 555..." + response)
-        Log.d("TIME123", "ACtual;ly loging in 555aa..." + response.body())
-
         val resp = response.body();
         return resp;
-
-
-        /*resp?.get("token")?.let{
-            return Result.Success(resp)
-        }
-
-        return Result.Error(Exception("Bad Login"))*/
     }
 
     override suspend fun postLogout() {
-
         val response = userApi.postLogout();
-        Log.d("TIME123", "ACtual;ly loging out 555..." + response)
-        Log.d("TIME123", "ACtual;ly loging out 555aa..." + response.body())
-
         val resp = response.body();
-       // return resp;
-
-
-        /*resp?.get("token")?.let{
-            return Result.Success(resp)
-        }
-
-        return Result.Error(Exception("Bad Login"))*/
     }
 }
