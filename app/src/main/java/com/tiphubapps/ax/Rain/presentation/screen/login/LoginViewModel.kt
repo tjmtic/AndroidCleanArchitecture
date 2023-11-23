@@ -12,8 +12,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 import com.tiphubapps.ax.Rain.presentation.delegate.AuthorizationDelegate
+import com.tiphubapps.ax.Rain.presentation.delegate.AuthorizationDelegate2
+import com.tiphubapps.ax.Rain.presentation.delegate.AuthorizationDelegate2Impl
 import com.tiphubapps.ax.Rain.presentation.delegate.AuthorizationDelegateImpl
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.update
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
@@ -22,12 +25,15 @@ class LoginViewModel @Inject constructor(
     // Yes.
     //authUseCases: AuthUseCases,
     authorizationDelegateImpl: AuthorizationDelegateImpl,
+    authorizationDelegate2Impl: AuthorizationDelegate2Impl,
     private val coroutineContextProvider: CoroutineContextProvider
-) : ViewModel(), AuthorizationDelegate by authorizationDelegateImpl {
+) : ViewModel(), AuthorizationDelegate by authorizationDelegateImpl, AuthorizationDelegate2 by authorizationDelegate2Impl {
 
     /////////////
     private lateinit var auth: FirebaseAuth
     /////////////
+
+    override var authState = authorizationDelegateImpl.authState
 
     //TODO: implement injection (and use!) of this?
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
@@ -92,7 +98,7 @@ class LoginViewModel @Inject constructor(
     fun onEvent(event: LoginViewEvent) {
         when (event) {
             is LoginViewEvent.ViewChanged -> {
-                _state.value = _state.value.copy(viewState = event.viewState)
+                _state.update{ it.copy(viewState = event.viewState)}
             }
             is LoginViewEvent.LoadingChanged -> {
                 _state.value = _state.value.copy(isLoading = event.isLoading)
@@ -107,7 +113,8 @@ class LoginViewModel @Inject constructor(
                 _state.value = _state.value.copy(name = event.name)
             }
             is LoginViewEvent.LoginClicked -> {
-                postLogin(_state.value.email, _state.value.password)
+                _state.value.run { postLogin(this.email, this.password) }
+                //postLogin(_state.value.email, _state.value.password)
             }
             is LoginViewEvent.SignupClicked -> {
                 postSignup(_state.value.email, _state.value.password)
@@ -193,6 +200,9 @@ class LoginViewModel @Inject constructor(
                             // Need to check, stop, and re-start?
                             println("Loading --- Login")
                             //TODO: NO. Should be useful for stateful responses, emit(LOADING) and emit(SUCCESS/ERROR)
+                            // ... not going to emit that from the backend though. Still UI State Declaration. Relevant
+                            // datastreams will emit it as they begin, and resolve to be the result.
+                            // _localValueFlow here would emit a LOADING, before the useCase invocation.
                         }
                 }
                 //Hide loading

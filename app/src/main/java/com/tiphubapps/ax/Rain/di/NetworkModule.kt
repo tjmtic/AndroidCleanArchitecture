@@ -26,7 +26,6 @@ object NetworkModule {
             .addInterceptor(authInterceptor)
             .build()
     }
-
     @Provides
     @Singleton
     fun provideRetrofitInstance(okHttpClient: OkHttpClient): Retrofit {
