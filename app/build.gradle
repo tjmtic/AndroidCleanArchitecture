@@ -15,7 +15,7 @@ android {
     defaultConfig {
         applicationId "com.tiphubapps.ax.Rain"
         minSdk 24
-        targetSdk 32
+        targetSdk 33
         versionCode 4
         versionName "1.1.1"
 
@@ -82,7 +82,7 @@ dependencies {
     implementation 'androidx.annotation:annotation:1.2.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.compose.material3:material3:1.0.0-alpha08'
-    implementation 'androidx.core:core-ktx:+'
+    //implementation 'androidx.core:core-ktx:+'
     implementation 'androidx.test.ext:junit-ktx:1.1.5'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
